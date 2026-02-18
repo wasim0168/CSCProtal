@@ -1,0 +1,1190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Print Portal - Admin (Password Update)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* --- LIGHT THEME VARIABLES --- */
+        :root {
+            --bg-body: #f1f5f9;
+            --bg-card: #ffffff;
+            --bg-input: #f8fafc;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --primary: #4f46e5;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --radius: 12px;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; outline: none; }
+        
+        body { 
+            background-color: var(--bg-body); 
+            background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+            background-size: 24px 24px;
+            color: var(--text-main); 
+            min-height: 100vh; 
+            display: flex; 
+            flex-direction: column;
+        }
+
+        /* --- COMPONENTS --- */
+        .btn { 
+            padding: 10px 20px; 
+            border: none; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            font-weight: 500; 
+            transition: all 0.2s ease; 
+            font-size: 0.9rem; 
+            display: inline-flex; align-items: center; gap: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: #4338ca; transform: translateY(-1px); }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-danger:hover { background: #dc2626; }
+        .btn-success { background: #10b981; color: white; }
+        .btn-success:hover { background: #059669; }
+        .btn-warning { background: #f59e0b; color: white; }
+        .btn-warning:hover { background: #d97706; }
+        .btn-info { background: #3b82f6; color: white; }
+        .btn-info:hover { background: #2563eb; }
+        .btn-sm { padding: 6px 12px; font-size: 0.8rem; }
+        .btn-outline { background: white; border: 1px solid var(--border); color: var(--text-main); }
+        .btn-outline:hover { border-color: var(--primary); color: var(--primary); background: #f8fafc; }
+
+        /* --- LOGIN --- */
+        .login-wrapper {
+            width: 100%; height: 100vh; display: flex; justify-content: center; align-items: center;
+            position: absolute; top: 0; left: 0; z-index: 50; background: #f8fafc; transition: opacity 0.5s ease;
+        }
+        .login-wrapper.hidden { opacity: 0; pointer-events: none; }
+        .card { background: var(--bg-card); padding: 3rem; border-radius: var(--radius); border: 1px solid var(--border); width: 100%; max-width: 420px; box-shadow: var(--shadow); }
+        .input-group { margin-bottom: 1.5rem; }
+        .input-group label { display: block; margin-bottom: 0.5rem; font-size: 0.85rem; color: var(--text-muted); font-weight: 600; }
+        .input-group input, .input-group select, .input-group textarea { width: 100%; padding: 14px; background: var(--bg-input); border: 1px solid var(--border); border-radius: 8px; color: var(--text-main); font-size: 1rem; transition: 0.2s; }
+        .input-group input:focus, .input-group select:focus, .input-group textarea:focus { border-color: var(--primary); background: white; box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); }
+
+        /* --- HEADER --- */
+        header { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); padding: 1rem 2.5rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 40; }
+        .logo { font-size: 1.5rem; font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 12px; }
+        .logo span { color: var(--primary); }
+
+        /* --- MAIN --- */
+        main { flex: 1; padding: 2.5rem; max-width: 1400px; margin: 0 auto; width: 100%; }
+
+        /* --- NOTICE BOARD --- */
+        .notice-board { margin-bottom: 30px; display: flex; flex-direction: column; gap: 15px; }
+        .notice-header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+        .notice-item { background: #fff; border-left: 5px solid var(--warning); padding: 15px 20px; border-radius: 8px; box-shadow: var(--shadow); display: flex; justify-content: space-between; align-items: flex-start; animation: slideIn 0.3s ease; }
+        .notice-content h4 { color: var(--text-main); margin-bottom: 5px; font-size: 1.1rem; }
+        .notice-content p { color: var(--text-muted); font-size: 0.9rem; }
+        .notice-date { font-size: 0.75rem; color: #94a3b8; display: block; margin-bottom: 5px; }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
+
+        /* --- STATS CARDS --- */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; margin-bottom: 40px; }
+        .stat-card { position: relative; padding: 2rem; border-radius: 16px; color: white; overflow: hidden; cursor: pointer; transition: transform 0.3s ease, box-shadow 0.3s ease; border: 1px solid rgba(0,0,0,0.05); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+        .stat-card:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.15); }
+        .stat-card.user { background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); }
+        .stat-card.pan { background: linear-gradient(135deg, #ea580c 0%, #db2777 100%); }
+        .stat-card.ll { background: linear-gradient(135deg, #059669 0%, #0d9488 100%); }
+        .stat-content h3 { font-size: 3rem; font-weight: 700; margin-bottom: 5px; line-height: 1; }
+        .stat-content p { font-size: 1rem; opacity: 0.95; font-weight: 500; text-transform: uppercase; }
+        .stat-icon { position: absolute; right: 20px; bottom: 20px; font-size: 2.5rem; opacity: 0.2; }
+
+        /* --- TABLE --- */
+        .panel { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 25px; box-shadow: var(--shadow); }
+        .panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px; }
+        .search-box { position: relative; }
+        .search-box input { background: var(--bg-input); border: 1px solid var(--border); padding: 10px 15px 10px 40px; border-radius: 8px; color: var(--text-main); min-width: 300px; }
+        .search-box input:focus { border-color: var(--primary); background: white; box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); }
+        .search-box svg { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; fill: var(--text-muted); }
+
+        table { width: 100%; border-collapse: separate; border-spacing: 0 8px; }
+        th { text-align: left; padding: 0 15px 10px; color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; font-weight: 600; letter-spacing: 1px; border-bottom: 1px solid var(--border); }
+        td { background: white; padding: 16px 15px; color: #475569; font-size: 0.9rem; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); transition: 0.2s; }
+        tr { box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); }
+        tr td:first-child { border-left: 1px solid var(--border); border-top-left-radius: 8px; border-bottom-left-radius: 8px; }
+        tr td:last-child { border-right: 1px solid var(--border); border-top-right-radius: 8px; border-bottom-right-radius: 8px; }
+        tr:hover td { background: #f8fafc; border-color: #cbd5e1; }
+
+        .badge { padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; }
+        .badge-active { background: rgba(16, 185, 129, 0.1); color: #059669; border: 1px solid rgba(16, 185, 129, 0.2); }
+        .badge-pending { background: rgba(245, 158, 11, 0.1); color: #d97706; border: 1px solid rgba(245, 158, 11, 0.2); }
+        .badge-completed { background: rgba(59, 130, 246, 0.1); color: #2563eb; border: 1px solid rgba(59, 130, 246, 0.2); }
+        .badge-type { padding: 3px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; letter-spacing: 0.5px; margin-right: 5px; }
+        .badge-ll { background: rgba(5, 150, 105, 0.1); color: #059669; }
+        .badge-pan { background: rgba(234, 88, 12, 0.1); color: #c2410c; }
+
+        /* Test score styles */
+        .test-score { font-weight: 600; padding: 4px 8px; border-radius: 20px; display: inline-block; }
+        .score-high { color: #059669; }
+        .score-medium { color: #d97706; }
+        .score-low { color: #dc2626; }
+
+        /* --- MODALS --- */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(4px); display: none; justify-content: center; align-items: center; z-index: 1000; animation: fadeIn 0.2s ease; }
+        .modal-box { background: white; padding: 2rem; border-radius: 16px; width: 90%; max-width: 600px; border: 1px solid var(--border); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); transform: scale(0.95); animation: popIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; max-height: 90vh; overflow-y: auto; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; position: sticky; top: 0; background: white; padding-bottom: 1rem; border-bottom: 1px solid var(--border); }
+        .modal-header h3 { color: var(--text-main); }
+        .close-btn { background: none; border: none; color: var(--text-muted); font-size: 1.5rem; cursor: pointer; transition: 0.2s; }
+        .close-btn:hover { color: var(--danger); transform: rotate(90deg); }
+
+        /* Grid layout for modal */
+        .modal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+
+        /* --- TOAST --- */
+        #toast-container { position: fixed; bottom: 30px; right: 30px; z-index: 2000; }
+        .toast { background: white; color: #334155; padding: 15px 25px; border-radius: 10px; margin-top: 10px; border-left: 5px solid var(--primary); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); display: flex; align-items: center; gap: 10px; opacity: 0; transform: translateY(20px); transition: all 0.3s ease; border: 1px solid var(--border); }
+        .toast.show { opacity: 1; transform: translateY(0); }
+
+        @keyframes popIn { to { transform: scale(1); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    </style>
+</head>
+<body>
+
+    <!-- LOGIN -->
+    <div id="login-section" class="login-wrapper">
+        <div class="card">
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <svg width="50" height="50" viewBox="0 0 24 24" fill="var(--primary)"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 9h-2V7h2v5zm0 4h-2v-2h2v2z"/></svg>
+                <h2 style="color: var(--text-main); margin-top: 10px;">Admin Portal</h2>
+                <p style="color: var(--text-muted); font-size: 0.9rem;">Secure Access</p>
+            </div>
+            <form onsubmit="handleLogin(event)">
+                <div class="input-group">
+                    <label>Username</label>
+                    <input type="text" id="username" name="username" placeholder="admin" required>
+                </div>
+
+                <div class="input-group">
+                    <label>Password</label>
+                    <input type="password" id="password" name="password" placeholder="•••••••" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Access Dashboard</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MAIN APP -->
+    <div id="app-container" style="display: none; flex: 1; flex-direction: column;">
+        <header>
+            <div class="logo">
+                <svg viewBox="0 0 24 24" width="32" height="32" fill="var(--primary)"><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-4-9H6v4h9V3z"/></svg>
+                Print Portal <span>Admin</span>
+            </div>
+            <nav style="display: flex; align-items: center; gap: 20px;">
+                <div style="text-align: right;">
+                    <span style="display: block; font-size: 0.8rem; color: var(--text-muted);">Logged in as</span>
+                    <span style="font-weight: 600; color: var(--text-main);">Administrator</span>
+                </div>
+                <button class="btn btn-outline btn-sm" onclick="logout()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M16 13v-2H7V8l-5 4 5 4v-3zM20 3H9c-1.1 0-2 .9-2 2v3h2V5h11v14H9v-3H7v3c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/></svg>
+                    Logout
+                </button>
+            </nav>
+        </header>
+
+        <main>
+            <!-- NOTICE BOARD -->
+            <div class="notice-board">
+                <div class="notice-header">
+                    <h3 style="color: var(--text-main);">📢 Announcements (User Dashboard)</h3>
+                    <button class="btn btn-primary btn-sm" onclick="openNoticeModal()">+ Post Announcement</button>
+                </div>
+                <div id="notice-list">
+                    <!-- Notices injected here -->
+                </div>
+            </div>
+
+            <!-- STATS -->
+            <div class="stats-grid">
+                <div class="stat-card user" onclick="filterData('all', 'All')">
+                    <div class="stat-content"><h3 id="stat-total">0</h3><p>Total Users</p></div>
+                    <div class="stat-icon">👥</div>
+                </div>
+                <div class="stat-card pan" onclick="filterData('pan', 'PAN')">
+                    <div class="stat-content"><h3 id="stat-pan">0</h3><p>Pan Card</p></div>
+                    <div class="stat-icon">💳</div>
+                </div>
+                <div class="stat-card ll" onclick="filterData('ll', 'LL')">
+                    <div class="stat-content"><h3 id="stat-ll">0</h3><p>LL Test</p></div>
+                    <div class="stat-icon">🚗</div>
+                </div>
+            </div>
+
+            <!-- TABLE -->
+            <div class="panel">
+                <div class="panel-header">
+                    <div>
+                        <h2 id="table-title" style="color: var(--text-main); font-weight: 600;">All Applications</h2>
+                        <p id="table-subtitle" style="color: var(--text-muted); font-size: 0.9rem;">Manage your database</p>
+                    </div>
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <div class="search-box">
+                            <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+                            <input type="text" id="search-input" placeholder="Search name or ID..." onkeyup="renderTable()">
+                        </div>
+                        <button class="btn btn-outline" onclick="resetFilter()">Reset</button>
+                    </div>
+                </div>
+
+                <div style="overflow-x: auto;">
+                    <table id="main-table">
+                        <thead id="table-head">
+                            <!-- Dynamic Headers -->
+                        </thead>
+                        <tbody id="table-body">
+                            <!-- Dynamic Rows -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- ADD ANNOUNCEMENT MODAL -->
+    <div id="notice-modal" class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3>Post Announcement</h3>
+                <button class="close-btn" onclick="closeNoticeModal()">&times;</button>
+            </div>
+            <form onsubmit="saveAnnouncement(event)">
+                <div class="input-group">
+                    <label>Announcement Title</label>
+                    <input type="text" id="notice-title" required placeholder="e.g. Office Closed">
+                </div>
+                <div class="input-group">
+                    <label>Message Details</label>
+                    <textarea id="notice-message" rows="4" required placeholder="Type details here..."></textarea>
+                </div>
+                <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
+                    <button type="button" class="btn btn-outline" onclick="closeNoticeModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Post Now</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- PASSWORD UPDATE MODAL -->
+    <div id="password-modal" class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3>🔒 Update Password</h3>
+                <button class="close-btn" onclick="closePasswordModal()">&times;</button>
+            </div>
+            <form onsubmit="savePasswordUpdate(event)">
+                <input type="hidden" id="pass-user-id">
+                
+                <div style="margin-bottom: 20px; background: #f1f5f9; padding: 10px; border-radius: 8px;">
+                    <p style="font-size: 0.85rem; color: var(--text-muted);">User:</p>
+                    <p id="pass-user-name" style="font-weight: 600; color: var(--text-main);">User Name</p>
+                </div>
+
+                <div class="input-group">
+                    <label>New Password</label>
+                    <input type="text" id="new-password-input" required placeholder="Enter new password">
+                </div>
+
+                <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
+                    <button type="button" class="btn btn-outline" onclick="closePasswordModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Update Password</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- EDIT/UPDATE MODAL (ENHANCED) -->
+    <div id="edit-modal" class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3>Update Application Information</h3>
+                <button class="close-btn" onclick="closeEditModal()">&times;</button>
+            </div>
+            <form onsubmit="saveEdit(event)">
+                <input type="hidden" id="edit-id">
+                <input type="hidden" id="edit-type">
+                
+                <div class="modal-grid">
+                    <div class="input-group">
+                        <label>Application No</label>
+                        <input type="text" id="edit-appNo" placeholder="Enter application number">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label>PAN Number</label>
+                        <div style="display: flex; gap: 5px;">
+                            <input type="text" id="edit-panNumber" class="form-control" placeholder="ABCDE1234F" maxlength="10" style="text-transform: uppercase;">
+                            <button type="button" class="btn btn-outline btn-sm" onclick="generatePAN()" title="Generate PAN">🔄</button>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Aadhar Number</label>
+                        <input type="text" id="edit-aadhar" placeholder="12-digit Aadhar number" maxlength="12">
+                    </div>
+
+                    <div class="input-group" id="dob-group">
+                        <label>Date of Birth</label>
+                        <input type="date" id="edit-dob">
+                    </div>
+
+                    <div class="input-group">
+                        <label>Wallet Balance (₹)</label>
+                        <input type="number" id="edit-wallet" placeholder="0" min="0" value="0">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label>Status</label>
+                        <select id="edit-status">
+                            <option value="pending">Pending</option>
+                            <option value="active">Active</option>
+                            <option value="completed">Completed</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- LL Test Specific Fields (shown only for LL) -->
+                <div id="ll-test-fields" style="display: none;">
+                    <h4 style="margin: 15px 0 10px; color: var(--text-main);">LL Test Results</h4>
+                    <div class="modal-grid">
+                        <div class="input-group">
+                            <label>Test Score (0-100)</label>
+                            <input type="number" id="edit-test-score" min="0" max="100" value="0">
+                        </div>
+                        <div class="input-group">
+                            <label>Test Status</label>
+                            <select id="edit-test-status">
+                                <option value="pending">Pending</option>
+                                <option value="passed">Passed</option>
+                                <option value="failed">Failed</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label>Remarks / Feed</label>
+                    <textarea id="edit-textFeed" rows="3" placeholder="Enter remarks or feedback..."></textarea>
+                </div>
+
+                <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
+                    <button type="button" class="btn btn-outline" onclick="closeEditModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Update Info</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- LL TEST RESULT MODAL -->
+    <div id="ll-test-modal" class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3>📝 LL Test Result</h3>
+                <button class="close-btn" onclick="closeLLTestModal()">&times;</button>
+            </div>
+            <form onsubmit="saveLLTestResult(event)">
+                <input type="hidden" id="ll-test-id">
+                
+                <div class="modal-grid">
+                    <div class="input-group">
+                        <label>Application Number</label>
+                        <input type="text" id="ll-test-appno" class="form-control" readonly>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Applicant Name</label>
+                        <input type="text" id="ll-test-name" class="form-control" readonly>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Test Score (0-100)</label>
+                        <input type="number" id="ll-test-score" class="form-control" min="0" max="100" value="0">
+                    </div>
+
+                    <div class="input-group">
+                        <label>Test Status</label>
+                        <select id="ll-test-status" class="form-control">
+                            <option value="pending">Pending</option>
+                            <option value="passed">Passed</option>
+                            <option value="failed">Failed</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label>Examiner Remarks</label>
+                    <textarea id="ll-test-remarks" class="form-control" rows="3" placeholder="Enter examiner remarks..."></textarea>
+                </div>
+
+                <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+                    <button type="button" class="btn btn-outline" onclick="closeLLTestModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Result</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="toast-container"></div>
+
+    <script>
+        // --- ANNOUNCEMENT DATA ---
+        let announcements = [
+            { id: 1, date: '2023-10-25', title: 'Server Maintenance', message: 'The server will be down for maintenance on Sunday from 2 AM to 4 AM.' },
+        ];
+
+        // This will be populated from the backend
+        let applications = [];
+        let currentFilter = 'all';
+
+        // --- API BASE URL ---
+        const API_BASE_URL = 'http://localhost:5000/api';
+
+        // --- AUTH ---
+        function handleLogin(e) {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            if(username === 'admin' && password === 'admin123') {
+                document.getElementById('login-section').classList.add('hidden');
+                setTimeout(() => {
+                    document.getElementById('login-section').style.display = 'none';
+                    document.getElementById('app-container').style.display = 'flex';
+                    initDashboard();
+                    showToast("Welcome back! 👋");
+                }, 500);
+            } else {
+                showToast("Invalid Credentials ❌");
+            }
+        }
+
+        function logout() {
+            document.getElementById('app-container').style.display = 'none';
+            document.getElementById('login-section').style.display = 'flex';
+            document.getElementById('login-section').classList.remove('hidden');
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+            showToast("Logged out");
+        }
+
+        // --- INIT ---
+        async function initDashboard() {
+            await fetchApplications();
+            updateStats();
+            renderTable();
+            renderNotices();
+        }
+
+        // --- FETCH APPLICATIONS FROM BACKEND ---
+        async function fetchApplications() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/applications`);
+                if (response.ok) {
+                    applications = await response.json();
+                } else {
+                    console.error('Failed to fetch applications');
+                    applications = [];
+                }
+            } catch (error) {
+                console.error('Error fetching applications:', error);
+                showToast('Failed to connect to server. Please check if backend is running.');
+                applications = [];
+            }
+        }
+
+        // --- PASSWORD UPDATE MODAL LOGIC ---
+        function openPasswordModal(id) {
+            const app = applications.find(a => a.id === id);
+            if(!app) return;
+
+            document.getElementById('pass-user-id').value = app.id;
+            document.getElementById('pass-user-name').innerText = `${app.name} (ID: ${app.id})`;
+            document.getElementById('new-password-input').value = app.password;
+            document.getElementById('password-modal').style.display = 'flex';
+        }
+
+        function closePasswordModal() {
+            document.getElementById('password-modal').style.display = 'none';
+        }
+
+        async function savePasswordUpdate(e) {
+            e.preventDefault();
+            const id = parseInt(document.getElementById('pass-user-id').value);
+            const newPass = document.getElementById('new-password-input').value;
+            const app = applications.find(a => a.id === id);
+
+            if(app) {
+                try {
+                    const response = await fetch(`${API_BASE_URL}/applications/${id}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ password: newPass })
+                    });
+
+                    if (response.ok) {
+                        app.password = newPass;
+                        showToast("Password Updated Successfully! 🔑");
+                        closePasswordModal();
+                        renderTable();
+                    } else {
+                        const error = await response.json();
+                        showToast(`Failed to update password: ${error.error || 'Unknown error'}`);
+                    }
+                } catch (error) {
+                    console.error('Error updating password:', error);
+                    showToast("Network error. Please try again.");
+                }
+            }
+        }
+
+        // --- NOTICE BOARD LOGIC ---
+        function renderNotices() {
+            const container = document.getElementById('notice-list');
+            container.innerHTML = '';
+            if(announcements.length === 0) {
+                container.innerHTML = '<p style="color:#94a3b8; font-style:italic;">No active announcements.</p>';
+                return;
+            }
+            announcements.forEach(notice => {
+                const div = document.createElement('div');
+                div.className = 'notice-item';
+                div.innerHTML = `
+                    <div class="notice-content">
+                        <span class="notice-date">${notice.date}</span>
+                        <h4>${notice.title}</h4>
+                        <p>${notice.message}</p>
+                    </div>
+                    <button class="btn btn-danger btn-sm" onclick="deleteNotice(${notice.id})">Delete</button>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function openNoticeModal() {
+            document.getElementById('notice-modal').style.display = 'flex';
+        }
+
+        function closeNoticeModal() {
+            document.getElementById('notice-modal').style.display = 'none';
+            document.getElementById('notice-title').value = '';
+            document.getElementById('notice-message').value = '';
+        }
+
+        function saveAnnouncement(e) {
+            e.preventDefault();
+            const title = document.getElementById('notice-title').value;
+            const message = document.getElementById('notice-message').value;
+            const date = new Date().toISOString().split('T')[0];
+            const newNotice = { id: Date.now(), date: date, title: title, message: message };
+            announcements.unshift(newNotice);
+            renderNotices();
+            closeNoticeModal();
+            showToast("Announcement Posted! 📢");
+        }
+
+        function deleteNotice(id) {
+            if(confirm("Delete this announcement?")) {
+                announcements = announcements.filter(n => n.id !== id);
+                renderNotices();
+                showToast("Announcement Removed");
+            }
+        }
+
+        // --- DASHBOARD LOGIC ---
+        function updateStats() {
+            document.getElementById('stat-total').innerText = applications.length;
+            document.getElementById('stat-pan').innerText = applications.filter(a => a.type === 'pan').length;
+            document.getElementById('stat-ll').innerText = applications.filter(a => a.type === 'll').length;
+        }
+
+        function filterData(type, title) {
+            currentFilter = type;
+            document.getElementById('table-title').innerText = title + " Applications";
+            renderTable();
+        }
+
+        function resetFilter() {
+            currentFilter = 'all';
+            document.getElementById('table-title').innerText = "All Applications";
+            document.getElementById('search-input').value = '';
+            renderTable();
+        }
+
+        // --- RENDER TABLE FUNCTION (ENHANCED) ---
+        function renderTable() {
+            const thead = document.getElementById('table-head');
+            const tbody = document.getElementById('table-body');
+            const search = document.getElementById('search-input').value.toLowerCase();
+            
+            tbody.innerHTML = '';
+            thead.innerHTML = '';
+
+            // Determine headers based on filter
+            let headers = [];
+            
+            if (currentFilter === 'all') {
+                headers = ['ID', 'Date', 'Category', 'Name', 'Mobile', 'PAN/App No', 'Password', 'Wallet', 'Status', 'Actions'];
+            } else if (currentFilter === 'pan') {
+                headers = ['ID', 'Date', 'Name', 'Mobile', 'Aadhar', 'PAN Number', 'Status', 'Actions'];
+            } else {
+                headers = ['ID', 'Date', 'App No', 'Name', 'Mobile', 'DOB', 'Test Score', 'Status', 'Actions'];
+            }
+
+            // Render Headers
+            let headerHTML = '<tr>';
+            headers.forEach(h => {
+                headerHTML += `<th>${h}</th>`;
+            });
+            headerHTML += '</tr>';
+            thead.innerHTML = headerHTML;
+
+            // Filter data
+            let filtered = applications.filter(app => {
+                if (currentFilter === 'all') return true;
+                return app.type === currentFilter;
+            });
+
+            filtered = filtered.filter(app => 
+                (app.name && app.name.toLowerCase().includes(search)) || 
+                (app.aadhar && app.aadhar.includes(search)) ||
+                (app.mobile && app.mobile.includes(search)) ||
+                (app.appNo && app.appNo.includes(search)) ||
+                String(app.id).includes(search)
+            );
+
+            if(filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="${headers.length}" style="text-align:center; padding:30px; color:var(--text-muted);">No records found</td></tr>`;
+                return;
+            }
+
+            // Render rows
+            filtered.forEach(app => {
+                let statusClass = 'badge-pending';
+                let statusText = app.status;
+                
+                if (app.status === 'active' || app.status === 'completed') {
+                    statusClass = 'badge-active';
+                    statusText = app.status === 'active' ? 'Active' : 'Completed';
+                }
+
+                const typeBadge = app.type === 'll' ? 'badge-ll' : 'badge-pan';
+                const typeName = app.type === 'll' ? 'LL' : 'PAN';
+
+                let rowHTML = `<tr>
+                    <td style="font-family:monospace;">#${app.id}</td>
+                    <td>${app.date || '-'}</td>`;
+
+                if (currentFilter === 'all') {
+                    rowHTML += `
+                        <td><span class="badge-type ${typeBadge}">${typeName}</span></td>
+                        <td>${app.name || '-'}</td>
+                        <td>${app.mobile || '-'}</td>
+                        <td>${app.panNumber || app.appNo || '-'}</td>
+                        <td><code>${app.password || '-'}</code></td>
+                        <td>₹${app.walletBal || 0}</td>
+                        <td><span class="badge ${statusClass}">${statusText}</span></td>
+                        <td style="text-align: right;">
+                            <div style="display: flex; gap: 5px; justify-content: flex-end; flex-wrap: wrap;">
+                                <button class="btn btn-outline btn-sm" onclick="openPasswordModal(${app.id})" title="Update Password">🔒</button>
+                                <button class="btn btn-primary btn-sm" onclick="openEditModal(${app.id})" title="Edit Details">✏️</button>
+                                <button class="btn btn-info btn-sm" onclick="viewUserDashboard(${app.id})" title="View Dashboard">👤</button>
+                                <button class="btn btn-danger btn-sm" onclick="deleteUser(${app.id})" title="Delete">🗑️</button>
+                            </div>
+                        </td>
+                    `;
+                } else if (currentFilter === 'pan') {
+                    rowHTML += `
+                        <td>${app.name || '-'}</td>
+                        <td>${app.mobile || '-'}</td>
+                        <td>${app.aadhar ? app.aadhar.replace(/(\d{4})/g, '$1 ').trim() : '-'}</td>
+                        <td><span style="font-family: monospace; font-weight: 600; color: #059669;">${app.panNumber || 'Not assigned'}</span></td>
+                        <td><span class="badge ${statusClass}">${statusText}</span></td>
+                        <td style="text-align: right;">
+                            <div style="display: flex; gap: 5px; justify-content: flex-end; flex-wrap: wrap;">
+                                <button class="btn btn-primary btn-sm" onclick="openEditModal(${app.id})" title="Edit">✏️</button>
+                                <button class="btn btn-success btn-sm" onclick="generateAndSetPAN(${app.id})" title="Generate PAN">🎲</button>
+                                <button class="btn btn-warning btn-sm" onclick="updateStatus(${app.id}, 'completed')" title="Complete" ${app.status === 'completed' ? 'disabled' : ''}>✅</button>
+                                <button class="btn btn-info btn-sm" onclick="viewUserDashboard(${app.id})" title="View">👤</button>
+                                <button class="btn btn-danger btn-sm" onclick="deleteUser(${app.id})" title="Delete">🗑️</button>
+                            </div>
+                        </td>
+                    `;
+                } else {
+                    // LL View
+                    const testScore = app.testScore || 0;
+                    const scoreClass = testScore >= 70 ? 'score-high' : (testScore >= 40 ? 'score-medium' : 'score-low');
+                    
+                    rowHTML += `
+                        <td>${app.appNo || '-'}</td>
+                        <td>${app.name || '-'}</td>
+                        <td>${app.mobile || '-'}</td>
+                        <td>${app.dob || '-'}</td>
+                        <td><span class="test-score ${scoreClass}">${testScore}/100</span></td>
+                        <td><span class="badge ${statusClass}">${statusText}</span></td>
+                        <td style="text-align: right;">
+                            <div style="display: flex; gap: 5px; justify-content: flex-end; flex-wrap: wrap;">
+                                <button class="btn btn-primary btn-sm" onclick="openEditModal(${app.id})" title="Edit">✏️</button>
+                                <button class="btn btn-success btn-sm" onclick="openLLTestModal(${app.id})" title="Update Test">📝</button>
+                                <button class="btn btn-warning btn-sm" onclick="updateDocumentStatus(${app.id})" title="Documents">📄</button>
+                                <button class="btn btn-info btn-sm" onclick="viewUserDashboard(${app.id})" title="View">👤</button>
+                                <button class="btn btn-danger btn-sm" onclick="deleteUser(${app.id})" title="Delete">🗑️</button>
+                            </div>
+                        </td>
+                    `;
+                }
+
+                rowHTML += `</tr>`;
+                tbody.innerHTML += rowHTML;
+            });
+        }
+
+        // --- PAN NUMBER FUNCTIONS ---
+        async function generatePAN() {
+            const id = document.getElementById('edit-id').value;
+            if (!id) return;
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/applications/${id}/generate-pan`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    document.getElementById('edit-panNumber').value = data.panNumber;
+                    showToast('PAN number generated successfully! 🔢');
+                } else {
+                    showToast('Failed to generate PAN: ' + data.error);
+                }
+            } catch (error) {
+                console.error('Error generating PAN:', error);
+                showToast('Network error. Please try again.');
+            }
+        }
+
+        async function generateAndSetPAN(id) {
+            if (!confirm('Generate a new PAN number for this application?')) return;
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/applications/${id}/generate-pan`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    const app = applications.find(a => a.id === id);
+                    if (app) {
+                        app.panNumber = data.panNumber;
+                    }
+                    renderTable();
+                    showToast(`PAN generated: ${data.panNumber} ✅`);
+                } else {
+                    showToast('Failed to generate PAN: ' + data.error);
+                }
+            } catch (error) {
+                console.error('Error generating PAN:', error);
+                showToast('Network error. Please try again.');
+            }
+        }
+
+        // --- LL TEST FUNCTIONS ---
+        function openLLTestModal(id) {
+            const app = applications.find(a => a.id === id);
+            if (!app) return;
+
+            document.getElementById('ll-test-id').value = app.id;
+            document.getElementById('ll-test-appno').value = app.appNo || '';
+            document.getElementById('ll-test-name').value = app.name || '';
+            document.getElementById('ll-test-score').value = app.testScore || 0;
+            document.getElementById('ll-test-status').value = app.testStatus || 'pending';
+            document.getElementById('ll-test-remarks').value = app.examinerRemarks || '';
+
+            document.getElementById('ll-test-modal').style.display = 'flex';
+        }
+
+        function closeLLTestModal() {
+            document.getElementById('ll-test-modal').style.display = 'none';
+        }
+
+        async function saveLLTestResult(e) {
+            e.preventDefault();
+            
+            const id = document.getElementById('ll-test-id').value;
+            const testScore = document.getElementById('ll-test-score').value;
+            const testStatus = document.getElementById('ll-test-status').value;
+            const examinerRemarks = document.getElementById('ll-test-remarks').value;
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/ll-applications/${id}/test-result`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        testScore: parseInt(testScore),
+                        testStatus: testStatus,
+                        examinerRemarks: examinerRemarks
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    const app = applications.find(a => a.id === parseInt(id));
+                    if (app) {
+                        app.testScore = parseInt(testScore);
+                        app.testStatus = testStatus;
+                        app.examinerRemarks = examinerRemarks;
+                        if (testStatus === 'passed') {
+                            app.status = 'active';
+                        } else if (testStatus === 'failed') {
+                            app.status = 'pending';
+                        }
+                    }
+                    
+                    showToast('Test result saved successfully! ✅');
+                    closeLLTestModal();
+                    renderTable();
+                    updateStats();
+                } else {
+                    showToast('Error: ' + data.error);
+                }
+            } catch (error) {
+                console.error('Error saving test result:', error);
+                showToast('Network error. Please try again.');
+            }
+        }
+
+        async function updateDocumentStatus(id) {
+            const app = applications.find(a => a.id === id);
+            if (!app) return;
+
+            const status = prompt('Enter document status (verified/rejected):', app.documentStatus || 'pending');
+            if (status && ['verified', 'rejected'].includes(status)) {
+                try {
+                    const response = await fetch(`${API_BASE_URL}/applications/${id}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ documentStatus: status })
+                    });
+
+                    if (response.ok) {
+                        app.documentStatus = status;
+                        showToast(`Documents ${status} ✅`);
+                        renderTable();
+                    }
+                } catch (error) {
+                    console.error('Error updating document status:', error);
+                    showToast('Network error');
+                }
+            }
+        }
+
+        // --- VIEW USER DASHBOARD ---
+        function viewUserDashboard(id) {
+            window.open(`user-dashboard.html?id=${id}`, '_blank');
+        }
+
+        // --- UPDATE STATUS ---
+        async function updateStatus(id, newStatus) {
+            const app = applications.find(a => a.id === id);
+            if (!app) return;
+
+            const statusText = newStatus === 'completed' ? 'Completed' : 'Active';
+            
+            if (confirm(`Are you sure you want to mark this application as ${statusText}?`)) {
+                try {
+                    const response = await fetch(`${API_BASE_URL}/applications/${id}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ status: newStatus })
+                    });
+
+                    if (response.ok) {
+                        app.status = newStatus;
+                        renderTable();
+                        updateStats();
+                        showToast(`Application marked as ${statusText} ✅`);
+                    } else {
+                        showToast('Failed to update status ❌');
+                    }
+                } catch (error) {
+                    console.error('Error updating status:', error);
+                    showToast('Network error. Please try again.');
+                }
+            }
+        }
+
+        // --- ADD REMARKS ---
+        function addRemarks(id) {
+            const app = applications.find(a => a.id === id);
+            if (!app) return;
+
+            const remarks = prompt('Enter remarks/feedback for this application:', app.textFeed || '');
+            
+            if (remarks !== null) {
+                updateRemarks(id, remarks);
+            }
+        }
+
+        async function updateRemarks(id, remarks) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/applications/${id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ textFeed: remarks })
+                });
+
+                if (response.ok) {
+                    const app = applications.find(a => a.id === id);
+                    if (app) {
+                        app.textFeed = remarks;
+                        renderTable();
+                        showToast('Remarks updated successfully 📝');
+                    }
+                } else {
+                    showToast('Failed to update remarks ❌');
+                }
+            } catch (error) {
+                console.error('Error updating remarks:', error);
+                showToast('Network error. Please try again.');
+            }
+        }
+
+        // --- USER ACTIONS ---
+        async function deleteUser(id) {
+            if(confirm("Are you sure you want to delete this user?")) {
+                try {
+                    const response = await fetch(`${API_BASE_URL}/applications/${id}`, {
+                        method: 'DELETE'
+                    });
+
+                    if (response.ok) {
+                        applications = applications.filter(a => a.id !== id);
+                        updateStats();
+                        renderTable();
+                        showToast("User Deleted Successfully 🗑️");
+                    } else {
+                        const error = await response.json();
+                        showToast(`Failed to delete user: ${error.error || 'Unknown error'}`);
+                    }
+                } catch (error) {
+                    console.error('Error deleting user:', error);
+                    showToast("Network error. Please try again.");
+                }
+            }
+        }
+
+        // --- EDIT MODAL FUNCTIONS ---
+        function openEditModal(id) {
+            const app = applications.find(a => a.id === id);
+            if(!app) return;
+
+            document.getElementById('edit-id').value = app.id;
+            document.getElementById('edit-type').value = app.type;
+            document.getElementById('edit-appNo').value = app.appNo || ''; 
+            document.getElementById('edit-panNumber').value = app.panNumber || '';
+            document.getElementById('edit-aadhar').value = app.aadhar || '';
+            document.getElementById('edit-dob').value = app.dob || '';
+            document.getElementById('edit-wallet').value = app.walletBal || 0;
+            document.getElementById('edit-status').value = app.status;
+            document.getElementById('edit-textFeed').value = app.textFeed || '';
+
+            // LL specific fields
+            if (app.type === 'll') {
+                document.getElementById('ll-test-fields').style.display = 'block';
+                document.getElementById('edit-test-score').value = app.testScore || 0;
+                document.getElementById('edit-test-status').value = app.testStatus || 'pending';
+            } else {
+                document.getElementById('ll-test-fields').style.display = 'none';
+            }
+
+            document.getElementById('edit-modal').style.display = 'flex';
+        }
+
+        function closeEditModal() {
+            document.getElementById('edit-modal').style.display = 'none';
+        }
+async function updatePANAndSync(id, panNumber) {
+    try {
+        const response = await fetch(`${API_BASE_URL}/applications/${id}/update-pan`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ panNumber: panNumber })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            // Update local application
+            const app = applications.find(a => a.id === id);
+            if (app) {
+                app.panNumber = panNumber;
+            }
+            
+            showToast(`PAN updated and synced: ${panNumber} ✅`);
+            renderTable();
+            return true;
+        } else {
+            showToast('Failed to update PAN: ' + data.error);
+            return false;
+        }
+    } catch (error) {
+        console.error('Error updating PAN:', error);
+        showToast('Network error. Please try again.');
+        return false;
+    }
+}
+       async function saveEdit(e) {
+    e.preventDefault();
+    const id = parseInt(document.getElementById('edit-id').value);
+    const app = applications.find(a => a.id === id);
+
+    if(app) {
+        // Get values and handle empties
+        const panNumber = document.getElementById('edit-panNumber').value.toUpperCase().trim();
+        const aadhar = document.getElementById('edit-aadhar').value.trim();
+        const dob = document.getElementById('edit-dob').value;
+        const appNo = document.getElementById('edit-appNo').value.trim();
+        const walletBal = document.getElementById('edit-wallet').value;
+        const status = document.getElementById('edit-status').value;
+        const textFeed = document.getElementById('edit-textFeed').value.trim();
+
+        // Validate PAN number format if provided
+        if (panNumber) {
+            const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
+            if (!panRegex.test(panNumber)) {
+                showToast('Invalid PAN format! Use: ABCDE1234F');
+                return;
+            }
+        }
+
+        // Validate Aadhar if provided
+        if (aadhar && aadhar.length !== 12 && aadhar.length !== 0) {
+            showToast('Aadhar must be 12 digits');
+            return;
+        }
+
+        // Prepare updated data
+        const updatedData = {
+            appNo: appNo || null,
+            panNumber: panNumber || null,
+            aadhar: aadhar || null,
+            dob: dob || null,
+            walletBal: parseInt(walletBal) || 0,
+            status: status,
+            textFeed: textFeed || null
+        };
+
+        // Add LL test data if applicable
+        if (app.type === 'll') {
+            updatedData.testScore = parseInt(document.getElementById('edit-test-score').value) || 0;
+            updatedData.testStatus = document.getElementById('edit-test-status').value;
+        }
+
+        // Show loading state
+        const saveBtn = e.target.querySelector('button[type="submit"]');
+        const originalText = saveBtn.textContent;
+        saveBtn.textContent = 'Saving...';
+        saveBtn.disabled = true;
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/applications/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(updatedData)
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                // Update local application object
+                Object.assign(app, updatedData);
+                
+                showToast("Information Updated Successfully ✅");
+                closeEditModal();
+                renderTable();
+                updateStats();
+            } else {
+                showToast(`Failed to update: ${result.error || 'Unknown error'}`);
+            }
+        } catch (error) {
+            console.error('Error updating application:', error);
+            showToast("Network error. Please try again.");
+        } finally {
+            saveBtn.textContent = originalText;
+            saveBtn.disabled = false;
+        }
+    }
+}
+
+        // --- TOAST ---
+        function showToast(msg) {
+            const container = document.getElementById('toast-container');
+            const div = document.createElement('div');
+            div.className = 'toast show';
+            div.innerHTML = `<span>${msg}</span>`;
+            container.appendChild(div);
+            setTimeout(() => { 
+                div.classList.remove('show'); 
+                setTimeout(() => div.remove(), 300); 
+            }, 3000);
+        }
+
+        // --- MODAL CLICK OUTSIDE ---
+        window.onclick = function(e) {
+            if (e.target == document.getElementById('edit-modal')) closeEditModal();
+            if (e.target == document.getElementById('notice-modal')) closeNoticeModal();
+            if (e.target == document.getElementById('password-modal')) closePasswordModal();
+            if (e.target == document.getElementById('ll-test-modal')) closeLLTestModal();
+        }
+
+        // --- INITIALIZE ---
+        window.onload = function() {
+            document.getElementById('login-section').style.display = 'flex';
+            document.getElementById('app-container').style.display = 'none';
+        }
+
+        // --- REFRESH DATA ---
+        setInterval(async () => {
+            if (document.getElementById('app-container').style.display === 'flex') {
+                await fetchApplications();
+                renderTable();
+                updateStats();
+            }
+        }, 30000);
+    </script>
+    
+</body>
+</html>
