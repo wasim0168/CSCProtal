@@ -692,7 +692,7 @@
             </div>
             
             <!-- Card 3: Voting Card -->
-            <div class="card card-3">
+            <div class="card card-3" id="vote">
                 <div class="badge-new">New</div>
                 <h3>Voting Card</h3>
                 <p>Apply for a new Voter ID card or update existing details.</p>
@@ -1757,6 +1757,10 @@ async function showLLHistory() {
     let resume = document.getElementById("resume")
     resume.addEventListener('click', function() {
         window.location.href = "./resume.html";
+    });
+    let vote = document.getElementById("vote")
+    vote.addEventListener('click', function() {
+        window.location.href = "https://voting-card.netlify.app/";
     });
 </script>
 
