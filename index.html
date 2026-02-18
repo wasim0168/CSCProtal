@@ -709,6 +709,16 @@
                 <h3>Voting Card PDF</h3>
                 <p>Upload photo and get professional passport sized images ready for print.</p>
             </div>
+            <div class="card card-4" id="bioData">
+                <div class="badge-new">New</div>
+                <h3>Bio Data</h3>
+                <p>Upload photo and get professional passport sized images ready for print.</p>
+            </div>
+            <div class="card card-4">
+                <div class="badge-new">New</div>
+                <h3>Resume</h3>
+                <p>Upload photo and get professional passport sized images ready for print.</p>
+            </div>
         </div>
     </main>
 
@@ -1739,6 +1749,11 @@ async function showLLHistory() {
         showHome();
         initCanvas();
     };
+
+    let bio = document.getElementById('bioData');
+    bio.addEventListener('click', function() {
+        window.location.href = "./bioData.html";
+    });
 </script>
 
 <!-- Add these styles for badges -->

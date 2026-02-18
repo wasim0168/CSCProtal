@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marriage Biodata Maker</title>
+    <!-- Premium Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Lato:wght@400;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
+    
+    <style>
+        /* 
+         * GLOBAL VARIABLES 
+         */
+        :root {
+            --color-gold: #D4AF37;
+            --color-maroon: #800020;
+            --color-dark: #1a1a1a;
+            --color-paper: #fffbf0;
+            --color-form-bg: #ffffff;
+        }
+
+        body {
+            font-family: 'Lato', sans-serif;
+            background-color: #525659; 
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+
+        /* =========================================
+         * 1. EDITOR SECTION (SCREEN ONLY)
+         * =========================================
+         */
+        .editor-section {
+            background: var(--color-form-bg);
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+            max-width: 800px; 
+            margin-left: auto;
+            margin-right: auto;
+            border-left: 5px solid var(--color-maroon);
+        }
+
+        .editor-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+
+        .btn-print {
+            background: linear-gradient(135deg, var(--color-maroon), #5c0014);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1rem;
+        }
+        .btn-print:hover { opacity: 0.9; }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .form-group { display: flex; flex-direction: column; }
+        .form-group label { font-size: 0.85rem; font-weight: bold; margin-bottom: 5px; color: #444; }
+        .form-group input { padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 0.9rem; }
+        
+        .upload-wrapper { position: relative; }
+        #inputPhoto { display: none; }
+        .custom-file-upload {
+            display: flex; align-items: center; justify-content: center;
+            padding: 10px; border: 2px dashed #ccc; border-radius: 4px;
+            cursor: pointer; background: #fafafa; font-size: 0.9rem;
+            transition: background 0.2s;
+        }
+        .custom-file-upload:hover { background: #eee; }
+        .upload-status { margin-top: 5px; font-size: 0.8rem; color: green; display: none; }
+        .spinner { border: 2px solid #ddd; border-top: 2px solid green; border-radius: 50%; width: 12px; height: 12px; animation: spin 1s infinite; display: inline-block; margin-right: 5px; vertical-align: middle;}
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+
+        /* =========================================
+         * 2. BIODATA CARD (PREVIEW MODE - SCREEN)
+         * =========================================
+         */
+        .biodata-card {
+            /* Small Size for Screen Preview */
+            width: 500px; 
+            min-height: 297px; 
+            
+            margin: 0 auto;
+            background-color: var(--color-paper);
+            
+            border: 4px double var(--color-gold); 
+            padding: 10px; 
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            position: relative;
+            outline: 1px solid var(--color-maroon);
+            outline-offset: -5px;
+            box-sizing: border-box;
+            
+        }
+
+        /* Decorations - Scaled down for screen */
+        .corner-om {
+            position: absolute;
+            font-family: 'Playfair Display', serif;
+            font-size: 1.2rem;
+            color: var(--color-maroon);
+            z-index: 2;
+        }
+        .top-left { top: 5px; left: 5px; }
+        .top-right { top: 5px; right: 5px; }
+        .bottom-left { bottom: 5px; left: 5px; }
+        .bottom-right { bottom: 5px; right: 5px; }
+
+        /* Sections - Scaled down for screen */
+        .header { text-align: center; padding-bottom: 5px; border-bottom: 2px double var(--color-maroon); margin-bottom: 5px; }
+        .ganesh-mantra { font-family: 'Cinzel', serif; font-size: 1rem; color: var(--color-maroon); margin: 15px; line-height: 1; }
+        .main-title { font-family: 'Playfair Display', serif; font-size: 0.9rem; color: var(--color-dark); text-transform: uppercase; letter-spacing: 1px; margin-top: 2px; }
+
+        .hero { display: flex; flex-direction: column; align-items: center; padding-bottom: 10px; }
+        
+        /* Photo scaled down */
+        .photo-container {
+            width: 80px; height: 80px;
+            border: 2px solid var(--color-gold);
+            outline: 1px solid var(--color-maroon);
+            padding: 2px;
+            background-color: white;
+            display: flex; align-items: center; justify-content: center;
+            margin-bottom: 8px;
+        }
+        .photo-container img { width: 100%; height: 100%;  }
+        
+        .candidate-name {
+            font-family: 'Playfair Display', serif; font-size: 1rem; color: var(--color-maroon); margin: 0; font-weight: 700; text-align: center; border-bottom: 1px solid var(--color-gold); padding-bottom: 2px; width: 100%;
+        }
+
+        .content-body { }
+        .section-box { margin-bottom: 10px; }
+        .section-heading {
+            background-color: var(--color-maroon); color: var(--color-gold);
+            padding: 2px 5px; font-family: 'Cinzel', serif; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; border-left: 3px solid var(--color-gold);
+        }
+        .details-table { width: 100%; border-collapse: collapse; }
+        .details-table td { padding: 2px; border-bottom: 1px dashed #ccc; font-size: 0.65rem; vertical-align: top; line-height: 1.2; }
+        .label-col { width: 40%; font-weight: 700; color: var(--color-dark); }
+        .val-col { width: 60%; color: #444; }
+
+        .footer { background-color: var(--color-maroon); color: var(--color-gold); text-align: center; padding: 5px; margin-top: auto; font-size: 0.6rem; line-height: 1.2; }
+
+
+        /* =========================================
+         * 3. PRINT SETTINGS (COLOR ENABLED)
+         * =========================================
+         */
+        @media print {
+            @page {
+                size: A4 portrait;
+                margin: 0; /* Remove browser default margins */
+            }
+
+            body { 
+                background: white; 
+                margin: 20px; 
+                padding: 0;
+                width: 280mm; /* Standard A4 width */
+                height: 388mm; /* Standard A4 height */
+                
+                /* IMPORTANT: Force browser to print backgrounds and colors */
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            /* Hide the form completely */
+            .editor-section { display: none !important; }
+
+            /* Expand the card to fill the entire paper */
+            .biodata-card { 
+                width: 100%;
+                height: 100%;
+                margin: 0; 
+                box-shadow: none; 
+                
+                /* RESTORE COLORS FOR PRINT */
+                border: 8px double var(--color-gold) !important; 
+                outline: 2px solid var(--color-maroon) !important;
+                outline-offset: -8px;
+                padding: -100px;
+                
+                overflow: visible !important; 
+                background-color: var(--color-paper) !important;
+            }
+            
+            /* ============================================
+             * FIXING COLORS & SIZES FOR PRINT
+             * ============================================ */
+            
+            /* 1. Remove the "Force Black" rule so colors can show */
+            /* * { color: #000 !important; } <-- REMOVED */
+
+            /* 2. Specific Element Overrides for A4 Size with COLORS */
+            
+            /* Corners - Maroon */
+            .corner-om { 
+                font-size: 3rem !important; 
+                position: absolute; 
+                z-index: 10;
+                color: var(--color-maroon) !important; 
+            }
+            .top-left { top: 10mm; left: 10mm; }
+            .top-right { top: 10mm; right: 10mm; }
+            .bottom-left { bottom: 10mm; left: 10mm; }
+            .bottom-right { bottom: 10mm; right: 10mm; }
+
+            /* Header - Maroon Border */
+            .header { 
+                padding-bottom: 10mm; 
+                border-bottom: 3px double var(--color-maroon) !important; 
+                margin-bottom: 15mm; 
+            }
+            .ganesh-mantra { 
+                font-size: 2.5rem !important; 
+                margin-bottom: 10px; 
+                color: var(--color-maroon) !important; 
+            }
+            .main-title { 
+                font-size: 2.2rem !important; 
+                letter-spacing: 2px; 
+                color: var(--color-dark) !important;
+            }
+
+            /* Hero Section */
+            .hero { margin-bottom: 20px; }
+            .photo-container { 
+                width: 130px; height: 130px; 
+                border: 3px solid var(--color-gold) !important; 
+                outline: 2px solid var(--color-maroon) !important;
+                padding: 3px;
+                margin-bottom: 15px;
+            }
+            .candidate-name { 
+                font-size: 2rem !important; 
+                padding-bottom: 8px; 
+                border-bottom: 2px solid var(--color-gold) !important;
+                width: 100%;
+                color: var(--color-maroon) !important;
+            }
+
+            /* Content Body */
+            .section-box { margin-bottom: 20px; }
+            
+            /* SECTION HEADING - MAROON BG, GOLD TEXT */
+            .section-heading { 
+                background-color: var(--color-maroon) !important; 
+                color: var(--color-gold) !important;
+                padding: 5px 10px; 
+                font-size: 1.1rem !important; 
+                margin-bottom: 8px; 
+                border-left: 5px solid var(--color-gold) !important;
+                text-transform: uppercase;
+            }
+
+            /* Details Table */
+            .details-table { width: 100%; }
+            .details-table td { 
+                padding: 8px 5px; 
+                font-size: 12pt !important; 
+                border-bottom: 1px solid var(--color-gold) !important;
+                line-height: 1.4;
+                vertical-align: middle;
+                color: #333 !important; /* Dark text for readability */
+            }
+            .label-col { font-weight: bold; width: 35%; color: var(--color-maroon) !important; }
+
+            /* FOOTER - MAROON BG, GOLD TEXT */
+            .footer { 
+                border-top: 2px solid var(--color-maroon); 
+                padding: 15px; 
+                margin-top: 30px;
+                font-size: 11pt !important;
+                background-color: var(--color-maroon) !important;
+                color: var(--color-gold) !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 1. EDITOR FORM -->
+    <div class="editor-section">
+        <div class="editor-header">
+            <h2>📝 Biodata Details</h2>
+            <button class="btn-print" onclick="window.print()">🖨️ Print / Save PDF</button>
+        </div>
+        <form id="bioForm">
+            <div class="form-grid">
+                <div class="form-group"><label>Full Name</label><input type="text" id="inputName" placeholder="e.g. Rahul Sharma" value="Rahul Sharma"></div>
+                
+                <div class="form-group upload-wrapper">
+                    <label>Photo</label>
+                    <label for="inputPhoto" class="custom-file-upload">📷 Upload Photo</label>
+                    <input type="file" id="inputPhoto" accept="image/*">
+                    <div class="upload-status" id="uploadStatus"><div class="spinner"></div> Updating...</div>
+                </div>
+
+                <div class="form-group"><label>Religion</label><input type="text" id="inputReligion" value="Hindu"></div>
+                <div class="form-group"><label>Caste</label><input type="text" id="inputCaste" value="Brahmin"></div>
+                <div class="form-group"><label>Height</label><input type="text" id="inputHeight" value="5'10&quot;"></div>
+                <div class="form-group"><label>color</label><input type="text" id="inputCOLOR" value="Fair"></div>
+                <div class="form-group"><label>Time of Birth</label><input type="text" id="inputTime" value="10:30 AM"></div>
+                <div class="form-group"><label>Place of Birth</label><input type="text" id="inputPlace" value="Delhi"></div>
+
+                <div class="form-group"><label>Education</label><input type="text" id="inputEdu" value="B.Tech (CSE)"></div>
+                <div class="form-group"><label>Occupation</label><input type="text" id="inputOcc" value="Software Engineer"></div>
+                <div class="form-group"><label>Income</label><input type="text" id="inputIncome" value="15 LPA"></div>
+                <div class="form-group"><label>Father's Name</label><input type="text" id="inputFather" value="Mr. Ram Sharma"></div>
+                <div class="form-group"><label>Father's Job</label><input type="text" id="inputFatherOcc" value="Govt. Service"></div>
+                <div class="form-group"><label>Mother's Name</label><input type="text" id="inputMother" value="Mrs. Sita Sharma"></div>
+                <div class="form-group"><label>BROTHER's Name</label><input type="text" id="inputBROTHER" value="Mr. Ram Sharma"></div>
+                <div class="form-group"><label>SISTER's Name</label><input type="text" id="inputSISTER" value="Mrs. SONU Sharma"></div>
+                <div class="form-group"><label>MAMA Name</label><input type="text" id="inputMAMA" value="Mr. TUKARAM VARMA"></div>
+
+                <div class="form-group"><label>Contact Number</label><input type="text" id="inputMobile" value="+91 9876543210"></div>
+                <div class="form-group"><label>Email</label><input type="text" id="inputEmail" value="rahul@example.com"></div>
+            </div>
+        </form>
+    </div>
+
+    <!-- 2. BIODATA CARD PREVIEW (210x297px on screen) -->
+    <div class="biodata-card">
+        
+        <!-- Corner Decorations -->
+        <div class="corner-om top-left">ॐ</div>
+        <div class="corner-om top-right">ॐ</div>
+       
+        <!-- Header -->
+        <header class="header">
+            <div class="ganesh-mantra">॥ श्री गणेशाय नमः ॥</div>
+            <h1 class="main-title">Marriage Biodata</h1>
+        </header>
+
+        <!-- Hero (Photo + Name) -->
+        <div class="hero">
+            <div class="photo-container">
+                <img id="displayPhoto" src="https://picsum.photos/seed/biodata/200/200" alt="Photo">
+            </div>
+            <h2 class="candidate-name" id="displayName">Rahul Sharma</h2>
+        </div>
+
+        <div class="content-body">
+            <!-- Janma Kundali Section -->
+            <div class="section-box">
+                <div class="section-heading">Janma Kundali</div>
+                <table class="details-table">
+                    <tr>
+                        <td class="label-col">Time</td>
+                        <td class="val-col" id="displayTime">10:30 AM</td>
+                    </tr>
+                    <tr>
+                        <td class="label-col">Place</td>
+                        <td class="val-col" id="displayPlace">Delhi</td>
+                    </tr>
+                    
+                    </tr>
+              
+                    </tr>
+                </table>
+            </div>
+
+            <!-- Personal Details Section -->
+            <div class="section-box">
+                <div class="section-heading">Personal Details</div>
+                <table class="details-table">
+                    <tr><td class="label-col">Religion</td><td class="val-col" id="displayReligion">Hindu</td></tr>
+                    <tr><td class="label-col">Caste</td><td class="val-col" id="displayCaste">Brahmin</td></tr>
+                    <tr><td class="label-col">Height</td><td class="val-col" id="displayHeight">5'10"</td></tr>
+                    <tr><td class="label-col">COLOR</td><td class="val-col" id="displayCOLOR">Fair</td></tr>
+                </table>
+            </div>
+
+            <!-- Education & Career Section -->
+            <div class="section-box">
+                <div class="section-heading">Education & Career</div>
+                <table class="details-table">
+                    <tr><td class="label-col">Education</td><td class="val-col" id="displayEdu">B.Tech (CSE)</td></tr>
+                    <tr><td class="label-col">Occupation</td><td class="val-col" id="displayOcc">Software Engineer</td></tr>
+                    <tr><td class="label-col">Income</td><td class="val-col" id="displayIncome">15 LPA</td></tr>
+                </table>
+            </div>
+
+            <!-- Family Details Section -->
+            <div class="section-box">
+                <div class="section-heading">Family Details</div>
+                <table class="details-table">
+                    <tr><td class="label-col">Father</td><td class="val-col" id="displayFather">Mr. Ram Sharma</td></tr>
+                    <tr><td class="label-col">Father's Job</td><td class="val-col" id="displayFatherOcc">Govt. Service</td></tr>
+                    <tr><td class="label-col">Mother</td><td class="val-col" id="displayMother">Mrs. Sita Sharma</td></tr>
+                    <tr><td class="label-col">BROTHER</td><td class="val-col" id="displayBROTHER">Mr. Ram Sharma</td></tr>
+                    <tr><td class="label-col">SISTER</td><td class="val-col" id="displaySISTER">Mrs. Soun Sharma</td></tr>
+                    <tr><td class="label-col">MAMA</td><td class="val-col" id="displayMAMA">Mrs.  Sharma</td></tr>
+
+                </table>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>📍 Contact Us: <span id="displayMobile">+91 9876543210</span></p>
+            <p>✉️ <span id="inputEmail">rahul@example.com</span></p>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // Mapping Input IDs to Display IDs
+        const inputs = [
+            { input: 'inputName', display: 'displayName' },
+            { input: 'inputReligion', display: 'displayReligion' },
+            { input: 'inputCaste', display: 'displayCaste' },
+            { input: 'inputHeight', display: 'displayHeight' },
+            { input: 'inputCOLOR', display: 'displayCOLOR' },
+            { input: 'inputTime', display: 'displayTime' },
+            { input: 'inputPlace', display: 'displayPlace' },
+         
+    
+            { input: 'inputEdu', display: 'displayEdu' },
+            { input: 'inputOcc', display: 'displayOcc' },
+            { input: 'inputIncome', display: 'displayIncome' },
+            { input: 'inputFather', display: 'displayFather' },
+            { input: 'inputFatherOcc', display: 'displayFatherOcc' },
+            { input: 'inputMother', display: 'displayMother' },
+            { input: 'inputBROTHER', display: 'displayBROTHER' },
+            { input: 'inputSISTER', display: 'displaySISTER' },
+            { input: 'inputMAMA', display: 'displayMAMA' },
+            { input: 'inputMobile', display: 'displayMobile' },
+            { input: 'inputEmail', display: 'displayEmail' },
+        ];
+
+        // Add Event Listeners for Live Update
+        inputs.forEach(item => {
+            const inputElem = document.getElementById(item.input);
+            const displayElem = document.getElementById(item.display);
+            if(inputElem && displayElem) {
+                inputElem.addEventListener('input', function() {
+                    displayElem.innerText = this.value;
+                });
+            }
+        });
+
+        // Handle Photo Upload with Preview
+        document.getElementById('inputPhoto').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const uploadStatus = document.getElementById('uploadStatus');
+                uploadStatus.style.display = 'block';
+                
+                // Simulate a small delay for "uploading" feel
+                setTimeout(() => {
+                    uploadStatus.style.display = 'none';
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        document.getElementById('displayPhoto').src = e.target.result;
+                    }
+                    reader.readAsDataURL(file);
+                }, 800);
+            }
+        });
+    </script>
+
+</body>
+</html>
