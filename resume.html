@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Professional Resume Builder</title>
+  
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* --- CSS VARIABLES & RESET --- */
+    :root {
+      --primary: #2563eb;       /* Modern Blue */
+      --primary-dark: #1e40af;
+      --primary-light: #dbeafe;
+      --secondary: #0f172a;     /* Dark Slate */
+      --accent: #0d9488;        /* Teal */
+      --danger: #ef4444;        /* Red */
+      --danger-hover: #dc2626;
+      --bg-body: #f3f4f6;
+      --bg-card: #ffffff;
+      --text-main: #334155;
+      --text-light: #64748b;
+      --border: #e2e8f0;
+      --radius: 12px;
+      --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025);
+    }
+
+    * { box-sizing: border-box; outline: none; }
+    
+    body { 
+      font-family: 'Inter', sans-serif; 
+      background: var(--bg-body); 
+      margin: 0; 
+      padding: 40px 20px; 
+      color: var(--text-main); 
+    }
+
+    h1, h2, h3, .resume-title { font-family: 'Poppins', sans-serif; }
+
+    /* --- NOTIFICATION TOAST --- */
+    #toast {
+      visibility: hidden;
+      min-width: 300px;
+      background: var(--secondary);
+      color: #fff;
+      text-align: center;
+      border-radius: 50px;
+      padding: 16px;
+      position: fixed;
+      z-index: 1000;
+      right: 30px;
+      top: 30px;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 500;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+      opacity: 0;
+      transform: translateY(-20px);
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    #toast.show { visibility: visible; opacity: 1; transform: translateY(0); }
+
+    /* =========================================
+       FORM STYLES
+       ========================================= */
+    .form-container {
+      max-width: 1000px;
+      width: 100%;
+      background: var(--bg-card);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      padding: 40px;
+      margin: 0 auto 60px auto;
+      border: 1px solid var(--border);
+    }
+
+    .form-header {
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 25px;
+      margin-bottom: 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .form-header h1 {
+      font-size: 2rem; font-weight: 700; margin: 0;
+      color: var(--secondary); position: relative;
+      padding-left: 20px; flex: 1;
+    }
+    .form-header h1::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 10%; bottom: 10%;
+      width: 5px;
+      background: linear-gradient(to bottom, var(--primary), var(--accent));
+      border-radius: 4px;
+    }
+
+    /* =========================================
+       NEW PHOTO UPLOADER UI/UX
+       ========================================= */
+    .photo-uploader {
+      position: relative;
+      width: 120px; /* Square aspect ratio */
+      height: 120px;
+      flex-shrink: 0;
+    }
+
+    /* The hidden actual input */
+    .photo-uploader input[type="file"] {
+      display: none;
+    }
+
+    /* The clickable/draggable zone */
+    .upload-zone {
+      width: 100%;
+      height: 100%;
+      border: 2px dashed var(--border);
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      background: #f8fafc;
+      overflow: hidden;
+      color: var(--text-light);
+    }
+
+    /* Hover State */
+    .upload-zone:hover {
+      border-color: var(--primary);
+      background: #eff6ff;
+      color: var(--primary);
+    }
+
+    /* Drag Over State (Active Drop) */
+    .upload-zone.dragover {
+      border-color: var(--accent);
+      background: #f0fdfa;
+      transform: scale(1.02);
+    }
+
+    /* Content inside the box (Icon + Text) */
+    .upload-placeholder {
+      text-align: center;
+      pointer-events: none; /* Let clicks pass to parent */
+      transition: opacity 0.2s;
+    }
+    .upload-placeholder svg {
+      width: 32px; height: 32px; margin-bottom: 5px;
+      stroke-width: 1.5;
+    }
+    .upload-placeholder span {
+      font-size: 0.75rem; font-weight: 600; text-transform: uppercase;
+    }
+
+    /* The Preview Image */
+    .preview-image {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      object-fit: cover; /* Ensures image fills the square nicely */
+      display: none; /* Hidden by default */
+      z-index: 5;
+    }
+
+    /* Remove Button (Overlay) */
+    .remove-photo-btn {
+      position: absolute;
+      top: 5px; right: 5px;
+      background: rgba(0, 0, 0, 0.6);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 24px; height: 24px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      z-index: 10;
+      opacity: 0;
+      transition: all 0.2s ease;
+      transform: scale(0.8);
+    }
+
+    /* Show remove button only when hovering the photo area */
+    .upload-zone:hover .remove-photo-btn,
+    .preview-image:hover + .remove-photo-btn,
+    .remove-photo-btn:hover {
+      opacity: 1;
+      transform: scale(1);
+    }
+    
+    .remove-photo-btn:hover {
+      background: var(--danger);
+    }
+
+    /* =========================================
+       REST OF FORM & BUTTONS
+       ========================================= */
+
+    h2.section-title {
+      font-size: 1.25rem; font-weight: 600; margin: 40px 0 20px 0;
+      color: var(--secondary); display: flex; align-items: center; gap: 10px;
+    }
+    h2.section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); margin-left: 15px; }
+
+    .row { display: flex; flex-wrap: wrap; gap: 20px; margin-bottom: 20px; }
+    .field { flex: 1 1 200px; display: flex; flex-direction: column; }
+    .field.full { flex: 1 1 100%; }
+    
+    label { 
+      font-weight: 600; font-size: 0.8rem; letter-spacing: 0.5px; 
+      color: var(--text-light); margin-bottom: 8px; text-transform: uppercase; 
+    }
+    
+    input, textarea, select {
+      background: #fff; border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 12px 16px; font-size: 0.95rem; color: var(--secondary);
+      transition: all 0.2s ease; width: 100%; font-family: 'Inter', sans-serif;
+    }
+    input:focus, textarea:focus, select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+      background: #fff;
+    }
+
+    .exp-block, .edu-row {
+      background: #f8fafc; border: 1px solid var(--border); border-radius: 16px;
+      padding: 25px; margin-bottom: 20px; position: relative;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .exp-block:hover, .edu-row:hover { box-shadow: var(--shadow); border-color: #cbd5e1; }
+
+    /* Buttons */
+    button {
+      font-family: 'Inter', sans-serif; font-weight: 600; font-size: 0.95rem;
+      border: none; cursor: pointer; border-radius: 8px;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      user-select: none;
+    }
+
+    button.btn-primary {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white; padding: 16px 40px; font-size: 1.1rem; letter-spacing: 0.5px;
+      box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.3); width: 100%;
+    }
+    button.btn-primary:hover:not(:disabled) {
+      transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.4); filter: brightness(1.1);
+    }
+    button.btn-primary:active:not(:disabled) { transform: translateY(1px) scale(0.98); box-shadow: 0 2px 4px -1px rgba(37, 99, 235, 0.3); }
+    button.btn-primary:focus-visible { outline: 3px solid var(--primary-light); outline-offset: 2px; }
+    button.btn-primary:disabled { opacity: 0.7; cursor: not-allowed; transform: none; background: var(--text-light); }
+
+    button.btn-add {
+      background-color: #eff6ff; color: var(--primary); border: 1px solid transparent;
+      padding: 10px 20px; border-radius: 8px;
+    }
+    button.btn-add:hover { background-color: var(--primary); color: white; border-color: var(--primary); transform: translateY(-1px); box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2); }
+    button.btn-add:active { transform: scale(0.97); }
+
+    .remove-btn button, .remove-exp {
+      background-color: transparent; color: var(--danger); border: 1px solid transparent;
+      padding: 6px 12px; font-size: 0.85rem; border-radius: 6px; width: auto;
+    }
+    .remove-btn button:hover, .remove-exp:hover {
+      background-color: #fef2f2; border-color: #fecaca; color: var(--danger-hover);
+    }
+    .remove-btn button:active, .remove-exp:active { background-color: #fee2e2; transform: scale(0.95); }
+
+    .btn-print { background-color: var(--secondary); color: white; padding: 12px 24px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2); }
+    .btn-print:hover { background-color: #334155; transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3); }
+    .btn-print:active { transform: translateY(0); }
+
+    /* =========================================
+       RESUME STYLES
+       ========================================= */
+    .resume-wrapper { max-width: 210mm; margin: 0 auto; }
+    .resume-actions { text-align: center; margin-bottom: 30px; }
+
+    .resume-container {
+      width: 100%; background: #fff; padding: 50px 40px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+      margin: 0 auto; position: relative;
+    }
+    .resume-header { border-bottom: 2px solid var(--secondary); padding-bottom: 20px; margin-bottom: 25px; }
+    .resume-header-content { display: flex; align-items: center; justify-content: space-between; }
+    .resume-header-text { flex: 1; }
+    .resume-title {
+      font-size: 1.8rem; font-weight: 700; letter-spacing: 4px; color: var(--secondary);
+      text-align: center; display: block; margin-bottom: 20px; text-transform: uppercase;
+    }
+    .resume-container h1 { margin: 0; font-size: 2.8rem; color: var(--secondary); line-height: 1.1; text-transform: uppercase; letter-spacing: -1px; }
+    .resume-contact-info { margin-top: 15px; font-size: 1rem; color: var(--text-main); display: flex; gap: 20px; }
+    .resume-header-photo img {
+      width: 120px; height: 120px; object-fit: cover; border-radius: 8px;
+      border: 3px solid var(--secondary); box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    .resume-section { margin-bottom: 25px; }
+    .resume-section h2 {
+      font-size: 1.2rem; font-weight: 700; color: #fff; background-color: var(--secondary);
+      padding: 8px 15px; margin-bottom: 15px; letter-spacing: 1px; text-transform: uppercase;
+      display: inline-block;
+    }
+    .resume-section p { font-size: 0.95rem; line-height: 1.6; color: #374151; margin: 0; }
+    .resume-table { width: 100%; border-collapse: collapse; margin-bottom: 0; font-size: 0.9rem; border: 1px solid #cbd5e1; }
+    .resume-table th { 
+      background-color: #f1f5f9; color: var(--secondary); font-weight: 700; text-transform: uppercase;
+      padding: 10px; border: 1px solid #94a3b8; text-align: left;
+    }
+    .resume-table td { padding: 10px; border: 1px solid #e2e8f0; color: #475569; }
+    .resume-table tr:nth-child(even) { background-color: #f8fafc; }
+
+    .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .info-item { display: flex; border-bottom: 1px dotted #cbd5e1; padding-bottom: 4px; align-items: baseline; }
+    .info-label { font-weight: 700; color: var(--secondary); width: 160px; flex-shrink: 0; font-size: 0.9rem; }
+
+    .declaration-box { margin-top: 40px; }
+    .signature-area { margin-top: 30px; display: flex; justify-content: space-between; font-size: 0.95rem; font-weight: 600; }
+    
+    @media print {
+      body { background: #fff; padding: 0; margin: 0; }
+      .form-container, .resume-actions, #toast { display: none !important; }
+      .resume-wrapper { padding: 0; margin: 0; max-width: 100%; }
+      .resume-container { box-shadow: none; border: none; width: 100%; max-width: 100%; margin: 0; padding: 30px; }
+      .resume-section h2, .resume-table th { background-color: #eee !important; color: #000 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .resume-table th, .resume-table td { border-color: #000 !important; }
+    }
+    @media (max-width: 768px) {
+      .form-header { flex-direction: column; align-items: center; text-align: center; }
+      .form-header h1 { padding-left: 0; }
+      .form-header h1::before { display: none; }
+      .resume-header-content { flex-direction: column-reverse; text-align: center; gap: 20px; }
+      .resume-contact-info { flex-direction: column; align-items: center; gap: 5px; }
+      .info-grid { grid-template-columns: 1fr; }
+      .info-label { width: 120px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Toast Notification -->
+<div id="toast">✔ Resume Updated Successfully!</div>
+
+<!-- ========================
+     PART 1: APPLICATION FORM
+     ======================== -->
+<div class="form-container">
+  <div class="form-header">
+    <h1>Application Form</h1>
+    
+    <!-- NEW MODERN PHOTO UPLOADER UI -->
+    <div class="photo-uploader">
+      <input type="file" id="photo-upload" accept="image/*">
+      
+      <div class="upload-zone" id="uploadZone">
+        <!-- Placeholder (Icon + Text) -->
+        <div class="upload-placeholder">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+          <span>Upload</span>
+        </div>
+        
+        <!-- Image Preview -->
+        <img src="" alt="Preview" class="preview-image" id="formPhotoPreview">
+        
+        <!-- Remove Button -->
+        <button type="button" class="remove-photo-btn" id="removePhotoBtn" title="Remove Photo">✕</button>
+      </div>
+    </div>
+  </div>
+
+  <form id="resumeForm">
+    <!-- Basic Info -->
+    <div class="row">
+      <div class="field">
+        <label>Full name</label>
+        <input type="text" id="input_name" name="name" placeholder="e.g. Aditya Sharma" required>
+      </div>
+      <div class="field">
+        <label>Mobile</label>
+        <input type="tel" id="input_mobile" name="mobile" placeholder="9876543210" required>
+      </div>
+      <div class="field">
+        <label>Email</label>
+        <input type="email" id="input_email" name="email" placeholder="hello@domain.com" required>
+      </div>
+    </div>
+
+    <!-- Objective -->
+    <div class="field full">
+      <label>Objective</label>
+      <textarea id="input_objective" name="objective" rows="3" placeholder="Seeking a challenging position where I can leverage my skills ..."></textarea>
+    </div>
+
+    <!-- Education -->
+    <h2 class="section-title">Educational Qualifications</h2>
+    <div id="education-fields">
+      <div class="edu-row">
+        <div class="row">
+          <div class="field"><label>Exam name</label><input type="text" class="edu-exam" placeholder="B.E. / B.Sc."></div>
+          <div class="field"><label>Board/University</label><input type="text" class="edu-board" placeholder="Mumbai University"></div>
+          <div class="field"><label>Year</label><input type="text" class="edu-year" placeholder="2023"></div>
+          <div class="field"><label>Percentage</label><input type="text" class="edu-perc" placeholder="88.5%"></div>
+          <div class="field remove-btn">
+            <button type="button" class="remove-edu">✕ Remove</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <button type="button" class="btn-add" id="add-education">➕ Add Qualification</button>
+
+    <!-- Experience -->
+    <h2 class="section-title">Job Experience</h2>
+    <div id="experience-fields">
+      <div class="exp-block">
+        <div class="row">
+          <div class="field"><label>Organization</label><input type="text" class="exp-org" placeholder="ABC Corp"></div>
+          <div class="field"><label>Designation</label><input type="text" class="exp-desig" placeholder="Software Developer"></div>
+          <div class="field"><label>Duration</label><input type="text" class="exp-dur" placeholder="2.5 years"></div>
+          <div class="field"><label>Year</label><input type="text" class="exp-year" placeholder="2022–2024"></div>
+        </div>
+        <div class="field full">
+          <label>Description</label>
+          <textarea class="exp-desc" rows="2" placeholder="Brief description of achievements..."></textarea>
+        </div>
+        <button type="button" class="remove-exp">✕ Remove Experience</button>
+      </div>
+    </div>
+    <button type="button" class="btn-add" id="add-experience">➕ Add Experience</button>
+
+    <!-- Personal Info -->
+    <h2 class="section-title">Personal Information</h2>
+    <div class="row">
+      <div class="field"><label>Name (Records)</label><input type="text" id="input_personal_name" name="personal_name"></div>
+      <div class="field"><label>Father's Name</label><input type="text" id="input_father_name" name="father_name"></div>
+      <div class="field"><label>Date of Birth</label><input type="date" id="input_dob" name="dob"></div>
+      <div class="field"><label>Mother's Name</label><input type="text" id="input_mother_name" name="mother_name"></div>
+    </div>
+    <div class="row">
+      <div class="field"><label>Marital Status</label><input type="text" id="input_marital" name="marital_status" placeholder="Single / Married"></div>
+      <div class="field"><label>Category</label><input type="text" id="input_category" name="category"></div>
+      <div class="field"><label>Languages</label><input type="text" id="input_lang" name="languages"></div>
+      <div class="field"><label>Total Exp.</label><input type="text" id="input_tot_exp" name="total_experience"></div>
+    </div>
+    <div class="field full"><label>Address</label><textarea id="input_address" name="address" rows="2"></textarea></div>
+
+    <!-- Declaration -->
+    <h2 class="section-title">Declaration</h2>
+    <div class="field full">
+      <textarea id="input_declaration" name="declaration" rows="4" placeholder="I hereby declare that all the information provided is true and correct..."></textarea>
+    </div>
+
+    <!-- Date & Place -->
+    <div class="row">
+      <div class="field">
+        <label>Date</label>
+        <input type="date" id="input_date" name="date">
+      </div>
+      <div class="field">
+        <label>Place</label>
+        <input type="text" id="input_place" name="place" placeholder="City / Town">
+      </div>
+    </div>
+
+    <!-- Submit -->
+    <div class="submit-btn">
+      <button type="submit" class="btn-primary" id="submitBtn">✔ Submit Application</button>
+    </div>
+  </form>
+</div>
+
+<!-- ========================
+     PART 2: RESUME PREVIEW
+     ======================== -->
+<div class="resume-wrapper" id="resumePreviewSection">
+  <div class="resume-actions">
+    <button class="btn-print" onclick="window.print()">🖨️ Print / Save PDF</button>
+  </div>
+
+  <div class="resume-container" id="printableArea">
+    <!-- Header -->
+    <header class="resume-header">
+      <div class="resume-title">RESUME</div>
+      <div class="resume-header-content">
+        <div class="resume-header-text">
+          <h1 id="res_name">ASDASD</h1>
+          <div class="resume-contact-info">
+            <span>Mobile: <span id="res_mobile">8978454154</span></span>
+            <span>Email: <span id="res_email">sadsad@gmail.com</span></span>
+          </div>
+        </div>
+        <div class="resume-header-photo">
+          <!-- Default placeholder image -->
+          <img id="res_photo" src="https://picsum.photos/seed/asdasd/150/150" alt="Profile Photo">
+        </div>
+      </div>
+    </header>
+
+    <!-- Objective -->
+    <section class="resume-section">
+      <h2>Objective</h2>
+      <p id="res_objective">To work with an organization where I can learn new skills and increase my abilities for the organizational goals as well as myself.</p>
+    </section>
+
+    <!-- Educational Qualifications -->
+    <section class="resume-section">
+      <h2>Educational Qualifications</h2>
+      <table class="resume-table">
+        <thead>
+          <tr>
+            <th>Exam Name</th>
+            <th>Board/University</th>
+            <th>Year</th>
+            <th>Percentage</th>
+            <th>Division</th>
+          </tr>
+        </thead>
+        <tbody id="res_edu_tbody">
+          <tr>
+            <td>sadsad</td>
+            <td>sadsa</td>
+            <td>2007</td>
+            <td>100</td>
+            <td>2nd Division</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Job Experience -->
+    <section class="resume-section">
+      <h2>Job Experience</h2>
+      <table class="resume-table">
+        <thead>
+          <tr>
+            <th>Organization</th>
+            <th>Designation</th>
+            <th>Duration</th>
+            <th>Year</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody id="res_exp_tbody">
+          <tr>
+            <td>Tech Solutions Inc.</td>
+            <td>Junior Assistant</td>
+            <td>1 Year</td>
+            <td>2022-2023</td>
+            <td>Handled data entry and client support.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Personal Information -->
+    <section class="resume-section">
+      <h2>Personal Information</h2>
+      <div class="info-grid">
+        <div class="info-item"><span class="info-label">Name:</span><span id="res_per_name">ASDASD</span></div>
+        <div class="info-item"><span class="info-label">Father's Name:</span><span id="res_father">DSA</span></div>
+        <div class="info-item"><span class="info-label">Date of Birth:</span><span id="res_dob">05/02/2026</span></div>
+        <div class="info-item"><span class="info-label">Mother's Name:</span><span id="res_mother">SADSA</span></div>
+        <div class="info-item"><span class="info-label">Marital Status:</span><span id="res_marital">UNMARRIED</span></div>
+        <div class="info-item"><span class="info-label">Category:</span><span id="res_category">OBC/MOBC</span></div>
+        <div class="info-item"><span class="info-label">Known Languages:</span><span id="res_lang">ASDSAD</span></div>
+        <div class="info-item"><span class="info-label">Experience:</span><span id="res_tot_exp">SADSADSADD</span></div>
+        <div class="info-item"><span class="info-label">Address:</span><span id="res_address">SADSADSA</span></div>
+      </div>
+    </section>
+
+    <!-- Declaration -->
+    <section class="declaration-box">
+      <h2>Declaration</h2>
+      <p id="res_declaration">I hereby declare that the above particulars of facts and information stated are true, correct and complete to the best of my belief and knowledge.</p>
+      
+      <div class="signature-area">
+        <div><strong>Date:</strong> <span id="res_date">13/02/2026</span></div>
+        <div><strong>Place:</strong> (<span id="res_place">asdasd</span>)</div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<script>
+  (function() {
+    // --- INIT: Set Date Defaults ---
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()).padStart(2, '0');
+    const todayStr = `${yyyy}-${mm}-${dd}`;
+    const currentDateField = document.getElementById('input_date');
+    if(currentDateField) currentDateField.value = todayStr;
+
+    // ===========================================
+    // ENHANCED PHOTO UPLOAD LOGIC (Drag & Drop)
+    // ===========================================
+    const photoInput = document.getElementById('photo-upload');
+    const uploadZone = document.getElementById('uploadZone');
+    const formPhotoPreview = document.getElementById('formPhotoPreview');
+    const uploadPlaceholder = document.querySelector('.upload-placeholder');
+    const removePhotoBtn = document.getElementById('removePhotoBtn');
+    const defaultPhotoSrc = "https://picsum.photos/seed/asdasd/150/150";
+    
+    // Default Resume Photo
+    document.getElementById('res_photo').src = defaultPhotoSrc;
+
+    // Function to handle file processing
+    function handleFile(file) {
+      if (file && file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+          // Update Form UI
+          formPhotoPreview.src = evt.target.result;
+          formPhotoPreview.style.display = 'block';
+          uploadPlaceholder.style.display = 'none';
+          
+          // Update Resume Preview (Live Update)
+          document.getElementById('res_photo').src = evt.target.result;
+        };
+        reader.readAsDataURL(file);
+      } else {
+        alert('Please upload a valid image file.');
+      }
+    }
+
+    // 1. Click to Upload
+    uploadZone.addEventListener('click', () => photoInput.click());
+
+    // 2. Input Change (Standard File Picker)
+    photoInput.addEventListener('change', (e) => {
+      if (e.target.files.length > 0) {
+        handleFile(e.target.files[0]);
+      }
+    });
+
+    // 3. Drag & Drop Events
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+      uploadZone.addEventListener(eventName, preventDefaults, false);
+    });
+
+    function preventDefaults(e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+
+    // Visual feedback for dragging over
+    ['dragenter', 'dragover'].forEach(eventName => {
+      uploadZone.addEventListener(eventName, () => uploadZone.classList.add('dragover'), false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+      uploadZone.addEventListener(eventName, () => uploadZone.classList.remove('dragover'), false);
+    });
+
+    // Handle Drop
+    uploadZone.addEventListener('drop', (e) => {
+      const dt = e.dataTransfer;
+      const files = dt.files;
+      if (files.length > 0) {
+        // Assign dropped files to the input (optional, for form submission consistency)
+        photoInput.files = files;
+        handleFile(files[0]);
+      }
+    });
+
+    // 4. Remove Photo
+    removePhotoBtn.addEventListener('click', (e) => {
+      e.stopPropagation(); // Prevent triggering the uploadZone click
+      // Clear input
+      photoInput.value = '';
+      // Reset Form UI
+      formPhotoPreview.src = '';
+      formPhotoPreview.style.display = 'none';
+      uploadPlaceholder.style.display = 'block';
+      // Reset Resume Photo
+      document.getElementById('res_photo').src = defaultPhotoSrc;
+    });
+
+
+    // --- DYNAMIC FORM LOGIC (Adding/Removing Rows) ---
+    const eduContainer = document.getElementById('education-fields');
+    const addEduBtn = document.getElementById('add-education');
+
+    function attachRemoveEduListener(btn) {
+      btn.addEventListener('click', function(e) {
+        const eduRow = this.closest('.edu-row');
+        const allEduRows = eduContainer.querySelectorAll('.edu-row');
+        if (allEduRows.length <= 1) {
+          showToast('⚠️ At least one qualification required');
+          return;
+        }
+        eduRow.remove();
+      });
+    }
+    document.querySelectorAll('.remove-edu').forEach(btn => attachRemoveEduListener(btn));
+
+    addEduBtn.addEventListener('click', function() {
+      const firstEduRow = eduContainer.querySelector('.edu-row');
+      const newRow = firstEduRow.cloneNode(true);
+      newRow.querySelectorAll('input').forEach(inp => inp.value = '');
+      attachRemoveEduListener(newRow.querySelector('.remove-edu'));
+      eduContainer.appendChild(newRow);
+    });
+
+    const expContainer = document.getElementById('experience-fields');
+    const addExpBtn = document.getElementById('add-experience');
+
+    function attachRemoveExpListener(btn) {
+      btn.addEventListener('click', function(e) {
+        const expBlock = this.closest('.exp-block');
+        const allExpBlocks = expContainer.querySelectorAll('.exp-block');
+        if (allExpBlocks.length <= 1) {
+          showToast('⚠️ At least one experience required');
+          return;
+        }
+        expBlock.remove();
+      });
+    }
+    document.querySelectorAll('.remove-exp').forEach(btn => attachRemoveExpListener(btn));
+
+    addExpBtn.addEventListener('click', function() {
+      const firstExpBlock = expContainer.querySelector('.exp-block');
+      const newBlock = firstExpBlock.cloneNode(true);
+      newBlock.querySelectorAll('input, textarea').forEach(field => field.value = '');
+      attachRemoveExpListener(newBlock.querySelector('.remove-exp'));
+      expContainer.appendChild(newBlock);
+    });
+
+    // --- HELPER: Show Toast Notification ---
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.innerText = message;
+      toast.className = "show";
+      setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 3000);
+    }
+
+    // --- HELPER: Format Date for Resume ---
+    function formatDateDisplay(dateStr) {
+      if(!dateStr) return "";
+      const d = new Date(dateStr);
+      return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;
+    }
+
+    // --- MAIN: SUBMIT & UPDATE RESUME ---
+    const form = document.getElementById('resumeForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const originalBtnText = submitBtn.innerHTML;
+
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = 'Processing...';
+      submitBtn.style.opacity = '0.8';
+
+      setTimeout(() => {
+        // 1. Map Simple Text Fields
+        document.getElementById('res_name').textContent = document.getElementById('input_name').value || 'YOUR NAME';
+        document.getElementById('res_mobile').textContent = document.getElementById('input_mobile').value || '';
+        document.getElementById('res_email').textContent = document.getElementById('input_email').value || '';
+        document.getElementById('res_objective').textContent = document.getElementById('input_objective').value || '';
+        document.getElementById('res_per_name').textContent = document.getElementById('input_personal_name').value || '';
+        document.getElementById('res_father').textContent = document.getElementById('input_father_name').value || '';
+        document.getElementById('res_mother').textContent = document.getElementById('input_mother_name').value || '';
+        document.getElementById('res_marital').textContent = document.getElementById('input_marital').value || '';
+        document.getElementById('res_category').textContent = document.getElementById('input_category').value || '';
+        document.getElementById('res_lang').textContent = document.getElementById('input_lang').value || '';
+        document.getElementById('res_tot_exp').textContent = document.getElementById('input_tot_exp').value || '';
+        document.getElementById('res_address').textContent = document.getElementById('input_address').value || '';
+        document.getElementById('res_declaration').textContent = document.getElementById('input_declaration').value || '';
+
+        // Dates
+        const dobVal = document.getElementById('input_dob').value;
+        document.getElementById('res_dob').textContent = dobVal ? formatDateDisplay(dobVal) : '';
+        const dateVal = document.getElementById('input_date').value;
+        document.getElementById('res_date').textContent = dateVal ? formatDateDisplay(dateVal) : '';
+        document.getElementById('res_place').textContent = document.getElementById('input_place').value || '';
+
+        // 2. Build Education Table
+        const eduTbody = document.getElementById('res_edu_tbody');
+        eduTbody.innerHTML = ''; 
+        const eduRows = document.querySelectorAll('.edu-row');
+        eduRows.forEach(row => {
+          const exam = row.querySelector('.edu-exam').value;
+          const board = row.querySelector('.edu-board').value;
+          const year = row.querySelector('.edu-year').value;
+          const perc = row.querySelector('.edu-perc').value;
+          if(exam || board || year) {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `<td>${exam}</td><td>${board}</td><td>${year}</td><td>${perc}</td><td>1st Division</td>`;
+            eduTbody.appendChild(tr);
+          }
+        });
+
+        // 3. Build Experience Table
+        const expTbody = document.getElementById('res_exp_tbody');
+        expTbody.innerHTML = ''; 
+        const expBlocks = document.querySelectorAll('.exp-block');
+        expBlocks.forEach(block => {
+          const org = block.querySelector('.exp-org').value;
+          const desig = block.querySelector('.exp-desig').value;
+          const dur = block.querySelector('.exp-dur').value;
+          const year = block.querySelector('.exp-year').value;
+          const desc = block.querySelector('.exp-desc').value;
+          if(org || desig || year) {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `<td>${org}</td><td>${desig}</td><td>${dur}</td><td>${year}</td><td>${desc}</td>`;
+            expTbody.appendChild(tr);
+          }
+        });
+
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalBtnText;
+        submitBtn.style.opacity = '1';
+        showToast('✔ Resume Updated Successfully!');
+        document.getElementById('resumePreviewSection').scrollIntoView({ behavior: 'smooth' });
+      }, 600);
+    });
+
+  })();
+</script>
+</body>
+</html>

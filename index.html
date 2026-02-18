@@ -714,7 +714,7 @@
                 <h3>Bio Data</h3>
                 <p>Upload photo and get professional passport sized images ready for print.</p>
             </div>
-            <div class="card card-4">
+            <div class="card card-4" id="resume">
                 <div class="badge-new">New</div>
                 <h3>Resume</h3>
                 <p>Upload photo and get professional passport sized images ready for print.</p>
@@ -1753,6 +1753,10 @@ async function showLLHistory() {
     let bio = document.getElementById('bioData');
     bio.addEventListener('click', function() {
         window.location.href = "./bioData.html";
+    });
+    let resume = document.getElementById("resume")
+    resume.addEventListener('click', function() {
+        window.location.href = "./resume.html";
     });
 </script>
 
