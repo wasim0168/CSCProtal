@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terms & Conditions - Print & Online Service Portal</title>
+    
+    <!-- Google Fonts for professional typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Merriweather:ital,wght@0,300;0,700;1,300&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* --- CSS Variables & Reset --- */
+        :root {
+            --primary-color: #2563eb;       /* Royal Blue */
+            --primary-dark: #1e40af;
+            --secondary-color: #f8fafc;     /* Light Gray Background */
+            --text-main: #334155;           /* Slate Gray for body */
+            --text-heading: #0f172a;        /* Dark Slate for headings */
+            --accent-bg: #e0f2fe;           /* Light Blue for highlights */
+            --warning-bg: #fff7ed;          /* Light Orange for disclaimers */
+            --warning-border: #fdba74;
+            --white: #ffffff;
+            --border-radius: 8px;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
+            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--secondary-color);
+            color: var(--text-main);
+            line-height: 1.7;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* --- Layout Containers --- */
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* --- Header / Navigation --- */
+        header {
+            background-color: var(--white);
+            box-shadow: var(--shadow-sm);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 700;
+            font-size: 1.25rem;
+            color: var(--primary-color);
+        }
+
+        .brand i {
+            font-size: 1.5rem;
+        }
+
+        .btn-print {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.2s;
+            text-decoration: none;
+        }
+
+        .btn-print:hover {
+            background-color: var(--primary-dark);
+        }
+
+        /* --- Main Document Styling --- */
+        .document-card {
+            background: var(--white);
+            padding: 40px 50px;
+            margin-top: 30px;
+            margin-bottom: 60px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-md);
+            border-top: 5px solid var(--primary-color);
+        }
+
+        .doc-header {
+            text-align: center;
+            margin-bottom: 40px;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 20px;
+        }
+
+        .doc-header h1 {
+            font-family: 'Merriweather', serif;
+            color: var(--text-heading);
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+
+        .doc-header .subtitle {
+            color: var(--primary-color);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.9rem;
+        }
+
+        /* --- Sections --- */
+        section {
+            margin-bottom: 30px;
+        }
+
+        h2 {
+            color: var(--text-heading);
+            font-size: 1.4rem;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        h2 .number {
+            background: var(--primary-color);
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            font-family: 'Inter', sans-serif;
+            flex-shrink: 0;
+        }
+
+        p, li {
+            margin-bottom: 10px;
+            text-align: justify;
+        }
+
+        /* --- Service List --- */
+        .services-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .service-item {
+            background: var(--accent-bg);
+            padding: 15px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 500;
+            color: var(--primary-dark);
+        }
+
+        /* --- Special Boxes --- */
+        .highlight-box {
+            background-color: #f0fdf4; /* Light Green */
+            border-left: 4px solid #22c55e;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+
+        .warning-box {
+            background-color: var(--warning-bg);
+            border: 1px solid var(--warning-border);
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .warning-box h3 {
+            color: #c2410c;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .gov-list {
+            list-style: none;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .gov-list li {
+            background: rgba(255, 255, 255, 0.6);
+            padding: 5px 12px;
+            border-radius: 20px;
+            border: 1px solid var(--warning-border);
+            font-size: 0.9rem;
+            color: #9a3412;
+            font-weight: 500;
+        }
+
+        /* --- Footer --- */
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #64748b;
+            font-size: 0.9rem;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        /* --- Responsive Tweaks --- */
+        @media (max-width: 768px) {
+            .document-card {
+                padding: 25px;
+            }
+            
+            .doc-header h1 {
+                font-size: 1.8rem;
+            }
+
+            .services-list {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media print {
+            header, footer, .btn-print {
+                display: none !important;
+            }
+            body {
+                background: white;
+            }
+            .document-card {
+                box-shadow: none;
+                margin: 0;
+                padding: 0;
+                border: none;
+            }
+            .warning-box {
+                border: 1px solid #ccc;
+                background: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <div class="container header-content">
+            <div class="brand">
+                <i class="fa-solid fa-file-contract"></i>
+                Service Portal
+            </div>
+            <button class="btn-print" onclick="window.print()">
+                <i class="fa-solid fa-print"></i> Print / Save PDF
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container">
+        <article class="document-card">
+            
+            <div class="doc-header">
+                <div class="subtitle">Legal Agreement</div>
+                <h1>Terms & Conditions</h1>
+                <p style="color: #64748b; font-size: 0.9rem;">(Print & Online Service Portal)</p>
+            </div>
+
+            <!-- Section 1 -->
+            <section>
+                <h2><span class="number">1</span> Introduction</h2>
+                <p>Welcome to our Print & Online Service Portal. By accessing or using our services, you agree to be bound by these Terms & Conditions. Please read them carefully before using our services.</p>
+            </section>
+
+            <!-- Section 2 -->
+            <section>
+                <h2><span class="number">2</span> Services Offered</h2>
+                <p>We provide a wide range of digital and physical assistance services, including:</p>
+                <div class="services-list">
+                    <div class="service-item"><i class="fa-solid fa-print"></i> Document Printing</div>
+                    <div class="service-item"><i class="fa-solid fa-keyboard"></i> Online Form Filling</div>
+                    <div class="service-item"><i class="fa-solid fa-building-columns"></i> Govt. Service Assistance</div>
+                    <div class="service-item"><i class="fa-solid fa-id-card"></i> ID Card Services</div>
+                    <div class="service-item"><i class="fa-solid fa-file-pdf"></i> PDF Generation</div>
+                    <div class="service-item"><i class="fa-solid fa-laptop-file"></i> Other Digital Services</div>
+                </div>
+            </section>
+
+            <!-- Section 3 -->
+            <section>
+                <h2><span class="number">3</span> User Responsibility</h2>
+                <div class="highlight-box">
+                    <p><strong>User dwara di gayi sabhi jankari sahi aur valid honi chahiye.</strong></p>
+                    <p>Galat ya fake information dene par service cancel ki ja sakti hai.</p>
+                    <p>User apne documents ki authenticity ke liye khud zimmedar hoga.</p>
+                </div>
+            </section>
+
+            <!-- Section 4 -->
+            <section>
+                <h2><span class="number">4</span> Payment Policy</h2>
+                <ul style="list-style-type: disc; margin-left: 20px;">
+                    <li>Sabhi services prepaid basis par hongi.</li>
+                    <li>Once payment done, service start hone ke baad refund applicable nahi hoga.</li>
+                    <li><strong>Note:</strong> Printing mistake agar hamari taraf se ho to correction free hoga.</li>
+                </ul>
+            </section>
+
+            <!-- Section 5 -->
+            <section>
+                <h2><span class="number">5</span> No Government Affiliation</h2>
+                <div class="warning-box">
+                    <h3><i class="fa-solid fa-triangle-exclamation"></i> Important Disclaimer</h3>
+                    <p>Hum kisi bhi government department se directly affiliated nahi hain. Hum sirf assistance aur facilitation services provide karte hain for portals like:</p>
+                    <ul class="gov-list">
+                        <li>UIDAI</li>
+                        <li>Income Tax Department</li>
+                        <li>Election Commission of India</li>
+                        <li>Ministry of Road Transport and Highways</li>
+                    </ul>
+                    <p style="margin-top: 15px; font-weight: 500;">Official approval ya decision concerned department ka hoga.</p>
+                </div>
+            </section>
+
+            <!-- Section 6 -->
+            <section>
+                <h2><span class="number">6</span> Data Privacy</h2>
+                <p>Your privacy is important to us:</p>
+                <ul style="list-style-type: disc; margin-left: 20px;">
+                    <li>Customer ki personal information confidential rakhi jayegi.</li>
+                    <li>Data kisi third party ko share nahi kiya jayega without permission (except legal requirement).</li>
+                    <li>Digital copies limited time tak hi store ki jayengi.</li>
+                </ul>
+            </section>
+
+            <!-- Section 7 -->
+            <section>
+                <h2><span class="number">7</span> Service Time</h2>
+                <p>Processing time government portal aur network par depend karta hai. Delay ke liye hum responsible nahi honge agar issue external portal ka ho.</p>
+            </section>
+
+            <!-- Section 8 -->
+            <section>
+                <h2><span class="number">8</span> Cancellation & Refund</h2>
+                <ul style="list-style-type: disc; margin-left: 20px;">
+                    <li>Service start hone ke baad cancellation allowed nahi hoga.</li>
+                    <li>Technical failure case mein refund ya reprocess kiya jayega.</li>
+                </ul>
+            </section>
+
+            <!-- Section 9 -->
+            <section>
+                <h2><span class="number">9</span> Limitation of Liability</h2>
+                <p>Hum sirf service assistance provide karte hain. Application approval, rejection, ya delay ke liye hum zimmedar nahi honge.</p>
+            </section>
+
+        </article>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>&copy; 2023 Print & Online Service Portal. All rights reserved.</p>
+            <p style="margin-top: 5px; font-size: 0.8rem;">Last Updated: October 2023</p>
+        </div>
+    </footer>
+
+</body>
+</html>
