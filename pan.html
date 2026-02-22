@@ -214,10 +214,13 @@
         }
         
         .c2-qr { 
-            top: 244mm;   right: 130mm; 
-            width: 2px;   height: 2px; 
+            top: 244mm; 
+              right: 128.5mm; 
+            width: 2px; 
+              height: 2px; 
             background: white; padding: 2px; 
         }
+        
 
         /* =============================================== */
 
@@ -283,7 +286,7 @@
         <div class="preview-wrapper">
             <div class="a4-page" id="a4Page">
                 <!-- Background Image -->
-                <img src="pan.jpg" id="a4-bg" class="a4-bg-image" alt="Background Template">
+                <img src="pan.jpeg" id="a4-bg" class="a4-bg-image" alt="Background Template">
 
                 <!-- Content Layer -->
                 <div class="content-layer">
@@ -308,7 +311,7 @@
                     <!-- GENDER PREVIEW ADDED -->
 
                     <img id="c2_photo" class="pos-element c2-photo" src="https://via.placeholder.com/100?text=PHOTO">
-                    <img id="c2_sign" class="pos-element c2-sign" src="https://via.placeholder.com/150x50?text=SIGN" style="display:none;">
+                    <img id="c2_sign"   class="pos-element c2-sign" src="https://via.placeholder.com/150x50?text=SIGN" style="display:none;">
                     <div id="c2_qr" class="pos-element c2-qr"></div>
 
                 </div>
@@ -333,166 +336,174 @@
     </div>
 
     <script>
-        let records = [];
-        let serialNo = 1;
-        let currentPhoto = null;
-        let currentSign = null;
+let records = [];
+let serialNo = 1;
+let currentPhoto = null;
+let currentSign = null;
 
-        function scaleA4Page() {
-            const wrapper = document.querySelector('.preview-wrapper');
-            const page = document.querySelector('.a4-page');
-            if (!wrapper || !page) return;
-            const wrapperWidth = wrapper.clientWidth - 40; 
-            const pageWidth = page.offsetWidth;
+/* 🔥 DOB FORMAT FUNCTION */
+function formatDateIndian(dateValue) {
+    if (!dateValue) return "DD/MM/YYYY";
+    const parts = dateValue.split("-");
+    return `${parts[2]}/${parts[1]}/${parts[0]}`;
+}
 
-            if (wrapperWidth < pageWidth) {
-                const scale = wrapperWidth / pageWidth;
-                page.style.transform = `scale(${scale})`;
-                const heightDiff = page.offsetHeight * (1 - scale);
-                page.style.marginBottom = `-${heightDiff}px`;
-            } else {
-                page.style.transform = 'scale(1)';
-                page.style.marginBottom = '0';
+function scaleA4Page() {
+    const wrapper = document.querySelector('.preview-wrapper');
+    const page = document.querySelector('.a4-page');
+    if (!wrapper || !page) return;
+
+    const wrapperWidth = wrapper.clientWidth - 40; 
+    const pageWidth = page.offsetWidth;
+
+    if (wrapperWidth < pageWidth) {
+        const scale = wrapperWidth / pageWidth;
+        page.style.transform = `scale(${scale})`;
+        const heightDiff = page.offsetHeight * (1 - scale);
+        page.style.marginBottom = `-${heightDiff}px`;
+    } else {
+        page.style.transform = 'scale(1)';
+        page.style.marginBottom = '0';
+    }
+}
+
+window.onload = function() {
+    refreshPreview();
+    scaleA4Page();
+};
+window.onresize = scaleA4Page;
+
+function handleFile(input, type) {
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            if (type === 'photo') {
+                currentPhoto = e.target.result;
+                document.getElementById('c1_photo').src = currentPhoto;
+                document.getElementById('c2_photo').src = currentPhoto;
+            }
+            if (type === 'sign') {
+                currentSign = e.target.result;
+                document.getElementById('c1_sign').src = currentSign;
+                document.getElementById('c1_sign').style.display = 'block';
+                document.getElementById('c2_sign').src = currentSign;
+                document.getElementById('c2_sign').style.display = 'block';
             }
         }
+        reader.readAsDataURL(input.files[0]);
+    }
+}
 
-        window.onload = function() {
-            refreshPreview();
-            scaleA4Page();
-        };
-        window.onresize = scaleA4Page;
+function refreshPreview() {
+    const pan = document.getElementById('label1').value || "PAN NO";
+    const name = document.getElementById('label2').value || "NAME";
+    const father = document.getElementById('label3').value || "FATHER NAME";
+    const dobRaw = document.getElementById('label4').value;
+    const dob = formatDateIndian(dobRaw);
+    const gender = document.getElementById('label5').value || "MALE";
 
-        function handleFile(input, type) {
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    if (type === 'photo') {
-                        currentPhoto = e.target.result;
-                        document.getElementById('c1_photo').src = currentPhoto;
-                        document.getElementById('c2_photo').src = currentPhoto;
-                    }
-                    if (type === 'sign') {
-                        currentSign = e.target.result;
-                        document.getElementById('c1_sign').src = currentSign;
-                        document.getElementById('c1_sign').style.display = 'block';
-                        document.getElementById('c2_sign').src = currentSign;
-                        document.getElementById('c2_sign').style.display = 'block';
-                    }
-                }
-                reader.readAsDataURL(input.files[0]);
-            }
-        }
+    // Card 1
+    document.getElementById('c1_pan').innerText = pan;
+    document.getElementById('c1_name').innerText = name;
+    document.getElementById('c1_father').innerText = father;
+    document.getElementById('c1_dob').innerText = dob;
+    document.getElementById('c1_gender').innerText = gender;
 
-        function refreshPreview() {
-            const pan = document.getElementById('label1').value || "PAN NO";
-            const name = document.getElementById('label2').value || "NAME";
-            const father = document.getElementById('label3').value || "FATHER NAME";
-            const dob = document.getElementById('label4').value || "DD/MM/YYYY";
-            // Get Gender Value
-            const gender = document.getElementById('label5').value || "MALE"; 
+    // Card 2
+    document.getElementById('c2_pan').innerText = pan;
+    document.getElementById('c2_name').innerText = name;
+    document.getElementById('c2_father').innerText = father;
+    document.getElementById('c2_dob').innerText = dob;
 
-            // Update Card 1 Text
-            document.getElementById('c1_pan').innerText = pan;
-            document.getElementById('c1_name').innerText = name;
-            document.getElementById('c1_father').innerText = father;
-            document.getElementById('c1_dob').innerText = dob;
-            document.getElementById('c1_gender').innerText = gender; // Update C1 Gender
+    // QR Data with formatted DOB
+    const qrData = `${pan}|${name}|${father}|${dob}|${gender}`;
 
-            // Update Card 2 Text
-            document.getElementById('c2_pan').innerText = pan;
-            document.getElementById('c2_name').innerText = name;
-            document.getElementById('c2_father').innerText = father;
-            document.getElementById('c2_dob').innerText = dob;
+    document.getElementById('c1_qr').innerHTML = "";
+    document.getElementById('c2_qr').innerHTML = "";
 
-            // Generate QR Code
-            const qrData = `${pan}|${name}|${father}|${dob}|${gender}`;
-            
-            // Clear QRs
-            document.getElementById('c1_qr').innerHTML = "";
-            document.getElementById('c2_qr').innerHTML = "";
+    try {
+        new QRCode(document.getElementById("c1_qr"), { text: qrData, width: 100, height: 100 });
+        new QRCode(document.getElementById("c2_qr"), { text: qrData, width: 80, height: 80 });
+    } catch(e) {}
 
-            // Draw QRs
-            try {
-                new QRCode(document.getElementById("c1_qr"), { text: qrData, width: 100, height: 100 });
-                new QRCode(document.getElementById("c2_qr"), { text: qrData, width: 100, height: 100 });
-            } catch(e) {}
-            
-            setTimeout(scaleA4Page, 50);
-        }
+    setTimeout(scaleA4Page, 50);
+}
 
-        function submitData() {
-            const pan = document.getElementById('label1').value;
-            const name = document.getElementById('label2').value;
-            
-            if (!pan || !name || !currentPhoto || !currentSign) {
-                alert("Please fill all fields and upload Photo & Signature.");
-                return;
-            }
+function submitData() {
+    const pan = document.getElementById('label1').value;
+    const name = document.getElementById('label2').value;
 
-            const recordData = {
-                pan: pan, 
-                name: name, 
-                father: document.getElementById('label3').value,
-                dob: document.getElementById('label4').value,
-                gender: document.getElementById('label5').value, // Save Gender
-                photo: currentPhoto, 
-                sign: currentSign
-            };
+    if (!pan || !name || !currentPhoto || !currentSign) {
+        alert("Please fill all fields and upload Photo & Signature.");
+        return;
+    }
 
-            records.push(recordData);
-            const tbody = document.getElementById('tableBody');
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${serialNo}</td>
-                <td>${recordData.name}</td>
-                <td>${recordData.pan}</td>
-                <td><button class="btn-print" onclick="printRecord(${serialNo - 1})">PDF PRINT</button></td>
-            `;
-            tbody.appendChild(row);
-            serialNo++;
+    const recordData = {
+        pan: pan,
+        name: name,
+        father: document.getElementById('label3').value,
+        dob: formatDateIndian(document.getElementById('label4').value),
+        gender: document.getElementById('label5').value,
+        photo: currentPhoto,
+        sign: currentSign
+    };
 
-            document.getElementById('cardForm').reset();
-            currentPhoto = null; currentSign = null;
-            // Reset placeholders
-            document.getElementById('c1_photo').src = "https://via.placeholder.com/100?text=PHOTO";
-            document.getElementById('c2_photo').src = "https://via.placeholder.com/100?text=PHOTO";
-            document.getElementById('c1_sign').style.display = 'none';
-            document.getElementById('c2_sign').style.display = 'none';
-            
-            refreshPreview();
-            document.querySelector('.table-container').scrollIntoView({behavior: 'smooth'});
-        }
+    records.push(recordData);
 
-        function printRecord(index) {
-            const data = records[index];
-            
-            // Load data into preview elements
-            document.getElementById('c1_pan').innerText = data.pan;
-            document.getElementById('c1_name').innerText = data.name;
-            document.getElementById('c1_father').innerText = data.father;
-            document.getElementById('c1_dob').innerText = data.dob;
-            document.getElementById('c1_gender').innerText = data.gender || ""; // Print Gender C1
-            document.getElementById('c1_photo').src = data.photo;
-            document.getElementById('c1_sign').src = data.sign;
-            document.getElementById('c1_sign').style.display = 'block';
+    const tbody = document.getElementById('tableBody');
+    const row = document.createElement('tr');
+    row.innerHTML = `
+        <td>${serialNo}</td>
+        <td>${recordData.name}</td>
+        <td>${recordData.pan}</td>
+        <td><button class="btn-print" onclick="printRecord(${serialNo - 1})">PDF PRINT</button></td>
+    `;
+    tbody.appendChild(row);
+    serialNo++;
 
-            // Duplicate for Card 2
-            document.getElementById('c2_pan').innerText = data.pan;
-            document.getElementById('c2_name').innerText = data.name;
-            document.getElementById('c2_father').innerText = data.father;
-            document.getElementById('c2_dob').innerText = data.dob;
-            document.getElementById('c2_photo').src = data.photo;
-            document.getElementById('c2_sign').src = data.sign;
-            document.getElementById('c2_sign').style.display = 'block';
+    document.getElementById('cardForm').reset();
+    currentPhoto = null;
+    currentSign = null;
 
-            const qrData = `${data.pan}|${data.name}|${data.father}|${data.dob}|${data.gender}`;
-            document.getElementById('c1_qr').innerHTML = "";
-            document.getElementById('c2_qr').innerHTML = "";
-            new QRCode(document.getElementById("c1_qr"), { text: qrData, width: 100, height: 100 });
-            new QRCode(document.getElementById("c2_qr"), { text: qrData, width: 100, height: 100 });
+    document.getElementById('c1_photo').src = "https://via.placeholder.com/100?text=PHOTO";
+    document.getElementById('c2_photo').src = "https://via.placeholder.com/100?text=PHOTO";
+    document.getElementById('c1_sign').style.display = 'none';
+    document.getElementById('c2_sign').style.display = 'none';
 
-            window.print();
-        }
-    </script>
+    refreshPreview();
+    document.querySelector('.table-container').scrollIntoView({behavior: 'smooth'});
+}
+
+function printRecord(index) {
+    const data = records[index];
+
+    document.getElementById('c1_pan').innerText = data.pan;
+    document.getElementById('c1_name').innerText = data.name;
+    document.getElementById('c1_father').innerText = data.father;
+    document.getElementById('c1_dob').innerText = data.dob;
+    document.getElementById('c1_gender').innerText = data.gender || "";
+    document.getElementById('c1_photo').src = data.photo;
+    document.getElementById('c1_sign').src = data.sign;
+    document.getElementById('c1_sign').style.display = 'block';
+
+    document.getElementById('c2_pan').innerText = data.pan;
+    document.getElementById('c2_name').innerText = data.name;
+    document.getElementById('c2_father').innerText = data.father;
+    document.getElementById('c2_dob').innerText = data.dob;
+    document.getElementById('c2_photo').src = data.photo;
+    document.getElementById('c2_sign').src = data.sign;
+    document.getElementById('c2_sign').style.display = 'block';
+
+    const qrData = `${data.pan}|${data.name}|${data.father}|${data.dob}|${data.gender}`;
+
+    document.getElementById('c1_qr').innerHTML = "";
+    document.getElementById('c2_qr').innerHTML = "";
+
+    new QRCode(document.getElementById("c1_qr"), { text: qrData, width: 100, height: 100 });
+    new QRCode(document.getElementById("c2_qr"), { text: qrData, width: 80, height: 80 });
+
+    window.print();
+}
+</script>
 </body>
 </html>
