@@ -704,7 +704,7 @@
                 <h3>Passport Photo</h3>
                 <p>Upload photo and get professional passport sized images ready for print.</p>
             </div>
-            <div class="card card-4">
+            <div class="card card-4" id="votingCardPdf" onclick="showVotingForm()">
                 <div class="badge-new">New</div>
                 <h3>Voting Card PDF</h3>
                 <p>Upload photo and get professional passport sized images ready for print.</p>
@@ -727,6 +727,8 @@
             </div>
         </div>
     </main>
+    <!-- voting pdf -->
+     
 
     <!-- === NEW SECTION: PAN MENU (SUBMENU) === -->
     <main id="pan-menu-page" class="page-section hidden">
@@ -1767,6 +1769,11 @@ async function showLLHistory() {
     let vote = document.getElementById("vote")
     vote.addEventListener('click', function() {
         window.location.href = "https://voting-card.netlify.app/";
+    });
+
+    let votingPDF = document.getElementById("votingCardPdf");
+    votingPDF.addEventListener('click', function() {
+        window.location.href = "./votingCardPdf.html";
     });
 </script>
 

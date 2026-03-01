@@ -1,0 +1,1511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Print Portal</title>
+    <style>
+        /* =========================================
+           PORTAL GLOBAL STYLES
+           ========================================= */
+        :root {
+            --primary-color: #4F46E5;
+            --primary-hover: #4338CA;
+            --secondary-color: #10B981;
+            --danger-color: #EF4444;
+            --border-color: #E5E7EB;
+            --bg-gradient: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+            --card-5-color: #D946EF; /* Color for Card 5 */
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: var(--bg-gradient);
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Top Bar */
+        .top-bar {
+            background: linear-gradient(to right, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+            white-space: nowrap;
+            position: relative;
+            z-index: 101;
+        }
+
+        .scrolling-text {
+            display: inline-block;
+            padding-left: 100%;
+            animation: scroll-left 20s linear infinite;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        @keyframes scroll-left {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-100%); }
+        }
+
+        /* Navigation */
+        nav {
+            background-color: white;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 4px solid #f39c12;
+            position: sticky;
+            top: 0;
+            z-index: 101;
+        }
+
+        .logo { display: flex; align-items: center; }
+        .logo img { height: 100px; width: auto; object-fit: contain; }
+
+        /* --- NAV RIGHT WRAPPER --- */
+        .nav-right-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        /* =========================================
+           IMPROVED DATE & TIME STYLES
+           ========================================= */
+        .nav-datetime-wrapper {
+            display: flex;
+            align-items: center;
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 50px;
+            padding: 5px 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-datetime-wrapper:hover {
+            border-color: var(--primary-color);
+            box-shadow: 0 4px 15px rgba(79, 70, 229, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .dt-section {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .dt-icon {
+            width: 16px;
+            height: 16px;
+            color: #9ca3af;
+            flex-shrink: 0;
+        }
+
+        .dt-text {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #4b5563;
+            letter-spacing: 0.5px;
+        }
+
+        .dt-separator {
+            width: 1px;
+            height: 16px;
+            background: #e5e7eb;
+            margin: 0 5px;
+        }
+
+        /* Time specific styling */
+        #nav-time {
+            color: var(--primary-color);
+            font-weight: 700;
+            min-width: 80px; /* Prevents jitter when numbers change */
+            display: inline-block;
+        }
+
+        /* Blinking Colons Animation */
+        .blink-colon {
+            animation: blink 1s steps(1) infinite;
+        }
+        @keyframes blink {
+            50% { opacity: 0.3; }
+        }
+
+        /* Existing Links */
+        .nav-links { list-style: none; display: flex; gap: 15px; align-items: center; margin: 0; }
+        .nav-links a { text-decoration: none; color: #333; font-weight: 600; transition: color 0.3s; cursor: pointer; font-size: 0.95rem; }
+
+        .wallet-link {
+            color: white !important;
+            background: linear-gradient(45deg, #11998e, #38ef7d);
+            padding: 6px 16px;
+            border-radius: 20px;
+            box-shadow: 0 4px 10px rgba(56, 239, 125, 0.4);
+            font-size: 0.9rem !important;
+        }
+
+        /* Page Sections */
+        .page-section {
+            flex: 1;
+            text-align: center;
+            padding: 20px;
+            background: transparent; 
+        }
+
+        /* Photo Page Special Styling */
+        #photo-page {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100vh;
+            z-index: 200;
+            flex-direction: row;
+            overflow: hidden;
+            padding: 0;
+            background: #f0f2f5;
+        }
+        #photo-page.active { display: flex; }
+
+        .hero-title {
+            font-size: 3.5rem; margin-bottom: 20px;
+            background: linear-gradient(to right, #e64545, #f39c12, #2ecc71, #3498db, #9b59b6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 800; letter-spacing: -1px;
+        }
+
+        /* =========================================
+           HOME SEARCH BAR STYLES
+           ========================================= */
+        .search-container {
+            position: relative;
+            max-width: 600px;
+            margin: 0 auto 50px auto;
+        }
+        .search-input {
+            width: 100%;
+            padding: 16px 20px 16px 55px;
+            font-size:1rem;
+            border: 2px solid transparent;
+            border-radius: 50px;
+            background: white;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            outline: none;
+            transition: all 0.3s ease;
+        }
+        .search-input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 4px 20px rgba(79, 70, 229, 0.2);
+        }
+        .search-icon {
+            position: absolute;
+            left: 22px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+            pointer-events: none;
+        }
+
+        .service-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px; max-width: 1200px; margin: 0 auto;
+        }
+
+        .card {
+            background: white; border-radius: 15px; padding: 30px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer; text-decoration: none; color: #333;
+            position: relative; overflow: hidden;
+        }
+        .badge-new {
+            position: absolute; top: 12px; right: 12px;
+            background-color: #10B981; color: #000000;
+            font-size: 11px; font-weight: 700; padding: 4px 8px;
+            border-radius: 10px; z-index: 2;
+        }
+        .card:hover { transform: translateY(-10px); box-shadow: 0 15px 30px rgba(0,0,0,0.15); }
+        .card-1 { border-top: 6px solid #3498db; } .card-1 h3 { color: #3498db; }
+        .card-2 { border-top: 6px solid #9b59b6; } .card-2 h3 { color: #9b59b6; }
+        .card-3 { border-top: 6px solid #e67e22; } .card-3 h3 { color: #e67e22; }
+        .card-4 { border-top: 6px solid #2ecc71; } .card-4 h3 { color: #2ecc71; }
+        .card-5 { border-top: 6px solid var(--card-5-color); } .card-5 h3 { color: var(--card-5-color); } /* Card 5 Style */
+        
+        .card h3 { font-size: 1.5rem; margin-bottom: 15px; }
+        .card p { font-size: 1rem; color: #777; line-height: 1.5; }
+
+        /* --- Form Styles --- */
+        .form-container {
+            max-width: 500px; margin: 0 auto; background: white; padding: 40px;
+            border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: left;
+        }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: #555; }
+        .form-group input, .form-group select {
+            width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px;
+            font-size: 1rem; outline: none; transition: border-color 0.3s;
+        }
+        .form-group input:focus, .form-group select:focus { border-color: var(--card-5-color); }
+        .submit-btn {
+            width: 100%; padding: 12px; background: linear-gradient(to right, #4facfe 0%, #00f2fe 100%);
+            color: white; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: bold;
+            cursor: pointer; transition: transform 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .submit-btn:hover:not(:disabled) { transform: scale(1.02); background: linear-gradient(to right, #00f2fe 0%, #4facfe 100%); }
+        .submit-btn:disabled { background: #95a5a6; cursor: not-allowed; transform: none; }
+        .back-btn {
+            width: 100%; padding: 10px; background-color: #95a5a6; color: white; border: none;
+            border-radius: 8px; margin-top: 10px; cursor: pointer; font-weight: bold;
+        }
+        .admin-sim-btn {
+            background-color: #333; color: white; border: none; padding: 10px 20px;
+            border-radius: 8px; margin-bottom: 20px; cursor: pointer; font-size: 0.9rem;
+        }
+        .admin-sim-btn:hover { background-color: #000; }
+
+        /* --- Table Styles --- */
+        .table-container {
+            max-width: 900px; margin: 0 auto; background: white; padding: 30px;
+            border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            text-align: left;
+        }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 0.9rem; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background-color: #2c3e50; color: white; text-transform: uppercase; font-size: 0.8rem; }
+        tr:nth-child(even) { background-color: #f2f2f2; }
+        tr:hover { background-color: #e9f7fe; }
+        .no-data-msg { text-align: center; color: #777; padding: 20px; font-style: italic; }
+        
+        /* Status Indicators */
+        .status-pending { color: #e67e22; font-weight: bold; }
+        .status-ready { color: #27ae60; font-weight: bold; text-decoration: underline; cursor: pointer; }
+
+        /* --- Footer --- */
+        footer {
+            background-color: #2c3e50; color: white; padding: 40px 20px; margin-top: auto;
+            border-top: 4px solid #3498db;
+        }
+        .footer-content {
+            max-width: 1200px; margin: 0 auto; display: flex; flex-wrap: wrap;
+            justify-content: space-between; align-items: center;
+        }
+        .contact-info h4 { margin-bottom: 15px; color: #f1c40f; text-transform: uppercase; font-size: 1.1rem; }
+        .contact-item { margin-bottom: 10px; font-size: 1rem; display: flex; align-items: center; gap: 10px; }
+        .social-icons { display: flex; gap: 15px; margin-top: 20px; }
+        .social-icon {
+            width: 40px; height: 40px; background: linear-gradient(45deg, #ff9966, #ff5e62);
+            border-radius: 50%; display: flex; justify-content: center; align-items: center;
+            text-decoration: none; color: white; font-weight: bold; transition: transform 0.2s;
+        }
+        .social-icon:hover { transform: scale(1.1); }
+        .service-hours {
+            text-align: center; width: 100%; margin-bottom: 20px; font-weight: bold;
+            color: #2ecc71; font-size: 1.1rem;
+        }
+
+        .hidden { display: none !important; }
+        .title-header { margin-bottom: 20px; color: #2c3e50; font-size: 2rem;}
+
+        /* =========================================
+           WALLET STYLES
+           ========================================= */
+        .wallet-container {
+            width: 100%; max-width: 480px; margin: 0 auto; background: white;
+            border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); overflow: hidden;
+            text-align: left;
+        }
+        .wallet-header { padding: 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+        .wallet-header h2 { font-size: 1.2rem; }
+        .balance-card {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-hover)); color: white;
+            padding: 30px 24px; margin: 24px; border-radius: 12px; text-align: center;
+        }
+        .balance-label { font-size: 0.9rem; opacity: 0.9; margin-bottom: 8px; }
+        .balance-amount { font-size: 2rem; font-weight: 700; }
+        .wallet-content { padding: 0 24px 24px 24px; }
+        .wallet-section-title { font-size: 0.95rem; font-weight: 600; margin-bottom: 12px; color: #333; }
+        .wallet-input-group { position: relative; margin-bottom: 20px; }
+        .currency-symbol { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: #666; font-weight: 600; font-size: 1.2rem; }
+        .wallet-input {
+            width: 100%; padding: 16px 16px 16px 45px; border: 2px solid var(--border-color);
+            border-radius: 12px; font-size: 1.25rem; font-weight: 600; outline: none;
+        }
+        .wallet-input:focus { border-color: var(--primary-color); }
+        .error-msg { color: #EF4444; font-size: 0.8rem; margin-top: 6px; display: none; }
+        .quick-select { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 24px; }
+        .quick-select::-webkit-scrollbar { display: none; }
+        .chip {
+            padding: 8px 16px; background: #f3f4f6; border: 1px solid #e5e7eb; border-radius: 20px;
+            font-size: 0.9rem; font-weight: 500; cursor: pointer; white-space: nowrap; transition: all 0.2s;
+        }
+        .chip:hover { background: #e0e7ff; border-color: #c7d2fe; color: var(--primary-color); }
+        .chip.active { background: var(--primary-color); color: white; border-color: var(--primary-color); }
+        .payment-methods { display: flex; flex-direction: column; gap: 12px; margin-bottom: 30px; }
+        .method-option {
+            display: flex; align-items: center; padding: 16px; border: 2px solid var(--border-color);
+            border-radius: 12px; cursor: pointer; transition: all 0.2s;
+        }
+        .method-option:hover { border-color: #c7d2fe; }
+        .method-option.selected { border-color: var(--primary-color); background-color: #eef2ff; }
+        .method-icon {
+            width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;
+            background: white; border-radius: 8px; margin-right: 12px; border: 1px solid var(--border-color);
+        }
+        .method-info { flex: 1; }
+        .method-name { font-weight: 600; font-size: 0.95rem; }
+        .method-desc { font-size: 0.8rem; color: #6b7280; }
+        .radio-circle {
+            width: 20px; height: 20px; border: 2px solid #6b7280; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .method-option.selected .radio-circle { border-color: var(--primary-color); }
+        .radio-circle::after {
+            content: ''; width: 10px; height: 10px; background: var(--primary-color); border-radius: 50%;
+            opacity: 0; transform: scale(0); transition: all 0.2s;
+        }
+        .method-option.selected .radio-circle::after { opacity: 1; transform: scale(1); }
+
+        /* Generic Modal Styles */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5);
+            z-index: 1000; display: flex; align-items: center; justify-content: center;
+            opacity: 0; visibility: hidden; transition: all 0.3s;
+        }
+        .modal-overlay.active { opacity: 1; visibility: visible; }
+        .success-modal {
+            background: white; padding: 32px; border-radius: 12px; width: 90%; max-width: 320px;
+            text-align: center; transform: translateY(20px); transition: transform 0.3s;
+        }
+        .modal-overlay.active .success-modal { transform: translateY(0); }
+        .check-icon {
+            width: 64px; height: 64px; background: #D1FAE5; color: var(--secondary-color);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px auto;
+        }
+        .spinner {
+            width: 20px; height: 20px; border: 2px solid rgba(255,255,255,0.3); border-radius: 50%;
+            border-top-color: white; animation: spin 0.8s linear infinite; display: none;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Confirmation Modal Specific Styles */
+        .confirm-buttons { display: flex; gap: 10px; margin-top: 20px; }
+        .btn-confirm {
+            flex: 1; padding: 10px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        .btn-yes { background-color: var(--primary-color); color: white; }
+        .btn-no { background-color: #95a5a6; color: white; }
+        .btn-confirm:hover { opacity: 0.9; }
+
+        /* =========================================
+           PHOTO MAKER STYLES
+           ========================================= */
+        #photo-page aside {
+            width: 320px; background: white; padding: 20px; border-right: 1px solid #ddd;
+            overflow-y: auto; display: flex; flex-direction: column; gap: 15px;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.05); z-index: 10;
+        }
+        
+        .photo-header {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .btn-photo-back {
+            background-color: white;
+            color: #333;
+            border: 1px solid #ddd;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            transition: all 0.2s;
+        }
+        .btn-photo-back:hover {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+
+        #photo-page h2, #photo-page h3 { margin-bottom: 10px; font-size: 1.2rem; }
+        .control-group { border-bottom: 1px solid var(--border-color); padding-bottom: 15px; }
+        #photo-page label { display: block; margin-bottom: 5px; font-weight: 500; color: #555; font-size: 0.9rem; }
+        #photo-page input[type="range"] { width: 100%; cursor: pointer; }
+        #photo-page select, #photo-page input[type="color"] {
+            width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; margin-top: 5px;
+        }
+        .checkbox-wrapper { display: flex; align-items: center; margin-top: 10px; cursor: pointer; }
+        #photo-page input[type="checkbox"] { margin-right: 8px; transform: scale(1.2); }
+        .upload-wrapper { position: relative; }
+        .upload-zone {
+            border: 2px dashed rgba(0,0,0,0.2); border-radius: 8px; padding: 20px;
+            text-align: center; cursor: pointer; transition: all 0.3s ease;
+            background-color: rgba(255,255,255,0.5); display: flex; flex-direction: column;
+            align-items: center; justify-content: center; min-height: 140px;
+        }
+        .upload-zone:hover { border-color: var(--primary-color); background-color: rgba(255,255,255,0.8); }
+        .upload-zone.dragover { border-color: var(--primary-color); background-color: #eaf4ff; transform: scale(1.02); }
+        .upload-icon { width: 40px; height: 40px; margin-bottom: 10px; fill: #aaa; }
+        .upload-zone:hover .upload-icon { fill: var(--primary-color); }
+        .upload-text { font-size: 14px; font-weight: 500; }
+        .upload-subtext { font-size: 12px; margin-top: 4px; }
+        #photoUpload { display: none; }
+        #upload-preview {
+            width: 100%; height: 100px; object-fit: cover; border-radius: 4px;
+            margin-bottom: 8px; display: none; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .btn-primary {
+            width: 100%; padding: 12px; font-size: 16px; font-weight: bold; letter-spacing: 1px;
+            border: none; outline: none; color: #fff; background: #111; cursor: pointer;
+            position: relative; z-index: 0; border-radius: 10px; text-align: center;
+        }
+        .btn-primary:before {
+            content: ''; background: linear-gradient(45deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000);
+            position: absolute; top: -2px; left: -2px; background-size: 400%; z-index: -1;
+            filter: blur(5px); width: calc(100% + 4px); height: calc(100% + 4px);
+            animation: glowing 20s linear infinite; opacity: 0; transition: opacity .3s ease-in-out;
+            border-radius: 10px; pointer-events: none;
+        }
+        .btn-primary:active { color: #000; }
+        .btn-primary:hover:before { opacity: 1; }
+        .btn-primary:after {
+            z-index: -1; content: ''; position: absolute; width: 100%; height: 100%;
+            background: #111; left: 0; top: 0; border-radius: 10px; pointer-events: none;
+        }
+        @keyframes glowing { 0% { background-position: 0 0; } 50% { background-position: 400% 0; } 100% { background-position: 0 0; } }
+        .scroll-controls { display: flex; gap: 10px; margin-top: 10px; }
+        .btn-scroll {
+            flex: 1; background-color: #6c757d; color: white; border: none; padding: 10px;
+            border-radius: 5px; cursor: pointer; font-size: 14px; transition: background 0.2s;
+        }
+        .btn-scroll:hover { background-color: #5a6268; }
+        #photo-page main {
+            flex: 1; overflow: auto; display: flex; justify-content: center; align-items: flex-start;
+            padding: 50px; background-color: #525659; scroll-behavior: smooth;
+        }
+        #a4-sheet {
+            background: white; width: 210mm; height: 297mm; box-shadow: 0 0 20px rgba(0,0,0,0.3);
+            flex-shrink: 0; transform-origin: top center; transition: transform 0.2s ease; margin-bottom: 50px;
+        }
+        #previewCanvas { display: block; width: 100%; height: 100%; }
+        .value-display { font-size: 12px; color: #777; float: right; }
+
+        /* Print Override */
+        @media print {
+            body { background: white; height: auto; overflow: visible; display: block; }
+            nav, .top-bar, footer, #home-page, #pan-page, #pan-menu-page, #pan-history-page, #ll-page, #wallet-page, .sidebar-dark, #profile-page, #voting-page { display: none !important; }
+            #photo-page {
+                position: static; display: block !important; z-index: auto; width: 100%; height: auto;
+            }
+            #photo-page aside { display: none; }
+            #photo-page main { padding: 0; margin: 0; display: block; overflow: visible; background: white; }
+            #a4-sheet { box-shadow: none; margin: 0; transform: none !important; page-break-after: always; }
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 900px) {
+            .nav-right-wrapper { flex-wrap: wrap; justify-content: flex-end; }
+            .nav-datetime-wrapper { width: 100%; justify-content: center; margin-bottom: 5px; }
+            .nav-links { margin-top: 5px; }
+        }
+        
+        .history-link-btn {
+            background: none; border: none; color: var(--primary-color);
+            text-decoration: underline; cursor: pointer; font-size: 0.9rem; margin-top: 5px;
+        }
+        .history-link-btn:hover { color: var(--primary-hover); }
+
+        /* =========================================
+           USER PROFILE STYLES
+           ========================================= */
+        .profile-wrapper {
+            max-width: 600px; margin: 0 auto; background: white; border-radius: 20px;
+            padding: 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); text-align: center;
+            display: flex; flex-direction: column; align-items: center; gap: 20px;
+        }
+        .profile-avatar {
+            width: 120px; height: 120px; border-radius: 50%; overflow: hidden;
+            border: 4px solid var(--primary-color); box-shadow: 0 5px 15px rgba(79, 70, 229, 0.3); margin-bottom: 10px;
+        }
+        .profile-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .profile-name { font-size: 1.8rem; font-weight: 700; color: #333; margin: 0; }
+        .profile-email { color: #666; font-size: 1rem; margin-bottom: 20px; }
+        .profile-balance-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); width: 100%; padding: 20px;
+            border-radius: 15px; color: white; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;
+        }
+        .balance-label-small { font-size: 0.9rem; opacity: 0.9; text-align: left; }
+        .balance-amount-small { font-size: 1.5rem; font-weight: bold; text-align: right; }
+        .profile-actions { width: 100%; display: grid; gap: 15px; }
+
+    </style>
+</head>
+<body>
+
+    <!-- === SECTION 1: HOME PAGE === -->
+    <main id="home-page" class="page-section">
+        <!-- HOME SEARCH BAR -->
+
+        <div class="service-grid">
+            <!-- CARD 5: VOTING CARD PDF (NEW) -->
+            <div class="card card-5" onclick="showVotingForm()">
+                <div class="badge-new">New</div>
+                <h3>Voting Card PDF</h3>
+                <p>Enter details to download your Voter ID card PDF.</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- === PAN MENU === -->
+    <main id="pan-menu-page" class="page-section hidden">
+        <h2 class="title-header">Find PAN Options</h2>
+        <div class="service-grid" style="max-width: 600px; margin-bottom: 30px;">
+            <div class="card card-1" onclick="showPanForm()">
+                <h3>Find PAN Details</h3>
+                <p>Enter Aadhar to get new PAN Number.</p>
+            </div>
+            <div class="card card-5" onclick="showPanHistory()">
+                <h3>FIND PAN HISTORY</h3>
+                <p>View your submitted PAN details (15 Days).</p>
+            </div>
+        </div>
+        <button class="back-btn" style="width: 200px; margin: 0 auto;" onclick="showHome()">Back to Home</button>
+    </main>
+
+    <!-- === PAN FORM PAGE === -->
+    <main id="pan-page" class="page-section hidden">
+        <div id="pan-input-section">
+            <h2 class="title-header">Find PAN Details</h2>
+            <div class="form-container">
+                <div class="form-group">
+                    <label for="aadharInput">Enter Aadhar Number</label>
+                    <input type="number" id="aadharInput" placeholder="Enter 12 digit number">
+                </div>
+                <button class="submit-btn" onclick="submitPanForm()">Submit</button>
+                <button class="back-btn" onclick="showPanMenu()">Back to Menu</button>
+            </div>
+        </div>
+        <div id="pan-result-section" class="hidden">
+            <h2 class="title-header">Application Details</h2>
+            <div class="table-container">
+                <table id="panTable"><thead><tr><th>Aadhar No</th><th>PAN Number</th><th>Service Name</th><th>Date</th><th>Status</th></tr></thead><tbody></tbody></table>
+                <br><button class="back-btn" onclick="showHome()">Back to Home</button>
+            </div>
+        </div>
+    </main>
+
+    <!-- === PAN HISTORY PAGE === -->
+    <main id="pan-history-page" class="page-section hidden">
+        <h2 class="title-header">My PAN Search History</h2>
+        <p style="margin-bottom: 20px; color: #666;">Records are automatically deleted after 15 days. PAN numbers are hidden until Admin updates.</p>
+        
+        <button class="admin-sim-btn" onclick="simulatePanAdminUpdate()">⚙ Simulate Admin Update (Reveal PAN)</button>
+        
+        <div class="table-container">
+            <table id="historyTable">
+                <thead><tr><th>Aadhar No</th><th>PAN Number</th><th>Service Name</th><th>Date</th><th>Status</th></tr></thead>
+                <tbody></tbody>
+            </table>
+            <div id="noHistoryMsg" class="no-data-msg hidden">No history found within the last 15 days.</div>
+            <br><button class="back-btn" onclick="showHome()">Back to Home</button>
+        </div>
+    </main>
+
+    <!-- === LL TEST FORM PAGE === -->
+    <main id="ll-page" class="page-section hidden">
+        
+        <!-- LL Input Section -->
+        <div id="ll-input-section">
+            <h2 class="title-header">LL Test Application</h2>
+            <div class="form-container">
+                <div class="form-group"><label for="llAppNoInput">Application No</label><input type="number" id="llAppNoInput" placeholder="Enter Application Number"></div>
+                <div class="form-group"><label for="llDobInput">Date of Birth (DOB)</label><input type="date" id="llDobInput"></div>
+                <div class="form-group"><label for="llPassInput">Password</label><input type="password" id="llPassInput" placeholder="Enter Password"></div>
+                <button class="submit-btn" onclick="submitLLForm()">Submit</button>
+                <button class="back-btn" onclick="showHome()">Back to Home</button>
+                
+                <div style="text-align: center; margin-top: 5px;">
+                    <button class="history-link-btn" onclick="showLLHistory()">View LL History</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- LL Single Result Section -->
+        <div id="ll-result-section" class="hidden">
+            <h2 class="title-header">Application Details</h2>
+            <div class="table-container">
+                <table id="llTable"><thead><tr><th>Application No</th><th>DOB</th><th>Password</th><th>Service Name</th><th>Status</th></tr></thead><tbody></tbody></table>
+                <br>
+                <button class="back-btn" onclick="showLLForm()">Back to Form</button>
+                <button class="back-btn" onclick="showHome()">Back to Home</button>
+            </div>
+        </div>
+
+        <!-- LL HISTORY SECTION -->
+        <div id="ll-history-section" class="hidden">
+            <h2 class="title-header">LL Test History</h2>
+            <p style="margin-bottom: 20px; color: #666;">Records are automatically deleted after 15 days.</p>
+            
+            <div class="table-container">
+                <table id="llHistoryTable">
+                    <thead><tr><th>Application No</th><th>DOB</th><th>Password</th><th>Service Name</th><th>Status</th></tr></thead>
+                    <tbody></tbody>
+                </table>
+                <div id="noLLHistoryMsg" class="no-data-msg hidden">No history found within the last 15 days.</div>
+                <br>
+                <button class="back-btn" onclick="showLLForm()">Back to Form</button>
+                <button class="back-btn" onclick="showHome()">Back to Home</button>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- === NEW: VOTING CARD PAGE (CARD 5) === -->
+    <main id="voting-page" class="page-section hidden">
+        
+        <!-- Voting Input Section -->
+        <div id="voting-input-section">
+            <h2 class="title-header" style="color: var(--card-5-color);">Voting Card PDF Download</h2>
+            <div class="form-container">
+                <div class="form-group">
+                    <label for="voteNoInput">Voting Card No</label>
+                    <input type="text" id="voteNoInput" placeholder="Enter Voting Card Number (e.g., ABC1234567)">
+                </div>
+                
+                <div class="form-group">
+                    <label for="voteStateInput">Select State</label>
+                    <select id="voteStateInput">
+                        <option value="">-- Select State --</option>
+                        <option value="Maharashtra">Maharashtra</option>
+                        <option value="Delhi">Delhi</option>
+                        <option value="Karnataka">Karnataka</option>
+                        <option value="Gujarat">Gujarat</option>
+                        <option value="Uttar Pradesh">Uttar Pradesh</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+
+                <button class="submit-btn" onclick="submitVotingForm()">GET PDF (₹50)</button>
+                <button class="back-btn" onclick="showHome()">Back to Home</button>
+                
+                <div style="text-align: center; margin-top: 5px;">
+                    <button class="history-link-btn" onclick="showVotingHistory()">View Voting History</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Voting History Section -->
+        <div id="voting-history-section" class="hidden">
+            <h2 class="title-header" style="color: var(--card-5-color);">Voting Card History</h2>
+            <p style="margin-bottom: 20px; color: #666;">PDF Status remains pending until Admin uploads the file.</p>
+            
+            <!-- Admin Simulation Button -->
+            <button class="admin-sim-btn" style="background-color: var(--card-5-color);" onclick="simulateVotingAdminUpload()">⚙ Simulate Admin Upload (Ready PDF)</button>
+
+            <div class="table-container">
+                <table id="votingHistoryTable">
+                    <thead>
+                        <tr>
+                            <th>Voting Card No</th>
+                            <th>State</th>
+                            <th>Date</th>
+                            <th>PDF Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Rows injected via JS -->
+                    </tbody>
+                </table>
+                <div id="noVotingHistoryMsg" class="no-data-msg hidden">No history found.</div>
+                <br>
+                <button class="back-btn" onclick="showVotingForm()">Back to Form</button>
+                <button class="back-btn" onclick="showHome()">Back to Home</button>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- === WALLET ADD FUNDS PAGE === -->
+    <main id="wallet-page" class="page-section hidden">
+        <div class="wallet-container">
+            <div class="wallet-header">
+                <button onclick="showHome()" style="background:none; border:none; font-size:1.5rem; cursor:pointer;">&larr;</button>
+                <h2>Add Funds</h2>
+                <div style="width:24px;"></div>
+            </div>
+            <div class="balance-card">
+                <div class="balance-label">Current Balance</div>
+                <div class="balance-amount" id="wallet-balance-display">₹0</div>
+            </div>
+            <div class="wallet-content">
+                <div class="wallet-section-title">Enter Amount</div>
+                <div class="wallet-input-group">
+                    <span class="currency-symbol">₹</span>
+                    <input type="number" id="amountInput" class="wallet-input" placeholder="0" min="1" max="100000">
+                </div>
+                <div class="error-msg" id="amountError">Please enter a valid amount between ₹1 and ₹1,00,000</div>
+                <div class="quick-select" id="quickSelect">
+                    <div class="chip" data-value="500">₹500</div>
+                    <div class="chip" data-value="1000">₹1,000</div>
+                    <div class="chip" data-value="2000">₹2,000</div>
+                    <div class="chip" data-value="5000">₹5,000</div>
+                    <div class="chip" data-value="10000">₹10,000</div>
+                </div>
+                <div class="wallet-section-title">Payment Method</div>
+                <div class="payment-methods">
+                    <div class="method-option selected" onclick="selectWalletMethod(this, 'upi')">
+                        <div class="method-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#4F46E5" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg></div>
+                        <div class="method-info"><div class="method-name">UPI / QR Code</div><div class="method-desc">GPay, PhonePe, Paytm</div></div>
+                        <div class="radio-circle"></div>
+                    </div>
+                    <div class="method-option" onclick="selectWalletMethod(this, 'card')">
+                        <div class="method-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#4F46E5" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg></div>
+                        <div class="method-info"><div class="method-name">Credit / Debit Card</div><div class="method-desc">Visa, Mastercard, Rupay</div></div>
+                        <div class="radio-circle"></div>
+                    </div>
+                    <div class="method-option" onclick="selectWalletMethod(this, 'netbanking')">
+                        <div class="method-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#4F46E5" stroke-width="2"><path d="M3 21h18M5 21V7l8-4 8 4v14M8 21v-2a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></div>
+                        <div class="method-info"><div class="method-name">Net Banking</div><div class="method-desc">All major Indian banks</div></div>
+                        <div class="radio-circle"></div>
+                    </div>
+                </div>
+                <button id="addFundsBtn" class="submit-btn" disabled onclick="processAddFunds()"><span class="btn-text">Add Funds</span><div class="spinner"></div></button>
+            </div>
+        </div>
+    </main>
+
+    <!-- === USER PROFILE PAGE === -->
+    <main id="profile-page" class="page-section hidden">
+        <h2 class="title-header">User Profile</h2>
+        <div class="profile-wrapper">
+            <div class="profile-avatar">
+                <img src="https://ui-avatars.com/api/?name=Guest+User&background=4F46E5&color=fff&size=128" alt="User Avatar">
+            </div>
+            <div>
+                <h3 class="profile-name">Guest User</h3>
+                <p class="profile-email">guest@shreeprint.com</p>
+            </div>
+            <div class="profile-balance-card">
+                <div class="balance-label-small">Wallet Balance</div>
+                <div class="balance-amount-small" id="profile-balance-display">₹0</div>
+            </div>
+            <div class="profile-actions">
+                <button class="submit-btn" onclick="showWalletForm()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"></path><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"></path><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"></path></svg>
+                    Add Funds
+                </button>
+                <button class="submit-btn" style="background: #6b7280;" onclick="alert('Feature coming soon: Edit Profile')">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>
+                    Edit Profile
+                </button>
+                <button class="back-btn" style="background-color: var(--danger-color);" onclick="alert('Logged Out (Simulation)')">Log Out</button>
+                <button class="back-btn" onclick="showHome()">Back to Home</button>
+            </div>
+        </div>
+    </main>
+
+    <!-- === PASSPORT PHOTO MAKER TOOL === -->
+    <main id="photo-page" class="page-section hidden">
+        <aside class="sidebar-dark">
+            <div class="photo-header">
+                <button class="btn-photo-back" onclick="showHome()">← Back to Home</button>
+            </div>
+            <h2>ID Photo Maker</h2>
+            <div class="control-group">
+                <h3>Step 1: Upload</h3>
+                <div class="upload-wrapper">
+                    <div class="upload-zone" id="drop-zone">
+                        <svg class="upload-icon" id="upload-icon" viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/></svg>
+                        <img id="upload-preview" alt="Preview">
+                        <span class="upload-text" id="upload-text">Click to Upload</span>
+                        <span class="upload-subtext">or Drag & Drop file here</span>
+                    </div>
+                    <input type="file" id="photoUpload" accept="image/*">
+                </div>
+            </div>
+            <div class="control-group">
+                <h3>Step 2: Adjust Image</h3>
+                <label>Brightness <span id="val-brightness" class="value-display">100%</span></label>
+                <input type="range" id="brightness" min="0" max="200" value="100">
+                <label>Contrast <span id="val-contrast" class="value-display">100%</span></label>
+                <input type="range" id="contrast" min="0" max="200" value="100">
+                <label>Border Color</label>
+                <input type="color" id="borderColor" value="#000000">
+                <div class="checkbox-wrapper"><input type="checkbox" id="grayscale"><label for="grayscale" style="margin:0; cursor:pointer;">Grayscale</label></div>
+            </div>
+            <div class="control-group">
+                <h3>Step 3: Layout</h3>
+                <label for="photoCount">Number of Photos</label>
+                <select id="photoCount">
+                    <option value="6">6 Photos (1 Row)</option>
+                    <option value="12">12 Photos (2 Rows)</option>
+                    <option value="18">18 Photos (3 Rows)</option>
+                    <option value="24">24 Photos (4 Rows)</option>
+                    <option value="30">30 Photos (5 Rows)</option>
+                    <option value="36">36 Photos (6 Rows)</option>
+                    <option value="42">42 Photos (7 Rows)</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <h3>View Controls</h3>
+                <label>Zoom Preview</label>
+                <input type="range" id="zoomLevel" min="0.5" max="1.5" step="0.1" value="0.9">
+                <label>Scroll Sheet</label>
+                <div class="scroll-controls">
+                    <button class="btn-scroll" id="scrollUpBtn">▲ Up</button>
+                    <button class="btn-scroll" id="scrollDownBtn">▼ Down</button>
+                </div>
+            </div>
+            <button class="btn-primary" onclick="printSheet()">PRINT / SAVE PDF</button>
+            <button class="btn-photo-back" style="width:100%; margin-top:10px; justify-content:center;" onclick="showHome()">← Back to Home</button>
+        </aside>
+        <main id="mainArea">
+            <div id="a4-sheet">
+                <canvas id="previewCanvas"></canvas>
+            </div>
+        </main>
+    </main>
+
+    <!-- PAN Confirmation Modal -->
+    <div class="modal-overlay" id="panConfirmModal">
+        <div class="success-modal">
+            <h2 style="margin-bottom:10px; color:#333;">Confirm Action</h2>
+            <p style="color:#666; margin-bottom:24px;">Are you sure you want to proceed?<br><strong>₹20</strong> will be deducted from your wallet.</p>
+            <div class="confirm-buttons">
+                <button class="btn-confirm btn-no" onclick="closePanModal()">No</button>
+                <button class="btn-confirm btn-yes" onclick="confirmPANDeduction()">Yes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Voting Confirmation Modal -->
+    <div class="modal-overlay" id="votingConfirmModal">
+        <div class="success-modal">
+            <h2 style="margin-bottom:10px; color:var(--card-5-color);">Get PDF</h2>
+            <p style="color:#666; margin-bottom:24px;">Are you sure you want to proceed?<br><strong>₹50</strong> will be deducted from your wallet.</p>
+            <div class="confirm-buttons">
+                <button class="btn-confirm btn-no" onclick="closeVotingModal()">No</button>
+                <button class="btn-confirm btn-yes" style="background-color: var(--card-5-color);" onclick="confirmVotingDeduction()">Yes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Wallet Success Modal -->
+    <div class="modal-overlay" id="successModal">
+        <div class="success-modal">
+            <div class="check-icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+            <h2 style="margin-bottom:8px; color:#333;">Payment Successful!</h2>
+            <p style="color:#666; margin-bottom:24px;">₹<span id="addedAmountDisplay">0.00</span> has been added to your wallet.</p>
+            <button class="submit-btn" onclick="closeWalletModal()">Done</button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    
+
+    <!-- JavaScript Logic -->
+    <script>
+        // === GLOBAL NAVIGATION LOGIC ===
+        const homePage = document.getElementById('home-page');
+        const panMenuPage = document.getElementById('pan-menu-page'); 
+        const panPage = document.getElementById('pan-page');
+        const panHistoryPage = document.getElementById('pan-history-page'); 
+        const llPage = document.getElementById('ll-page');
+        const votingPage = document.getElementById('voting-page'); // NEW
+        const walletPage = document.getElementById('wallet-page');
+        const photoPage = document.getElementById('photo-page');
+        const profilePage = document.getElementById('profile-page');
+
+        let currentWalletBalance = 0;
+        let tempAadhar = ''; 
+
+        function hideAllPages() {
+            homePage.classList.add('hidden');
+            panMenuPage.classList.add('hidden'); 
+            panPage.classList.add('hidden');
+            panHistoryPage.classList.add('hidden');
+            llPage.classList.add('hidden');
+            votingPage.classList.add('hidden'); // NEW
+            walletPage.classList.add('hidden');
+            photoPage.classList.remove('active');
+            photoPage.classList.add('hidden');
+            profilePage.classList.add('hidden');
+        }
+
+        function showHome() {
+            hideAllPages();
+            homePage.classList.remove('hidden');
+            resetForms();
+        }
+
+        function resetForms() {
+            document.getElementById('pan-input-section').classList.remove('hidden');
+            document.getElementById('pan-result-section').classList.add('hidden');
+            document.getElementById('aadharInput').value = "";
+            tempAadhar = '';
+            
+            document.getElementById('ll-input-section').classList.remove('hidden');
+            document.getElementById('ll-result-section').classList.add('hidden');
+            document.getElementById('ll-history-section').classList.add('hidden');
+            document.getElementById('llAppNoInput').value = "";
+            document.getElementById('llDobInput').value = "";
+            document.getElementById('llPassInput').value = "";
+            
+            // Reset Voting Page Views
+            document.getElementById('voting-input-section').classList.remove('hidden');
+            document.getElementById('voting-history-section').classList.add('hidden');
+            document.getElementById('voteNoInput').value = "";
+            document.getElementById('voteStateInput').value = "";
+            
+            document.getElementById('amountInput').value = "";
+            document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+            document.getElementById('addFundsBtn').disabled = true;
+            document.getElementById('searchInput').value = "";
+            const cards = document.querySelectorAll('.card');
+            cards.forEach(card => card.style.display = 'block');
+        }
+
+        // =========================================
+        // === IMPROVED DATE & TIME LOGIC ===
+        // =========================================
+        function updateDateTime() {
+            const now = new Date();
+            const dateOptions = { day: '2-digit', month: '2-digit', year: 'numeric' };
+            const dateString = now.toLocaleDateString('en-GB', dateOptions).replace(/\//g, '-');
+            const timeString = now.toLocaleTimeString('en-US', { hour12: false });
+            document.getElementById('nav-date').innerText = dateString;
+            document.getElementById('nav-time').innerText = timeString;
+        }
+        setInterval(updateDateTime, 1000);
+        updateDateTime();
+
+        // =========================================
+        // === SEARCH BAR LOGIC (HOME) ===
+        // =========================================
+        const searchInput = document.getElementById('searchInput');
+        const cards = document.querySelectorAll('.card');
+
+        function filterCards(term) {
+            cards.forEach(card => {
+                const cardText = card.innerText.toLowerCase();
+                if (cardText.includes(term)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        searchInput.addEventListener('input', (e) => {
+            filterCards(e.target.value.toLowerCase());
+        });
+
+        // ============================================
+        // === PAN SUB-MENU FUNCTIONS ===
+        // ============================================
+        function showPanMenu() {
+            hideAllPages();
+            panMenuPage.classList.remove('hidden');
+        }
+
+        // ============================================
+        // === PAN FUNCTIONS & HISTORY LOGIC ===
+        // ============================================
+        function generateRandomPan() {
+            const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            const nums = "0123456789";
+            let pan = "";
+            for(let i=0; i<5; i++) pan += chars.charAt(Math.floor(Math.random() * chars.length));
+            for(let i=0; i<4; i++) pan += nums.charAt(Math.floor(Math.random() * nums.length));
+            pan += chars.charAt(Math.floor(Math.random() * chars.length));
+            return pan;
+        }
+
+        function showPanForm() {
+            hideAllPages();
+            panPage.classList.remove('hidden');
+            document.getElementById('pan-input-section').classList.remove('hidden');
+            document.getElementById('pan-result-section').classList.add('hidden');
+        }
+        
+        function submitPanForm() {
+            const aadhar = document.getElementById('aadharInput').value;
+            if (aadhar.length < 12) { alert("Please enter a valid 12-digit Aadhar number."); return; }
+            tempAadhar = aadhar;
+            document.getElementById('panConfirmModal').classList.add('active');
+        }
+
+        function closePanModal() {
+            document.getElementById('panConfirmModal').classList.remove('active');
+        }
+
+        function confirmPANDeduction() {
+            const fee = 20;
+            if (currentWalletBalance >= fee) {
+                currentWalletBalance -= fee;
+                updateWalletDisplay();
+                const generatedPan = generateRandomPan();
+                const dateString = new Date().toLocaleDateString();
+                const tableHtml = `<tr><td>${tempAadhar}</td><td>${generatedPan}</td><td>Find PAN Service</td><td>${dateString}</td><td style="color: green; font-weight: bold;">Paid</td></tr>`;
+                document.querySelector('#panTable tbody').innerHTML = tableHtml;
+                document.getElementById('pan-input-section').classList.add('hidden');
+                document.getElementById('pan-result-section').classList.remove('hidden');
+                closePanModal();
+                savePanRecord(tempAadhar, generatedPan, "Find PAN Service", "Paid");
+            } else {
+                closePanModal();
+                alert("Insufficient Funds! Redirecting to Add Funds...");
+                showWalletForm();
+            }
+        }
+
+        // --- PAN HISTORY FUNCTIONS ---
+        function savePanRecord(aadhar, pan, service, status) {
+            const history = JSON.parse(localStorage.getItem('panSearchHistory')) || [];
+            const newRecord = {
+                aadhar: aadhar, pan: pan, service: service, status: status,
+                timestamp: new Date().toISOString(), displayDate: new Date().toLocaleDateString(), isPanVisible: false 
+            };
+            history.push(newRecord);
+            localStorage.setItem('panSearchHistory', JSON.stringify(history));
+        }
+
+        function showPanHistory() {
+            hideAllPages();
+            panHistoryPage.classList.remove('hidden');
+            const history = JSON.parse(localStorage.getItem('panSearchHistory')) || [];
+            const tableBody = document.querySelector('#historyTable tbody');
+            const noDataMsg = document.getElementById('noHistoryMsg');
+            tableBody.innerHTML = "";
+            const fifteenDaysMs = 15 * 24 * 60 * 60 * 1000;
+            const now = Date.now();
+            const validHistory = history.filter(item => { return (now - new Date(item.timestamp).getTime()) < fifteenDaysMs; });
+            
+            if (validHistory.length !== history.length) localStorage.setItem('panSearchHistory', JSON.stringify(validHistory));
+
+            if (validHistory.length === 0) noDataMsg.classList.remove('hidden');
+            else {
+                noDataMsg.classList.add('hidden');
+                validHistory.reverse().forEach(item => {
+                    let panDisplayText = item.isPanVisible ? item.pan : "****** (Admin Pending)"; 
+                    const row = `<tr><td>${item.aadhar}</td><td class="${item.isPanVisible ? '' : 'hidden-pan'}">${panDisplayText}</td><td>${item.service}</td><td>${item.displayDate}</td><td style="color: green; font-weight: bold;">${item.status}</td></tr>`;
+                    tableBody.innerHTML += row;
+                });
+            }
+        }
+
+        function simulatePanAdminUpdate() {
+            const history = JSON.parse(localStorage.getItem('panSearchHistory')) || [];
+            if(history.length === 0) { alert("No history to update!"); return; }
+            const updatedHistory = history.map(item => { return { ...item, isPanVisible: true }; });
+            localStorage.setItem('panSearchHistory', JSON.stringify(updatedHistory));
+            showPanHistory(); 
+            alert("Admin simulated! PAN numbers are now visible.");
+        }
+
+
+        // === LL FUNCTIONS ===
+        function showLLForm() {
+            hideAllPages();
+            llPage.classList.remove('hidden');
+            document.getElementById('ll-input-section').classList.remove('hidden');
+            document.getElementById('ll-result-section').classList.add('hidden');
+            document.getElementById('ll-history-section').classList.add('hidden');
+        }
+
+        function saveLLRecord(appNo, dob, pass, service, status) {
+            const history = JSON.parse(localStorage.getItem('llSearchHistory')) || [];
+            history.push({ appNo, dob, pass, service, status, timestamp: new Date().toISOString(), displayDate: new Date().toLocaleDateString() });
+            localStorage.setItem('llSearchHistory', JSON.stringify(history));
+        }
+
+        function submitLLForm() {
+            const appNo = document.getElementById('llAppNoInput').value;
+            const dob = document.getElementById('llDobInput').value;
+            const pass = document.getElementById('llPassInput').value;
+            if(!appNo || !dob || !pass) { alert("Please fill all fields."); return; }
+            saveLLRecord(appNo, dob, pass, "LL Test Service", "Pending");
+            document.querySelector('#llTable tbody').innerHTML = `<tr><td>${appNo}</td><td>${dob}</td><td>${pass}</td><td>LL Test Service</td><td style="color: orange; font-weight: bold;">Pending</td></tr>`;
+            document.getElementById('ll-input-section').classList.add('hidden');
+            document.getElementById('ll-result-section').classList.remove('hidden');
+        }
+
+        function showLLHistory() {
+            hideAllPages();
+            llPage.classList.remove('hidden');
+            document.getElementById('ll-input-section').classList.add('hidden');
+            document.getElementById('ll-result-section').classList.add('hidden');
+            document.getElementById('ll-history-section').classList.remove('hidden');
+            const history = JSON.parse(localStorage.getItem('llSearchHistory')) || [];
+            const tableBody = document.querySelector('#llHistoryTable tbody');
+            const noDataMsg = document.getElementById('noLLHistoryMsg');
+            tableBody.innerHTML = "";
+            const fifteenDaysMs = 15 * 24 * 60 * 60 * 1000;
+            const now = Date.now();
+            const validHistory = history.filter(item => { return (now - new Date(item.timestamp).getTime()) < fifteenDaysMs; });
+            if (validHistory.length !== history.length) localStorage.setItem('llSearchHistory', JSON.stringify(validHistory));
+            if (validHistory.length === 0) noDataMsg.classList.remove('hidden');
+            else {
+                noDataMsg.classList.add('hidden');
+                validHistory.reverse().forEach(item => {
+                    const row = `<tr><td>${item.appNo}</td><td>${item.dob}</td><td>${item.pass}</td><td>${item.service}</td><td style="color: orange; font-weight: bold;">${item.status}</td></tr>`;
+                    tableBody.innerHTML += row;
+                });
+            }
+        }
+
+        // ============================================
+        // === NEW: VOTING CARD (CARD 5) FUNCTIONS ===
+        // ============================================
+
+        function showVotingForm() {
+            hideAllPages();
+            votingPage.classList.remove('hidden');
+            document.getElementById('voting-input-section').classList.remove('hidden');
+            document.getElementById('voting-history-section').classList.add('hidden');
+        }
+
+        function saveVotingRecord(voteNo, state, status) {
+            const history = JSON.parse(localStorage.getItem('votingHistory')) || [];
+            history.push({
+                voteNo: voteNo,
+                state: state,
+                status: status,
+                timestamp: new Date().toISOString(),
+                displayDate: new Date().toLocaleDateString(),
+                isPdfReady: false
+            });
+            localStorage.setItem('votingHistory', JSON.stringify(history));
+        }
+
+        function submitVotingForm() {
+            const voteNo = document.getElementById('voteNoInput').value;
+            const state = document.getElementById('voteStateInput').value;
+
+            if(!voteNo || !state) {
+                alert("Please enter both Voting Card No and State.");
+                return;
+            }
+
+            // Show Confirmation Modal
+            document.getElementById('votingConfirmModal').classList.add('active');
+        }
+
+        function closeVotingModal() {
+            document.getElementById('votingConfirmModal').classList.remove('active');
+        }
+
+        function confirmVotingDeduction() {
+            const fee = 50;
+            const voteNo = document.getElementById('voteNoInput').value;
+            const state = document.getElementById('voteStateInput').value;
+
+            if (currentWalletBalance >= fee) {
+                // Deduct Money
+                currentWalletBalance -= fee;
+                updateWalletDisplay();
+
+                // Save Record
+                saveVotingRecord(voteNo, state, "Paid");
+
+                // Redirect to History
+                closeVotingModal();
+                showVotingHistory();
+                alert("Request Submitted! ₹50 deducted. Check history for PDF status.");
+
+            } else {
+                closeVotingModal();
+                alert("Insufficient Funds! Redirecting to Add Funds...");
+                showWalletForm();
+            }
+        }
+
+        function showVotingHistory() {
+            hideAllPages();
+            votingPage.classList.remove('hidden');
+            document.getElementById('voting-input-section').classList.add('hidden');
+            document.getElementById('voting-history-section').classList.remove('hidden');
+
+            const history = JSON.parse(localStorage.getItem('votingHistory')) || [];
+            const tableBody = document.querySelector('#votingHistoryTable tbody');
+            const noDataMsg = document.getElementById('noVotingHistoryMsg');
+            
+            tableBody.innerHTML = "";
+
+            if (history.length === 0) {
+                noDataMsg.classList.remove('hidden');
+            } else {
+                noDataMsg.classList.add('hidden');
+                // Show newest first
+                history.slice().reverse().forEach(item => {
+                    let pdfStatusHtml;
+                    if (item.isPdfReady) {
+                        // Show Download Link
+                        pdfStatusHtml = `<a href="#" class="status-ready" onclick="alert('Downloading PDF for ${item.voteNo}...')">Download PDF</a>`;
+                    } else {
+                        // Show Pending
+                        pdfStatusHtml = `<span class="status-pending">Pending</span>`;
+                    }
+
+                    const row = `<tr>
+                        <td>${item.voteNo}</td>
+                        <td>${item.state}</td>
+                        <td>${item.displayDate}</td>
+                        <td>${pdfStatusHtml}</td>
+                    </tr>`;
+                    tableBody.innerHTML += row;
+                });
+            }
+        }
+
+        function simulateVotingAdminUpload() {
+            const history = JSON.parse(localStorage.getItem('votingHistory')) || [];
+            
+            if(history.length === 0) {
+                alert("No history to update!");
+                return;
+            }
+
+            // Update all records to simulate admin upload
+            const updatedHistory = history.map(item => {
+                return { ...item, isPdfReady: true }; 
+            });
+
+            localStorage.setItem('votingHistory', JSON.stringify(updatedHistory));
+            showVotingHistory(); // Refresh table
+            alert("Admin simulated! PDFs are now ready for download.");
+        }
+
+        // === WALLET FUNCTIONS ===
+        function showWalletForm() {
+            hideAllPages();
+            walletPage.classList.remove('hidden');
+            updateWalletDisplay();
+        }
+        function updateWalletDisplay() {
+            const formatted = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(currentWalletBalance);
+            document.getElementById('nav-balance').textContent = formatted.replace('₹', '').trim();
+            document.getElementById('wallet-balance-display').textContent = formatted;
+            document.getElementById('profile-balance-display').textContent = formatted;
+        }
+        function selectWalletMethod(element, method) {
+            document.querySelectorAll('.method-option').forEach(opt => opt.classList.remove('selected'));
+            element.classList.add('selected');
+        }
+        function processAddFunds() {
+            const amount = parseFloat(document.getElementById('amountInput').value);
+            const btn = document.getElementById('addFundsBtn');
+            const spinner = btn.querySelector('.spinner');
+            const btnText = btn.querySelector('.btn-text');
+            btn.disabled = true; btnText.textContent = 'Processing...'; spinner.style.display = 'block';
+            setTimeout(() => {
+                currentWalletBalance += amount; updateWalletDisplay();
+                btnText.textContent = 'Add Funds'; spinner.style.display = 'none';
+                document.getElementById('amountInput').value = ""; btn.disabled = true;
+                document.getElementById('addedAmountDisplay').textContent = amount.toLocaleString('en-IN');
+                document.getElementById('successModal').classList.add('active');
+            }, 1500);
+        }
+        function closeWalletModal() {
+            document.getElementById('successModal').classList.remove('active');
+            showHome();
+        }
+        const amountInput = document.getElementById('amountInput');
+        const quickSelectChips = document.querySelectorAll('.chip');
+        amountInput.addEventListener('input', function() {
+            const val = parseFloat(this.value);
+            if(this.value!=='') quickSelectChips.forEach(c => c.classList.remove('active'));
+            if(isNaN(val) || val <= 0) document.getElementById('addFundsBtn').disabled = true;
+            else document.getElementById('addFundsBtn').disabled = false;
+        });
+        quickSelectChips.forEach(chip => {
+            chip.addEventListener('click', function() {
+                const val = parseFloat(this.getAttribute('data-value'));
+                quickSelectChips.forEach(c => c.classList.remove('active')); this.classList.add('active');
+                amountInput.value = val; document.getElementById('addFundsBtn').disabled = false;
+            });
+        });
+
+        // === PROFILE FUNCTIONS ===
+        function showProfile() {
+            hideAllPages();
+            profilePage.classList.remove('hidden');
+            updateWalletDisplay();
+        }
+
+        // === PHOTO MAKER FUNCTIONS ===
+        function showPhotoForm() {
+            hideAllPages();
+            photoPage.classList.remove('hidden');
+            photoPage.classList.add('active');
+            renderSheet(); 
+        }
+
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('photoUpload');
+        const uploadPreview = document.getElementById('upload-preview');
+        const uploadIcon = document.getElementById('upload-icon');
+        const uploadText = document.getElementById('upload-text');
+        const brightnessInput = document.getElementById('brightness');
+        const contrastInput = document.getElementById('contrast');
+        const grayscaleInput = document.getElementById('grayscale');
+        const borderColorInput = document.getElementById('borderColor');
+        const photoCountInput = document.getElementById('photoCount');
+        const zoomInput = document.getElementById('zoomLevel');
+        const scrollUpBtn = document.getElementById('scrollUpBtn');
+        const scrollDownBtn = document.getElementById('scrollDownBtn');
+        const mainArea = document.getElementById('mainArea');
+        const a4Sheet = document.getElementById('a4-sheet');
+        const canvas = document.getElementById('previewCanvas');
+        const ctx = canvas.getContext('2d');
+        let sourceImage = new Image();
+        let isImageLoaded = false;
+        const A4_WIDTH = 794 * 2; 
+        const A4_HEIGHT = 1123 * 2;
+
+        function initCanvas() {
+            canvas.width = A4_WIDTH;
+            canvas.height = A4_HEIGHT;
+            drawPlaceholder();
+        }
+        function drawPlaceholder() {
+            ctx.fillStyle = "#fff"; ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "#ccc"; ctx.font = "bold 40px Arial"; ctx.textAlign = "center";
+            ctx.fillText("Please upload a photo to start", canvas.width / 2, canvas.height / 2);
+        }
+
+        dropZone.addEventListener('click', () => fileInput.click());
+        fileInput.addEventListener('change', handleFileSelect);
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => { dropZone.addEventListener(eventName, preventDefaults, false); });
+        function preventDefaults(e) { e.preventDefault(); e.stopPropagation(); }
+        ['dragenter', 'dragover'].forEach(eventName => { dropZone.addEventListener(eventName, highlight, false); });
+        ['dragleave', 'drop'].forEach(eventName => { dropZone.addEventListener(eventName, unhighlight, false); });
+        function highlight() { dropZone.classList.add('dragover'); }
+        function unhighlight() { dropZone.classList.remove('dragover'); }
+        dropZone.addEventListener('drop', handleDrop, false);
+        function handleDrop(e) { const dt = e.dataTransfer; const files = dt.files; if (files.length > 0) handleFiles(files); }
+        function handleFileSelect(e) { const files = e.target.files; if (files.length > 0) handleFiles(files); }
+        function handleFiles(files) {
+            const file = files[0];
+            if (!file.type.startsWith('image/')) { alert("Please upload an image file (JPG, PNG)."); return; }
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onloadend = function() {
+                uploadPreview.src = reader.result;
+                uploadPreview.style.display = 'block';
+                uploadIcon.style.display = 'none';
+                uploadText.textContent = "Change Photo";
+                sourceImage = new Image();
+                sourceImage.onload = function() { isImageLoaded = true; renderSheet(); }
+                sourceImage.src = reader.result;
+            }
+        }
+
+        [brightnessInput, contrastInput, grayscaleInput, borderColorInput, photoCountInput].forEach(control => {
+            control.addEventListener('input', () => {
+                document.getElementById('val-brightness').textContent = brightnessInput.value + "%";
+                document.getElementById('val-contrast').textContent = contrastInput.value + "%";
+                if (isImageLoaded) renderSheet();
+            });
+        });
+
+        zoomInput.addEventListener('input', (e) => {
+            const scale = e.target.value;
+            a4Sheet.style.transform = `scale(${scale})`;
+            a4Sheet.style.marginBottom = `${50 * scale}px`;
+        });
+
+        scrollUpBtn.addEventListener('click', () => mainArea.scrollBy({ top: -300, behavior: 'smooth' }));
+        scrollDownBtn.addEventListener('click', () => mainArea.scrollBy({ top: 300, behavior: 'smooth' }));
+
+        function renderSheet() {
+            if (!isImageLoaded) return;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, canvas.width, canvas.height);
+            const totalPhotos = parseInt(photoCountInput.value);
+            const brightness = brightnessInput.value;
+            const contrast = contrastInput.value;
+            const grayscale = grayscaleInput.checked ?1 : 0;
+            const borderColor = borderColorInput.value;
+            const COLS = 6;
+            const ROWS = totalPhotos / COLS;
+            const MARGIN = 40; 
+            const availableWidth = canvas.width - (MARGIN * 2);
+            const availableHeight = canvas.height - (MARGIN * 2);
+            const cellWidth = availableWidth / COLS;
+            const cellHeight = cellWidth * 1.3; 
+
+            for (let i = 0; i < totalPhotos; i++) {
+                const colIndex = i % COLS;
+                const rowIndex = Math.floor(i / COLS);
+                const x = MARGIN + (colIndex * cellWidth);
+                const y = MARGIN + (rowIndex * cellHeight);
+
+                ctx.save();
+                ctx.beginPath();
+                ctx.rect(x, y, cellWidth, cellHeight);
+                ctx.clip();
+
+                const filterString = `brightness(${brightness}%) contrast(${contrast}%) grayscale(${grayscale}%)`;
+                ctx.filter = filterString;
+
+                const imgRatio = sourceImage.width / sourceImage.height;
+                const cellRatio = cellWidth / cellHeight;
+                let drawW, drawH, drawX, drawY;
+
+                if (imgRatio > cellRatio) {
+                    drawH = cellHeight;
+                    drawW = cellHeight * imgRatio;
+                    drawX = x - (drawW - cellWidth) / 2;
+                    drawY = y;
+                } else {
+                    drawW = cellWidth;
+                    drawH = cellWidth / imgRatio;
+                    drawX = x;
+                    drawY = y - (drawH - cellHeight) / 2;
+                }
+
+                ctx.drawImage(sourceImage, drawX, drawY, drawW, drawH);
+                ctx.filter = 'none';
+                
+                ctx.lineWidth = 10;
+                ctx.strokeStyle = borderColor;
+                ctx.strokeRect(x, y, cellWidth, cellHeight);
+                ctx.restore();
+            }
+        }
+
+        function printSheet() {
+            if (!isImageLoaded) { alert("Please upload a photo first!"); return; }
+            window.print();
+        }
+
+        initCanvas();
+
+    </script>
+</body>
+</html>
