@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Print Portal - Admin (Password Update)</title>
+    <title>Print Portal - Admin (Complete System)</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         /* --- LIGHT THEME VARIABLES --- */
@@ -18,6 +18,7 @@
             --success: #10b981;
             --warning: #f59e0b;
             --danger: #ef4444;
+            --voting: #8b5cf6;
             --radius: 12px;
             --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 10px 15px -3px rgba(0, 0, 0, 0.1);
         }
@@ -56,6 +57,8 @@
         .btn-warning:hover { background: #d97706; }
         .btn-info { background: #3b82f6; color: white; }
         .btn-info:hover { background: #2563eb; }
+        .btn-voting { background: var(--voting); color: white; }
+        .btn-voting:hover { background: #7c3aed; }
         .btn-sm { padding: 6px 12px; font-size: 0.8rem; }
         .btn-outline { background: white; border: 1px solid var(--border); color: var(--text-main); }
         .btn-outline:hover { border-color: var(--primary); color: var(--primary); background: #f8fafc; }
@@ -80,6 +83,36 @@
         /* --- MAIN --- */
         main { flex: 1; padding: 2.5rem; max-width: 1400px; margin: 0 auto; width: 100%; }
 
+        /* --- TAB NAVIGATION --- */
+        .tab-nav {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            background: white;
+            padding: 10px;
+            border-radius: 50px;
+            border: 1px solid var(--border);
+            width: fit-content;
+        }
+        .tab-btn {
+            padding: 12px 30px;
+            border: none;
+            background: transparent;
+            border-radius: 40px;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--text-muted);
+            transition: all 0.3s ease;
+        }
+        .tab-btn.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 10px rgba(79, 70, 229, 0.3);
+        }
+        .tab-btn[data-tab="voting"].active { background: var(--voting); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
         /* --- NOTICE BOARD --- */
         .notice-board { margin-bottom: 30px; display: flex; flex-direction: column; gap: 15px; }
         .notice-header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
@@ -90,12 +123,13 @@
         @keyframes slideIn { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
 
         /* --- STATS CARDS --- */
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; margin-bottom: 40px; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 25px; margin-bottom: 40px; }
         .stat-card { position: relative; padding: 2rem; border-radius: 16px; color: white; overflow: hidden; cursor: pointer; transition: transform 0.3s ease, box-shadow 0.3s ease; border: 1px solid rgba(0,0,0,0.05); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
         .stat-card:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.15); }
         .stat-card.user { background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); }
         .stat-card.pan { background: linear-gradient(135deg, #ea580c 0%, #db2777 100%); }
         .stat-card.ll { background: linear-gradient(135deg, #059669 0%, #0d9488 100%); }
+        .stat-card.voting { background: linear-gradient(135deg, #8b5cf6 0%, #c084fc 100%); }
         .stat-content h3 { font-size: 3rem; font-weight: 700; margin-bottom: 5px; line-height: 1; }
         .stat-content p { font-size: 1rem; opacity: 0.95; font-weight: 500; text-transform: uppercase; }
         .stat-icon { position: absolute; right: 20px; bottom: 20px; font-size: 2.5rem; opacity: 0.2; }
@@ -120,15 +154,31 @@
         .badge-active { background: rgba(16, 185, 129, 0.1); color: #059669; border: 1px solid rgba(16, 185, 129, 0.2); }
         .badge-pending { background: rgba(245, 158, 11, 0.1); color: #d97706; border: 1px solid rgba(245, 158, 11, 0.2); }
         .badge-completed { background: rgba(59, 130, 246, 0.1); color: #2563eb; border: 1px solid rgba(59, 130, 246, 0.2); }
+        .badge-processing { background: rgba(139, 92, 246, 0.1); color: #8b5cf6; border: 1px solid rgba(139, 92, 246, 0.2); }
+        .badge-rejected { background: rgba(239, 68, 68, 0.1); color: #dc2626; border: 1px solid rgba(239, 68, 68, 0.2); }
         .badge-type { padding: 3px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; letter-spacing: 0.5px; margin-right: 5px; }
         .badge-ll { background: rgba(5, 150, 105, 0.1); color: #059669; }
         .badge-pan { background: rgba(234, 88, 12, 0.1); color: #c2410c; }
+        .badge-voting { background: rgba(139, 92, 246, 0.1); color: #8b5cf6; }
 
         /* Test score styles */
         .test-score { font-weight: 600; padding: 4px 8px; border-radius: 20px; display: inline-block; }
         .score-high { color: #059669; }
         .score-medium { color: #d97706; }
         .score-low { color: #dc2626; }
+
+        /* PDF Link */
+        .pdf-link {
+            color: var(--voting);
+            text-decoration: none;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .pdf-link:hover {
+            text-decoration: underline;
+        }
 
         /* --- MODALS --- */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(4px); display: none; justify-content: center; align-items: center; z-index: 1000; animation: fadeIn 0.2s ease; }
@@ -141,6 +191,25 @@
         /* Grid layout for modal */
         .modal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
 
+        /* File upload */
+        .file-upload-area {
+            border: 2px dashed var(--border);
+            padding: 30px;
+            text-align: center;
+            border-radius: 8px;
+            margin: 20px 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .file-upload-area:hover {
+            border-color: var(--voting);
+            background: rgba(139, 92, 246, 0.05);
+        }
+        .file-upload-area.dragover {
+            border-color: var(--voting);
+            background: rgba(139, 92, 246, 0.1);
+        }
+
         /* --- TOAST --- */
         #toast-container { position: fixed; bottom: 30px; right: 30px; z-index: 2000; }
         .toast { background: white; color: #334155; padding: 15px 25px; border-radius: 10px; margin-top: 10px; border-left: 5px solid var(--primary); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); display: flex; align-items: center; gap: 10px; opacity: 0; transform: translateY(20px); transition: all 0.3s ease; border: 1px solid var(--border); }
@@ -148,6 +217,28 @@
 
         @keyframes popIn { to { transform: scale(1); } }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* Filter chips */
+        .filter-chips {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 15px 0;
+        }
+        .chip {
+            padding: 6px 15px;
+            border-radius: 30px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s ease;
+        }
+        .chip:hover, .chip.active {
+            background: var(--voting);
+            color: white;
+            border-color: var(--voting);
+        }
     </style>
 </head>
 <body>
@@ -158,7 +249,7 @@
             <div style="text-align: center; margin-bottom: 2rem;">
                 <svg width="50" height="50" viewBox="0 0 24 24" fill="var(--primary)"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 9h-2V7h2v5zm0 4h-2v-2h2v2z"/></svg>
                 <h2 style="color: var(--text-main); margin-top: 10px;">Admin Portal</h2>
-                <p style="color: var(--text-muted); font-size: 0.9rem;">Secure Access</p>
+                <p style="color: var(--text-muted); font-size: 0.9rem;">Complete Management System</p>
             </div>
             <form onsubmit="handleLogin(event)">
                 <div class="input-group">
@@ -207,47 +298,121 @@
                 </div>
             </div>
 
-            <!-- STATS -->
-            <div class="stats-grid">
-                <div class="stat-card user" onclick="filterData('all', 'All')">
-                    <div class="stat-content"><h3 id="stat-total">0</h3><p>Total Users</p></div>
-                    <div class="stat-icon">👥</div>
+            <!-- TAB NAVIGATION -->
+            <div class="tab-nav">
+                <button class="tab-btn active" data-tab="main" onclick="switchTab('main')">📊 Main Applications</button>
+                <button class="tab-btn" data-tab="voting" onclick="switchTab('voting')">🗳️ Voting Cards</button>
+            </div>
+
+            <!-- MAIN APPLICATIONS TAB -->
+            <div id="main-tab" class="tab-content active">
+                <!-- STATS -->
+                <div class="stats-grid">
+                    <div class="stat-card user" onclick="filterData('all', 'All')">
+                        <div class="stat-content"><h3 id="stat-total">0</h3><p>Total Users</p></div>
+                        <div class="stat-icon">👥</div>
+                    </div>
+                    <div class="stat-card pan" onclick="filterData('pan', 'PAN')">
+                        <div class="stat-content"><h3 id="stat-pan">0</h3><p>Pan Card</p></div>
+                        <div class="stat-icon">💳</div>
+                    </div>
+                    <div class="stat-card ll" onclick="filterData('ll', 'LL')">
+                        <div class="stat-content"><h3 id="stat-ll">0</h3><p>LL Test</p></div>
+                        <div class="stat-icon">🚗</div>
+                    </div>
                 </div>
-                <div class="stat-card pan" onclick="filterData('pan', 'PAN')">
-                    <div class="stat-content"><h3 id="stat-pan">0</h3><p>Pan Card</p></div>
-                    <div class="stat-icon">💳</div>
-                </div>
-                <div class="stat-card ll" onclick="filterData('ll', 'LL')">
-                    <div class="stat-content"><h3 id="stat-ll">0</h3><p>LL Test</p></div>
-                    <div class="stat-icon">🚗</div>
+
+                <!-- TABLE -->
+                <div class="panel">
+                    <div class="panel-header">
+                        <div>
+                            <h2 id="table-title" style="color: var(--text-main); font-weight: 600;">All Applications</h2>
+                            <p id="table-subtitle" style="color: var(--text-muted); font-size: 0.9rem;">Manage your database</p>
+                        </div>
+                        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                            <div class="search-box">
+                                <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+                                <input type="text" id="search-input" placeholder="Search name or ID..." onkeyup="renderTable()">
+                            </div>
+                            <button class="btn btn-outline" onclick="resetFilter()">Reset</button>
+                        </div>
+                    </div>
+
+                    <div style="overflow-x: auto;">
+                        <table id="main-table">
+                            <thead id="table-head">
+                                <!-- Dynamic Headers -->
+                            </thead>
+                            <tbody id="table-body">
+                                <!-- Dynamic Rows -->
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 
-            <!-- TABLE -->
-            <div class="panel">
-                <div class="panel-header">
-                    <div>
-                        <h2 id="table-title" style="color: var(--text-main); font-weight: 600;">All Applications</h2>
-                        <p id="table-subtitle" style="color: var(--text-muted); font-size: 0.9rem;">Manage your database</p>
+            <!-- VOTING CARDS TAB -->
+            <div id="voting-tab" class="tab-content">
+                <!-- Voting Stats -->
+                <div class="stats-grid">
+                    <div class="stat-card voting" onclick="filterVotingData('all', 'All Voting')">
+                        <div class="stat-content"><h3 id="voting-total">0</h3><p>Total Voting Apps</p></div>
+                        <div class="stat-icon">🗳️</div>
                     </div>
-                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                        <div class="search-box">
-                            <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-                            <input type="text" id="search-input" placeholder="Search name or ID..." onkeyup="renderTable()">
-                        </div>
-                        <button class="btn btn-outline" onclick="resetFilter()">Reset</button>
+                    <div class="stat-card voting" onclick="filterVotingData('pending', 'Pending')" style="background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);">
+                        <div class="stat-content"><h3 id="voting-pending">0</h3><p>Pending PDF</p></div>
+                        <div class="stat-icon">⏳</div>
+                    </div>
+                    <div class="stat-card voting" onclick="filterVotingData('completed', 'Completed')" style="background: linear-gradient(135deg, #10b981 0%, #34d399 100%);">
+                        <div class="stat-content"><h3 id="voting-completed">0</h3><p>PDF Ready</p></div>
+                        <div class="stat-icon">✅</div>
                     </div>
                 </div>
 
-                <div style="overflow-x: auto;">
-                    <table id="main-table">
-                        <thead id="table-head">
-                            <!-- Dynamic Headers -->
-                        </thead>
-                        <tbody id="table-body">
-                            <!-- Dynamic Rows -->
-                        </tbody>
-                    </table>
+                <!-- Voting Table -->
+                <div class="panel">
+                    <div class="panel-header">
+                        <div>
+                            <h2 style="color: var(--voting); font-weight: 600;">Voting Card Applications</h2>
+                            <p style="color: var(--text-muted); font-size: 0.9rem;">Manage voting card PDF uploads</p>
+                        </div>
+                        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                            <div class="search-box">
+                                <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+                                <input type="text" id="voting-search" placeholder="Search voting number or state..." onkeyup="renderVotingTable()">
+                            </div>
+                            <button class="btn btn-outline" onclick="resetVotingFilter()">Reset</button>
+                        </div>
+                    </div>
+
+                    <!-- Filter Chips -->
+                    <div class="filter-chips">
+                        <span class="chip active" onclick="filterVotingByStatus('all')">All</span>
+                        <span class="chip" onclick="filterVotingByStatus('pending')">Pending</span>
+                        <span class="chip" onclick="filterVotingByStatus('processing')">Processing</span>
+                        <span class="chip" onclick="filterVotingByStatus('completed')">Completed</span>
+                        <span class="chip" onclick="filterVotingByStatus('rejected')">Rejected</span>
+                    </div>
+
+                    <div style="overflow-x: auto;">
+                        <table id="voting-table">
+                            <thead>
+                                <tr>
+                                    <th>App ID</th>
+                                    <th>Date</th>
+                                    <th>Voting No</th>
+                                    <th>State</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                    <th>PDF</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="voting-table-body">
+                                <!-- Dynamic Rows -->
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </main>
@@ -388,49 +553,111 @@
     </div>
 
     <!-- LL TEST RESULT MODAL -->
-    <div id="ll-test-modal" class="modal-overlay">
-        <div class="modal-box">
-            <div class="modal-header">
-                <h3>📝 LL Test Result</h3>
-                <button class="close-btn" onclick="closeLLTestModal()">&times;</button>
+    <!-- Add this to your admin.html - LL Test Results Modal -->
+<div id="ll-test-modal" class="modal-overlay">
+    <div class="modal-box">
+        <div class="modal-header">
+            <h3>📝 Update LL Test Result</h3>
+            <button class="close-btn" onclick="closeLLTestModal()">&times;</button>
+        </div>
+        <form onsubmit="saveLLTestResult(event)">
+            <input type="hidden" id="ll-test-id">
+            
+            <div style="margin-bottom: 20px; background: #f1f5f9; padding: 15px; border-radius: 8px;">
+                <p style="font-size: 0.85rem; color: var(--text-muted);">Application Details:</p>
+                <p><strong>App No:</strong> <span id="ll-test-appno"></span></p>
+                <p><strong>Name:</strong> <span id="ll-test-name"></span></p>
+                <p><strong>Aadhar:</strong> <span id="ll-test-aadhar"></span></p>
+                <p><strong>Password:</strong> <span id="ll-test-password" style="font-family: monospace; background: #e2e8f0; padding: 2px 8px; border-radius: 4px;"></span></p>
             </div>
-            <form onsubmit="saveLLTestResult(event)">
-                <input type="hidden" id="ll-test-id">
-                
-                <div class="modal-grid">
-                    <div class="input-group">
-                        <label>Application Number</label>
-                        <input type="text" id="ll-test-appno" class="form-control" readonly>
-                    </div>
 
-                    <div class="input-group">
-                        <label>Applicant Name</label>
-                        <input type="text" id="ll-test-name" class="form-control" readonly>
-                    </div>
-
-                    <div class="input-group">
-                        <label>Test Score (0-100)</label>
-                        <input type="number" id="ll-test-score" class="form-control" min="0" max="100" value="0">
-                    </div>
-
-                    <div class="input-group">
-                        <label>Test Status</label>
-                        <select id="ll-test-status" class="form-control">
-                            <option value="pending">Pending</option>
-                            <option value="passed">Passed</option>
-                            <option value="failed">Failed</option>
-                        </select>
-                    </div>
+            <div class="modal-grid">
+                <div class="input-group">
+                    <label>Test Score (0-100)</label>
+                    <input type="number" id="ll-test-score" class="form-control" min="0" max="100" value="0">
                 </div>
 
                 <div class="input-group">
-                    <label>Examiner Remarks</label>
-                    <textarea id="ll-test-remarks" class="form-control" rows="3" placeholder="Enter examiner remarks..."></textarea>
+                    <label>Test Status</label>
+                    <select id="ll-test-status" class="form-control">
+                        <option value="pending">⏳ Pending</option>
+                        <option value="passed">✅ Passed</option>
+                        <option value="failed">❌ Failed</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>Examiner Remarks</label>
+                <textarea id="ll-test-remarks" class="form-control" rows="3" placeholder="Enter examiner remarks..."></textarea>
+            </div>
+
+            <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+                <button type="button" class="btn btn-outline" onclick="closeLLTestModal()">Cancel</button>
+                <button type="submit" class="btn btn-primary">Save Result</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Add this to your LL table in admin.html - Update the Actions column -->
+<!-- In the LL table section, update the actions column to include password view and test result update -->
+<td style="text-align: right;">
+    <div style="display: flex; gap: 5px; justify-content: flex-end; flex-wrap: wrap;">
+        <button class="btn btn-info btn-sm" onclick="viewLLPassword('${app.id}')" title="View Password">🔑</button>
+        <button class="btn btn-primary btn-sm" onclick="openLLTestModal('${app.id}')" title="Update Test Result">📝 Update Result</button>
+        <button class="btn btn-outline btn-sm" onclick="openEditModal('${app.id}')" title="Edit Details">✏️</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteUser('${app.id}')" title="Delete">🗑️</button>
+    </div>
+</td>
+    <!-- ll  -->
+     
+
+    <!-- VOTING PDF UPLOAD MODAL -->
+    <div id="voting-pdf-modal" class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3>📄 Upload Voting Card PDF</h3>
+                <button class="close-btn" onclick="closeVotingPDFModal()">&times;</button>
+            </div>
+            <form onsubmit="uploadVotingPDF(event)">
+                <input type="hidden" id="voting-app-id">
+                <input type="hidden" id="voting-app-ref">
+                
+                <div style="margin-bottom: 20px; background: #f1f5f9; padding: 15px; border-radius: 8px;">
+                    <p style="font-size: 0.85rem; color: var(--text-muted);">Application Details:</p>
+                    <p><strong>Voting No:</strong> <span id="voting-detail-number"></span></p>
+                    <p><strong>State:</strong> <span id="voting-detail-state"></span></p>
+                    <p><strong>Amount:</strong> ₹<span id="voting-detail-amount">50</span></p>
+                </div>
+
+                <!-- File Upload Area -->
+                <div class="file-upload-area" id="file-upload-area" onclick="document.getElementById('pdf-file').click()" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="var(--voting)">
+                        <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/>
+                    </svg>
+                    <p style="margin: 10px 0; color: var(--text-main);">Drag & drop PDF here or click to browse</p>
+                    <p style="font-size: 0.8rem; color: var(--text-muted);">Max file size: 5MB</p>
+                    <input type="file" id="pdf-file" accept=".pdf" style="display: none;" onchange="handleFileSelect(event)">
+                    
+                </div>
+                <!-- Selected File Info -->
+                <div id="selected-file-info" style="display: none; margin: 10px 0; padding: 10px; background: #e8f5e9; border-radius: 8px;">
+                    <p><strong>Selected:</strong> <span id="selected-file-name"></span></p>
+                    <p><strong>Size:</strong> <span id="selected-file-size"></span></p>
+                </div>
+
+                <div class="input-group">
+                    <label>Status after upload</label>
+                    <select id="voting-pdf-status">
+                        <option value="completed">Completed (PDF Ready)</option>
+                        <option value="processing">Processing</option>
+                    </select>
                 </div>
 
                 <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
-                    <button type="button" class="btn btn-outline" onclick="closeLLTestModal()">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Save Result</button>
+                    <button type="button" class="btn btn-outline" onclick="closeVotingPDFModal()">Cancel</button>
+                    <button type="submit" class="btn btn-voting" id="upload-pdf-btn">Upload PDF</button>
                 </div>
             </form>
         </div>
@@ -439,17 +666,25 @@
     <div id="toast-container"></div>
 
     <script>
-        // --- ANNOUNCEMENT DATA ---
+        // --- DATA STORES ---
         let announcements = [
             { id: 1, date: '2023-10-25', title: 'Server Maintenance', message: 'The server will be down for maintenance on Sunday from 2 AM to 4 AM.' },
         ];
 
-        // This will be populated from the backend
+        // Applications data
         let applications = [];
+        
+        // Voting applications data
+        let votingApplications = [];
+        
+        // Current filters
         let currentFilter = 'all';
+        let currentVotingFilter = 'all';
+        let currentVotingStatus = 'all';
 
         // --- API BASE URL ---
-        const API_BASE_URL = 'http://localhost:5000/api';
+        const API_BASE_URL = 'http://localhost:5001/api';
+        const ADMIN_KEY = 'admin123'; // In production, use environment variable
 
         // --- AUTH ---
         function handleLogin(e) {
@@ -479,9 +714,30 @@
             showToast("Logged out");
         }
 
+        // --- TAB SWITCHING ---
+        function switchTab(tabName) {
+            // Update tab buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`.tab-btn[data-tab="${tabName}"]`).classList.add('active');
+            
+            // Update tab content
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(`${tabName}-tab`).classList.add('active');
+            
+            // Load data if needed
+            if (tabName === 'voting') {
+                fetchVotingApplications();
+            }
+        }
+
         // --- INIT ---
         async function initDashboard() {
             await fetchApplications();
+            await fetchVotingApplications();
             updateStats();
             renderTable();
             renderNotices();
@@ -504,113 +760,39 @@
             }
         }
 
-        // --- PASSWORD UPDATE MODAL LOGIC ---
-        function openPasswordModal(id) {
-            const app = applications.find(a => a.id === id);
-            if(!app) return;
-
-            document.getElementById('pass-user-id').value = app.id;
-            document.getElementById('pass-user-name').innerText = `${app.name} (ID: ${app.id})`;
-            document.getElementById('new-password-input').value = app.password;
-            document.getElementById('password-modal').style.display = 'flex';
-        }
-
-        function closePasswordModal() {
-            document.getElementById('password-modal').style.display = 'none';
-        }
-
-        async function savePasswordUpdate(e) {
-            e.preventDefault();
-            const id = parseInt(document.getElementById('pass-user-id').value);
-            const newPass = document.getElementById('new-password-input').value;
-            const app = applications.find(a => a.id === id);
-
-            if(app) {
-                try {
-                    const response = await fetch(`${API_BASE_URL}/applications/${id}`, {
-                        method: 'PUT',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({ password: newPass })
-                    });
-
-                    if (response.ok) {
-                        app.password = newPass;
-                        showToast("Password Updated Successfully! 🔑");
-                        closePasswordModal();
-                        renderTable();
-                    } else {
-                        const error = await response.json();
-                        showToast(`Failed to update password: ${error.error || 'Unknown error'}`);
-                    }
-                } catch (error) {
-                    console.error('Error updating password:', error);
-                    showToast("Network error. Please try again.");
+        // --- FETCH VOTING APPLICATIONS ---
+        async function fetchVotingApplications() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/admin/voting-applications?limit=100`);
+                if (response.ok) {
+                    const data = await response.json();
+                    votingApplications = data.applications || [];
+                    updateVotingStats();
+                    renderVotingTable();
+                } else {
+                    console.error('Failed to fetch voting applications');
+                    votingApplications = [];
                 }
+            } catch (error) {
+                console.error('Error fetching voting applications:', error);
+                votingApplications = [];
             }
         }
 
-        // --- NOTICE BOARD LOGIC ---
-        function renderNotices() {
-            const container = document.getElementById('notice-list');
-            container.innerHTML = '';
-            if(announcements.length === 0) {
-                container.innerHTML = '<p style="color:#94a3b8; font-style:italic;">No active announcements.</p>';
-                return;
-            }
-            announcements.forEach(notice => {
-                const div = document.createElement('div');
-                div.className = 'notice-item';
-                div.innerHTML = `
-                    <div class="notice-content">
-                        <span class="notice-date">${notice.date}</span>
-                        <h4>${notice.title}</h4>
-                        <p>${notice.message}</p>
-                    </div>
-                    <button class="btn btn-danger btn-sm" onclick="deleteNotice(${notice.id})">Delete</button>
-                `;
-                container.appendChild(div);
-            });
-        }
-
-        function openNoticeModal() {
-            document.getElementById('notice-modal').style.display = 'flex';
-        }
-
-        function closeNoticeModal() {
-            document.getElementById('notice-modal').style.display = 'none';
-            document.getElementById('notice-title').value = '';
-            document.getElementById('notice-message').value = '';
-        }
-
-        function saveAnnouncement(e) {
-            e.preventDefault();
-            const title = document.getElementById('notice-title').value;
-            const message = document.getElementById('notice-message').value;
-            const date = new Date().toISOString().split('T')[0];
-            const newNotice = { id: Date.now(), date: date, title: title, message: message };
-            announcements.unshift(newNotice);
-            renderNotices();
-            closeNoticeModal();
-            showToast("Announcement Posted! 📢");
-        }
-
-        function deleteNotice(id) {
-            if(confirm("Delete this announcement?")) {
-                announcements = announcements.filter(n => n.id !== id);
-                renderNotices();
-                showToast("Announcement Removed");
-            }
-        }
-
-        // --- DASHBOARD LOGIC ---
+        // --- UPDATE STATS ---
         function updateStats() {
             document.getElementById('stat-total').innerText = applications.length;
             document.getElementById('stat-pan').innerText = applications.filter(a => a.type === 'pan').length;
             document.getElementById('stat-ll').innerText = applications.filter(a => a.type === 'll').length;
         }
 
+        function updateVotingStats() {
+            document.getElementById('voting-total').innerText = votingApplications.length;
+            document.getElementById('voting-pending').innerText = votingApplications.filter(v => v.status === 'pending').length;
+            document.getElementById('voting-completed').innerText = votingApplications.filter(v => v.status === 'completed').length;
+        }
+
+        // --- FILTER FUNCTIONS ---
         function filterData(type, title) {
             currentFilter = type;
             document.getElementById('table-title').innerText = title + " Applications";
@@ -624,7 +806,37 @@
             renderTable();
         }
 
-        // --- RENDER TABLE FUNCTION (ENHANCED) ---
+        function filterVotingData(type, title) {
+            currentVotingFilter = type;
+            renderVotingTable();
+        }
+
+        function filterVotingByStatus(status) {
+            currentVotingStatus = status;
+            
+            // Update chip UI
+            document.querySelectorAll('.chip').forEach(chip => {
+                chip.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            renderVotingTable();
+        }
+
+        function resetVotingFilter() {
+            currentVotingStatus = 'all';
+            document.getElementById('voting-search').value = '';
+            
+            // Reset chips
+            document.querySelectorAll('.chip').forEach((chip, index) => {
+                chip.classList.remove('active');
+                if (index === 0) chip.classList.add('active');
+            });
+            
+            renderVotingTable();
+        }
+
+        // --- RENDER MAIN TABLE ---
         function renderTable() {
             const thead = document.getElementById('table-head');
             const tbody = document.getElementById('table-body');
@@ -752,6 +964,356 @@
             });
         }
 
+        // --- RENDER VOTING TABLE ---
+        function renderVotingTable() {
+            const tbody = document.getElementById('voting-table-body');
+            const search = document.getElementById('voting-search').value.toLowerCase();
+            
+            tbody.innerHTML = '';
+
+            // Filter data
+            let filtered = [...votingApplications];
+            
+            // Apply status filter
+            if (currentVotingStatus !== 'all') {
+                filtered = filtered.filter(v => v.status === currentVotingStatus);
+            }
+            
+            // Apply search
+            if (search) {
+                filtered = filtered.filter(v => 
+                    (v.votingCardNo && v.votingCardNo.toLowerCase().includes(search)) ||
+                    (v.state && v.state.toLowerCase().includes(search)) ||
+                    (v.id && v.id.toLowerCase().includes(search))
+                );
+            }
+
+            if(filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:30px; color:var(--text-muted);">No voting applications found</td></tr>`;
+                return;
+            }
+
+            // Render rows
+            filtered.forEach(app => {
+                let statusClass = 'badge-pending';
+                if (app.status === 'completed') statusClass = 'badge-completed';
+                else if (app.status === 'processing') statusClass = 'badge-processing';
+                else if (app.status === 'rejected') statusClass = 'badge-rejected';
+
+                let pdfDisplay = app.canDownload ? 
+                    `<a href="#" class="pdf-link" onclick="viewPDF('${app.id}')">📄 View PDF</a>` : 
+                    '<span style="color: #94a3b8;">Not uploaded</span>';
+
+                let rowHTML = `<tr>
+                    <td style="font-family:monospace;">${app.id}</td>
+                    <td>${app.date || '-'}</td>
+                    <td><strong>${app.votingCardNo || '-'}</strong></td>
+                    <td>${app.state || '-'}</td>
+                    <td>₹${app.amount || 50}</td>
+                    <td><span class="badge ${statusClass}">${app.status}</span></td>
+                    <td>${pdfDisplay}</td>
+                    <td style="text-align: right;">
+                        <div style="display: flex; gap: 5px; justify-content: flex-end; flex-wrap: wrap;">
+                            <button class="btn btn-voting btn-sm" onclick="openVotingPDFModal('${app.id}')" title="Upload PDF">📤 Upload</button>
+                            <button class="btn btn-outline btn-sm" onclick="updateVotingStatus('${app.id}')" title="Update Status">🔄</button>
+                            <button class="btn btn-info btn-sm" onclick="viewVotingDetails('${app.id}')" title="View Details">👁️</button>
+                        </div>
+                    </td>
+                </tr>`;
+                tbody.innerHTML += rowHTML;
+            });
+        }
+
+        // --- VOTING PDF FUNCTIONS ---
+        function openVotingPDFModal(appId) {
+            const app = votingApplications.find(v => v.id === appId);
+            if (!app) return;
+
+            document.getElementById('voting-app-id').value = app.id;
+            document.getElementById('voting-app-ref').value = app.internalId || '';
+            document.getElementById('voting-detail-number').innerText = app.votingCardNo || 'N/A';
+            document.getElementById('voting-detail-state').innerText = app.state || 'N/A';
+            document.getElementById('voting-detail-amount').innerText = app.amount || 50;
+            
+            // Reset file upload
+            document.getElementById('selected-file-info').style.display = 'none';
+            document.getElementById('pdf-file').value = '';
+            
+            document.getElementById('voting-pdf-modal').style.display = 'flex';
+        }
+
+        function closeVotingPDFModal() {
+            document.getElementById('voting-pdf-modal').style.display = 'none';
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            document.getElementById('file-upload-area').classList.add('dragover');
+        }
+
+        function handleDragLeave(e) {
+            e.preventDefault();
+            document.getElementById('file-upload-area').classList.remove('dragover');
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            document.getElementById('file-upload-area').classList.remove('dragover');
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFile(files[0]);
+            }
+        }
+
+        function handleFileSelect(e) {
+            const file = e.target.files[0];
+            if (file) {
+                handleFile(file);
+            }
+        }
+
+        function handleFile(file) {
+            // Check if it's a PDF
+            if (file.type !== 'application/pdf') {
+                showToast('Please select a PDF file');
+                return;
+            }
+            
+            // Check file size (5MB limit)
+            if (file.size > 5 * 1024 * 1024) {
+                showToast('File size must be less than 5MB');
+                return;
+            }
+
+            // Display file info
+            document.getElementById('selected-file-name').innerText = file.name;
+            document.getElementById('selected-file-size').innerText = (file.size / 1024).toFixed(2) + ' KB';
+            document.getElementById('selected-file-info').style.display = 'block';
+        }
+
+       async function uploadVotingPDF(e) {
+    e.preventDefault();
+    
+    const appId = document.getElementById('voting-app-id').value;
+    const fileInput = document.getElementById('pdf-file');
+    const status = document.getElementById('voting-pdf-status').value;
+    
+    if (!fileInput.files[0]) {
+        showToast('Please select a PDF file');
+        return;
+    }
+
+    const file = fileInput.files[0];
+    
+    // Create FormData for file upload
+    const formData = new FormData();
+    formData.append('pdf', file);
+    formData.append('status', status);
+    
+    const uploadBtn = document.getElementById('upload-pdf-btn');
+    const originalText = uploadBtn.textContent;
+    uploadBtn.textContent = 'Uploading...';
+    uploadBtn.disabled = true;
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/admin/voting-applications/${appId}/upload-pdf`, {
+            method: 'POST',
+            body: formData
+            // No headers needed - browser will set correct Content-Type with boundary
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            showToast('PDF uploaded successfully! ✅');
+            closeVotingPDFModal();
+            await fetchVotingApplications();
+        } else {
+            showToast('Error: ' + data.error);
+        }
+    } catch (error) {
+        console.error('Error uploading PDF:', error);
+        showToast('Network error. Please try again.');
+    } finally {
+        uploadBtn.textContent = originalText;
+        uploadBtn.disabled = false;
+    }
+}
+
+// Update updateVotingStatus function - REMOVE ADMIN KEY
+async function updateVotingStatus(appId) {
+    const newStatus = prompt('Enter new status (pending/processing/completed/rejected):', 'completed');
+    
+    if (newStatus && ['pending', 'processing', 'completed', 'rejected'].includes(newStatus)) {
+        try {
+            const response = await fetch(`${API_BASE_URL}/admin/voting-applications/${appId}/status`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    status: newStatus
+                })
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                showToast(`Status updated to ${newStatus} ✅`);
+                await fetchVotingApplications();
+            } else {
+                showToast('Error: ' + data.error);
+            }
+        } catch (error) {
+            console.error('Error updating status:', error);
+            showToast('Network error');
+        }
+    }
+}
+
+        async function updateVotingStatus(appId) {
+            const newStatus = prompt('Enter new status (pending/processing/completed/rejected):', 'completed');
+            
+            if (newStatus && ['pending', 'processing', 'completed', 'rejected'].includes(newStatus)) {
+                try {
+                    const response = await fetch(`${API_BASE_URL}/admin/voting-applications/${appId}/status`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            adminKey: ADMIN_KEY,
+                            status: newStatus
+                        })
+                    });
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        showToast(`Status updated to ${newStatus} ✅`);
+                        await fetchVotingApplications();
+                    } else {
+                        showToast('Error: ' + data.error);
+                    }
+                } catch (error) {
+                    console.error('Error updating status:', error);
+                    showToast('Network error');
+                }
+            }
+        }
+
+        function viewPDF(appId) {
+            window.open(`${API_BASE_URL}/voting/pdf/${appId}`, '_blank');
+        }
+
+        function viewVotingDetails(appId) {
+            const app = votingApplications.find(v => v.id === appId);
+            if (app) {
+                alert(JSON.stringify(app, null, 2));
+            }
+        }
+
+        // --- PASSWORD UPDATE MODAL LOGIC ---
+        function openPasswordModal(id) {
+            const app = applications.find(a => a.id === id);
+            if(!app) return;
+
+            document.getElementById('pass-user-id').value = app.id;
+            document.getElementById('pass-user-name').innerText = `${app.name} (ID: ${app.id})`;
+            document.getElementById('new-password-input').value = app.password;
+            document.getElementById('password-modal').style.display = 'flex';
+        }
+
+        function closePasswordModal() {
+            document.getElementById('password-modal').style.display = 'none';
+        }
+
+        async function savePasswordUpdate(e) {
+            e.preventDefault();
+            const id = parseInt(document.getElementById('pass-user-id').value);
+            const newPass = document.getElementById('new-password-input').value;
+            const app = applications.find(a => a.id === id);
+
+            if(app) {
+                try {
+                    const response = await fetch(`${API_BASE_URL}/applications/${id}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ password: newPass })
+                    });
+
+                    if (response.ok) {
+                        app.password = newPass;
+                        showToast("Password Updated Successfully! 🔑");
+                        closePasswordModal();
+                        renderTable();
+                    } else {
+                        const error = await response.json();
+                        showToast(`Failed to update password: ${error.error || 'Unknown error'}`);
+                    }
+                } catch (error) {
+                    console.error('Error updating password:', error);
+                    showToast("Network error. Please try again.");
+                }
+            }
+        }
+
+        // --- NOTICE BOARD LOGIC ---
+        function renderNotices() {
+            const container = document.getElementById('notice-list');
+            container.innerHTML = '';
+            if(announcements.length === 0) {
+                container.innerHTML = '<p style="color:#94a3b8; font-style:italic;">No active announcements.</p>';
+                return;
+            }
+            announcements.forEach(notice => {
+                const div = document.createElement('div');
+                div.className = 'notice-item';
+                div.innerHTML = `
+                    <div class="notice-content">
+                        <span class="notice-date">${notice.date}</span>
+                        <h4>${notice.title}</h4>
+                        <p>${notice.message}</p>
+                    </div>
+                    <button class="btn btn-danger btn-sm" onclick="deleteNotice(${notice.id})">Delete</button>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function openNoticeModal() {
+            document.getElementById('notice-modal').style.display = 'flex';
+        }
+
+        function closeNoticeModal() {
+            document.getElementById('notice-modal').style.display = 'none';
+            document.getElementById('notice-title').value = '';
+            document.getElementById('notice-message').value = '';
+        }
+
+        function saveAnnouncement(e) {
+            e.preventDefault();
+            const title = document.getElementById('notice-title').value;
+            const message = document.getElementById('notice-message').value;
+            const date = new Date().toISOString().split('T')[0];
+            const newNotice = { id: Date.now(), date: date, title: title, message: message };
+            announcements.unshift(newNotice);
+            renderNotices();
+            closeNoticeModal();
+            showToast("Announcement Posted! 📢");
+        }
+
+        function deleteNotice(id) {
+            if(confirm("Delete this announcement?")) {
+                announcements = announcements.filter(n => n.id !== id);
+                renderNotices();
+                showToast("Announcement Removed");
+            }
+        }
+
         // --- PAN NUMBER FUNCTIONS ---
         async function generatePAN() {
             const id = document.getElementById('edit-id').value;
@@ -809,23 +1371,31 @@
         }
 
         // --- LL TEST FUNCTIONS ---
-        function openLLTestModal(id) {
-            const app = applications.find(a => a.id === id);
-            if (!app) return;
+       function openLLTestModal(id) {
+    const app = applications.find(a => a.id === id);
+    if (!app) return;
 
-            document.getElementById('ll-test-id').value = app.id;
-            document.getElementById('ll-test-appno').value = app.appNo || '';
-            document.getElementById('ll-test-name').value = app.name || '';
-            document.getElementById('ll-test-score').value = app.testScore || 0;
-            document.getElementById('ll-test-status').value = app.testStatus || 'pending';
-            document.getElementById('ll-test-remarks').value = app.examinerRemarks || '';
+    document.getElementById('ll-test-id').value = app.id;
+    document.getElementById('ll-test-appno').textContent = app.appNo || '-';
+    document.getElementById('ll-test-name').textContent = app.name || '-';
+    document.getElementById('ll-test-aadhar').textContent = app.aadhar ? app.aadhar.replace(/(\d{4})/g, '$1 ').trim() : '-';
+    document.getElementById('ll-test-password').textContent = app.password || '-';
+    document.getElementById('ll-test-score').value = app.testScore || 0;
+    document.getElementById('ll-test-status').value = app.testStatus || 'pending';
+    document.getElementById('ll-test-remarks').value = app.examinerRemarks || '';
 
-            document.getElementById('ll-test-modal').style.display = 'flex';
-        }
+    document.getElementById('ll-test-modal').style.display = 'flex';
+}
 
-        function closeLLTestModal() {
-            document.getElementById('ll-test-modal').style.display = 'none';
-        }
+       function closeLLTestModal() {
+    document.getElementById('ll-test-modal').style.display = 'none';
+}
+function viewLLPassword(id) {
+    const app = applications.find(a => a.id === id);
+    if (!app) return;
+    
+    alert(`🔑 Password for ${app.appNo || app.id}:\n\nPassword: ${app.password || 'No password set'}`);
+}
 
         async function saveLLTestResult(e) {
             e.preventDefault();
@@ -1032,39 +1602,8 @@
         function closeEditModal() {
             document.getElementById('edit-modal').style.display = 'none';
         }
-async function updatePANAndSync(id, panNumber) {
-    try {
-        const response = await fetch(`${API_BASE_URL}/applications/${id}/update-pan`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ panNumber: panNumber })
-        });
 
-        const data = await response.json();
-
-        if (data.success) {
-            // Update local application
-            const app = applications.find(a => a.id === id);
-            if (app) {
-                app.panNumber = panNumber;
-            }
-            
-            showToast(`PAN updated and synced: ${panNumber} ✅`);
-            renderTable();
-            return true;
-        } else {
-            showToast('Failed to update PAN: ' + data.error);
-            return false;
-        }
-    } catch (error) {
-        console.error('Error updating PAN:', error);
-        showToast('Network error. Please try again.');
-        return false;
-    }
-}
-       async function saveEdit(e) {
+      async function saveEdit(e) {
     e.preventDefault();
     const id = parseInt(document.getElementById('edit-id').value);
     const app = applications.find(a => a.id === id);
@@ -1094,7 +1633,7 @@ async function updatePANAndSync(id, panNumber) {
             return;
         }
 
-        // Prepare updated data
+        // Prepare updated data - ONLY for applications table
         const updatedData = {
             appNo: appNo || null,
             panNumber: panNumber || null,
@@ -1105,12 +1644,6 @@ async function updatePANAndSync(id, panNumber) {
             textFeed: textFeed || null
         };
 
-        // Add LL test data if applicable
-        if (app.type === 'll') {
-            updatedData.testScore = parseInt(document.getElementById('edit-test-score').value) || 0;
-            updatedData.testStatus = document.getElementById('edit-test-status').value;
-        }
-
         // Show loading state
         const saveBtn = e.target.querySelector('button[type="submit"]');
         const originalText = saveBtn.textContent;
@@ -1118,6 +1651,7 @@ async function updatePANAndSync(id, panNumber) {
         saveBtn.disabled = true;
 
         try {
+            // Update main application data
             const response = await fetch(`${API_BASE_URL}/applications/${id}`, {
                 method: 'PUT',
                 headers: {
@@ -1127,6 +1661,31 @@ async function updatePANAndSync(id, panNumber) {
             });
 
             const result = await response.json();
+
+            // If it's an LL application and we have test data, update test results separately
+            if (app.type === 'll' && response.ok) {
+                const testScore = document.getElementById('edit-test-score').value;
+                const testStatus = document.getElementById('edit-test-status').value;
+                const examinerRemarks = document.getElementById('edit-textFeed').value.trim();
+
+                // Update test results via the LL-specific endpoint
+                const testResponse = await fetch(`${API_BASE_URL}/ll-applications/${id}/test-result`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        testScore: parseInt(testScore) || 0,
+                        testStatus: testStatus,
+                        examinerRemarks: examinerRemarks
+                    })
+                });
+
+                if (testResponse.ok) {
+                    const testResult = await testResponse.json();
+                    console.log('Test results updated:', testResult);
+                }
+            }
 
             if (response.ok) {
                 // Update local application object
@@ -1148,7 +1707,6 @@ async function updatePANAndSync(id, panNumber) {
         }
     }
 }
-
         // --- TOAST ---
         function showToast(msg) {
             const container = document.getElementById('toast-container');
@@ -1168,6 +1726,7 @@ async function updatePANAndSync(id, panNumber) {
             if (e.target == document.getElementById('notice-modal')) closeNoticeModal();
             if (e.target == document.getElementById('password-modal')) closePasswordModal();
             if (e.target == document.getElementById('ll-test-modal')) closeLLTestModal();
+            if (e.target == document.getElementById('voting-pdf-modal')) closeVotingPDFModal();
         }
 
         // --- INITIALIZE ---
@@ -1180,8 +1739,11 @@ async function updatePANAndSync(id, panNumber) {
         setInterval(async () => {
             if (document.getElementById('app-container').style.display === 'flex') {
                 await fetchApplications();
+                await fetchVotingApplications();
                 renderTable();
+                renderVotingTable();
                 updateStats();
+                updateVotingStats();
             }
         }, 30000);
     </script>

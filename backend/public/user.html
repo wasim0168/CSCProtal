@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>User Voting Application</title>
+    <style>
+        body { font-family: Arial; padding: 40px; }
+        input, select, button { padding: 10px; margin: 10px 0; width: 300px; }
+        .box { border: 1px solid #ccc; padding: 20px; margin-top: 20px; }
+    </style>
+</head>
+<body>
+
+<h2>Apply for Voting Card PDF</h2>
+
+<input type="text" id="votingNo" placeholder="Enter Voting Card Number" />
+<br>
+<input type="text" id="state" placeholder="Enter State" />
+<br>
+<button onclick="submitApplication()">Submit</button>
+
+<div class="box">
+    <h3>Check Voting card Status</h3>
+    <input type="text" id="votingCheckNo" placeholder="Enter Voting Card Number" 
+           onkeypress="if(event.key==='Enter') checkStatus()" />
+
+    <button onclick="checkStatus()">Check Status</button>
+
+    <div id="result"></div>
+</div>
+
+<script>
+let sessionId = localStorage.getItem("sessionId");
+
+async function submitApplication() {
+
+    const votingNo = document.getElementById("votingNo").value.trim();
+    const state = document.getElementById("state").value.trim();
+
+    if (!votingNo || !state) {
+        alert("Please fill all fields");
+        return;
+    }
+
+    try {
+        const res = await fetch("http://localhost:5000/api/voting/submit", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ votingNo, state })
+        });
+
+        if (!res.ok) {
+            throw new Error("Server error");
+        }
+
+        const data = await res.json();
+
+        if (data.success) {
+            alert("Application Submitted! ID: " + data.application.id);
+        } else {
+            alert(data.error || "Submission failed");
+        }
+
+    } catch (err) {
+        alert("Unable to connect to server");
+        console.error(err);
+    }
+}
+
+
+async function checkStatus() {
+
+    const votingNo = document.getElementById("votingCheckNo").value.trim();
+
+    if (!votingNo) {
+        alert("Enter Voting Card Number");
+        return;
+    }
+
+    const resultDiv = document.getElementById("result");
+    resultDiv.innerHTML = "Checking...";
+
+    try {
+        const res = await fetch(`/api/voting/status/${votingNo}`);
+        console.log(res);
+
+        if (res.status === 404) {
+            resultDiv.innerHTML = "<p style='color:red;'>Application not found</p>";
+            return;
+        }
+
+        const data = await res.json();
+
+        if (!data.success) {
+            resultDiv.innerHTML = `<p style="color:red;">${data.error || "Application not found"}</p>`;
+            return;
+        }
+
+        let statusClass = "pending";
+        if (data.status === "approved") statusClass = "approved";
+        if (data.status === "rejected") statusClass = "rejected";
+
+        let html = `
+            <div class="status ${statusClass}">
+                <p><strong>Status:</strong> ${data.status.toUpperCase()}</p>
+                <p><strong>Application ID:</strong> ${data.applicationId}</p>
+            </div>
+        `;
+
+        if (data.canDownload) {
+            html += `
+                <a class="download-btn" 
+                   href="http://localhost:5000/api/voting/pdf/${data.applicationId}" 
+                   target="_blank">
+                   Download PDF
+                </a>
+            `;
+        }
+
+        resultDiv.innerHTML = html;
+
+    } catch (err) {
+        resultDiv.innerHTML = "<p style='color:red;'>Server error</p>";
+        console.error(err);
+    }
+}
+</script>
+
+</body>
+</html>

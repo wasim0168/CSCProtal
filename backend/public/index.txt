@@ -1,0 +1,1215 @@
+const express = require('express');
+const mysql = require('mysql2/promise');
+const cors = require('cors');
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
+const crypto = require('crypto');
+require('dotenv').config();
+
+const app = express();
+const PORT = process.env.PORT || 5000;
+
+// =================== MIDDLEWARE ===================
+app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// =================== MYSQL POOL ===================
+const pool = mysql.createPool({
+    host: process.env.DB_HOST || 'localhost',
+    user: process.env.DB_USER || 'root',
+    password: process.env.DB_PASSWORD || '02769500',
+    database: process.env.DB_NAME || 'pan_card_system',
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0
+});
+
+// Test database connection
+async function testConnection() {
+    try {
+        const connection = await pool.getConnection();
+        console.log('MySQL Connected successfully');
+        connection.release();
+    } catch (error) {
+        console.error('MySQL Connection error:', error);
+    }
+}
+testConnection();
+
+// =================== HELPER FUNCTIONS ===================
+function generateApplicationId() {
+    return 'VOT' + Date.now();
+}
+
+function generateSessionId() {
+    return crypto.randomBytes(16).toString('hex');
+}
+
+// Helper function to get next application ID
+async function getNextApplicationId() {
+    const connection = await pool.getConnection();
+    try {
+        await connection.beginTransaction();
+        
+        // Check if sequence exists
+        const [exists] = await connection.query(
+            'SELECT * FROM id_sequence WHERE name = "application_id"'
+        );
+        
+        if (exists.length === 0) {
+            await connection.query(
+                'INSERT INTO id_sequence (name, value) VALUES ("application_id", 1000)'
+            );
+        }
+        
+        await connection.query(
+            'UPDATE id_sequence SET value = value + 1 WHERE name = "application_id"'
+        );
+        
+        const [result] = await connection.query(
+            'SELECT value FROM id_sequence WHERE name = "application_id"'
+        );
+        
+        await connection.commit();
+        return result[0].value;
+    } catch (error) {
+        await connection.rollback();
+        throw error;
+    } finally {
+        connection.release();
+    }
+}
+
+// Helper function to get next voting application ID
+async function getNextVotingApplicationId() {
+    const connection = await pool.getConnection();
+    try {
+        await connection.beginTransaction();
+        
+        // Check if sequence exists
+        const [exists] = await connection.query(
+            'SELECT * FROM id_sequence WHERE name = "voting_application_id"'
+        );
+        
+        if (exists.length === 0) {
+            await connection.query(
+                'INSERT INTO id_sequence (name, value) VALUES ("voting_application_id", 1000)'
+            );
+        }
+        
+        await connection.query(
+            'UPDATE id_sequence SET value = value + 1 WHERE name = "voting_application_id"'
+        );
+        
+        const [result] = await connection.query(
+            'SELECT value FROM id_sequence WHERE name = "voting_application_id"'
+        );
+        
+        await connection.commit();
+        return `VOT${result[0].value}`;
+    } catch (error) {
+        await connection.rollback();
+        throw error;
+    } finally {
+        connection.release();
+    }
+}
+
+// =================== UPLOAD SETUP ===================
+const uploadDir = path.join(__dirname, 'uploads/voting/pdfs');
+
+if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+}
+
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, uploadDir);
+    },
+    filename: function (req, file, cb) {
+        const appId = req.params.id;
+        cb(null, `${appId}_${Date.now()}.pdf`);
+    }
+});
+
+const upload = multer({
+    storage: storage,
+    limits: { fileSize: 5 * 1024 * 1024 },
+    fileFilter: function (req, file, cb) {
+        if (file.mimetype !== 'application/pdf') {
+            cb(new Error('Only PDF allowed'));
+        } else {
+            cb(null, true);
+        }
+    }
+});
+
+// =================== HEALTH CHECK ===================
+app.get('/', (req, res) => {
+    res.send('CSC Portal Backend Running 🚀');
+});
+
+// ===================================================
+// ================= PAN APPLICATIONS =================
+// ===================================================
+
+// Submit PAN application
+app.post('/api/submit-pan', async (req, res) => {
+    try {
+        const { aadhar } = req.body;
+        
+        if (!aadhar || aadhar.length !== 12 || !/^\d+$/.test(aadhar)) {
+            return res.status(400).json({ error: 'Invalid Aadhar number' });
+        }
+
+        const appId = await getNextApplicationId();
+
+        const [result] = await pool.query(
+            `INSERT INTO applications 
+            (application_id, name, mobile, aadhar, password, type, status) 
+            VALUES (?, ?, ?, ?, ?, ?, ?)`,
+            [
+                appId,
+                `User ${appId}`,
+                '9876543210',
+                aadhar,
+                `PAN${appId}`,
+                'pan',
+                'pending'
+            ]
+        );
+
+        const [newApp] = await pool.query(
+            'SELECT * FROM applications WHERE id = ?',
+            [result.insertId]
+        );
+
+        res.json({ 
+            success: true, 
+            message: 'Application submitted successfully',
+            application: newApp[0]
+        });
+    } catch (error) {
+        console.error('Error submitting application:', error);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// Get all applications
+app.get('/api/applications', async (req, res) => {
+    try {
+        const { type, search } = req.query;
+        
+        let query = 'SELECT * FROM applications WHERE 1=1';
+        const params = [];
+
+        if (type && type !== 'all') {
+            query += ' AND type = ?';
+            params.push(type);
+        }
+
+        if (search) {
+            query += ` AND (name LIKE ? OR aadhar LIKE ? OR mobile LIKE ? OR application_id LIKE ?)`;
+            const searchPattern = `%${search}%`;
+            params.push(searchPattern, searchPattern, searchPattern, searchPattern);
+        }
+
+        query += ' ORDER BY application_id DESC';
+
+        const [applications] = await pool.query(query, params);
+        
+        const transformedApps = applications.map(app => ({
+            id: app.application_id,
+            date: app.date,
+            type: app.type,
+            name: app.name,
+            mobile: app.mobile,
+            aadhar: app.aadhar,
+            appNo: app.app_no,
+            dob: app.dob,
+            password: app.password,
+            walletBal: app.wallet_bal,
+            status: app.status,
+            textFeed: app.text_feed
+        }));
+
+        res.json(transformedApps);
+    } catch (error) {
+        console.error('Error fetching applications:', error);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// Get single application by ID
+app.get('/api/applications/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        
+        const [applications] = await pool.query(
+            'SELECT * FROM applications WHERE application_id = ?',
+            [id]
+        );
+
+        if (applications.length === 0) {
+            return res.status(404).json({ error: 'Application not found' });
+        }
+
+        const app = applications[0];
+        const transformedApp = {
+            id: app.application_id,
+            date: app.date,
+            type: app.type,
+            name: app.name,
+            mobile: app.mobile,
+            aadhar: app.aadhar,
+            appNo: app.app_no,
+            dob: app.dob,
+            password: app.password,
+            walletBal: app.wallet_bal,
+            status: app.status,
+            textFeed: app.text_feed
+        };
+
+        res.json(transformedApp);
+    } catch (error) {
+        console.error('Error fetching application:', error);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// Update application
+app.put('/api/applications/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const updates = req.body;
+
+        const fieldMappings = {
+            'appNo': 'app_no',
+            'aadhar': 'aadhar',
+            'panNumber': 'pan_number',
+            'dob': 'dob',
+            'walletBal': 'wallet_bal',
+            'status': 'status',
+            'textFeed': 'text_feed',
+            'password': 'password',
+            'name': 'name',
+            'mobile': 'mobile'
+        };
+
+        if (updates.status) {
+            const validStatuses = ['pending', 'active', 'completed'];
+            if (!validStatuses.includes(updates.status)) {
+                return res.status(400).json({ 
+                    error: `Invalid status. Must be one of: ${validStatuses.join(', ')}` 
+                });
+            }
+        }
+
+        if (updates.panNumber && updates.panNumber.trim() !== '') {
+            const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
+            if (!panRegex.test(updates.panNumber)) {
+                return res.status(400).json({ 
+                    error: 'Invalid PAN number format. Must be 10 characters: 5 letters, 4 numbers, 1 letter (e.g., ABCDE1234F)' 
+                });
+            }
+        }
+
+        if (updates.dob !== undefined) {
+            if (updates.dob === null || updates.dob === '' || updates.dob === 'Invalid Date') {
+                updates.dob = null;
+            } else {
+                const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+                if (!dateRegex.test(updates.dob)) {
+                    return res.status(400).json({ error: 'Invalid date format. Use YYYY-MM-DD' });
+                }
+            }
+        }
+
+        const connection = await pool.getConnection();
+        await connection.beginTransaction();
+
+        try {
+            const updateFields = [];
+            const params = [];
+
+            Object.keys(updates).forEach(field => {
+                if (fieldMappings[field] && updates[field] !== undefined) {
+                    updateFields.push(`${fieldMappings[field]} = ?`);
+                    params.push(updates[field]);
+                }
+            });
+
+            if (updateFields.length === 0) {
+                await connection.rollback();
+                connection.release();
+                return res.status(400).json({ error: 'No valid fields to update' });
+            }
+
+            params.push(id);
+            const query = `UPDATE applications SET ${updateFields.join(', ')} WHERE application_id = ?`;
+            
+            await connection.query(query, params);
+
+            if (updates.panNumber) {
+                const [app] = await connection.query(
+                    'SELECT aadhar FROM applications WHERE application_id = ?',
+                    [id]
+                );
+
+                if (app.length > 0 && app[0].aadhar) {
+                    await connection.query(
+                        `UPDATE pan_search_history 
+                         SET pan_number = ?, status = 'completed', is_pan_visible = TRUE 
+                         WHERE aadhar_number = ?`,
+                        [updates.panNumber, app[0].aadhar]
+                    );
+                }
+            }
+
+            await connection.commit();
+
+            const [updatedApp] = await connection.query(
+                'SELECT * FROM applications WHERE application_id = ?',
+                [id]
+            );
+
+            connection.release();
+
+            if (updatedApp.length === 0) {
+                return res.status(404).json({ error: 'Application not found' });
+            }
+
+            const app = updatedApp[0];
+            const transformedApp = {
+                id: app.application_id,
+                date: app.date,
+                type: app.type,
+                name: app.name,
+                mobile: app.mobile,
+                aadhar: app.aadhar,
+                panNumber: app.pan_number,
+                appNo: app.app_no,
+                dob: app.dob,
+                password: app.password,
+                walletBal: app.wallet_bal,
+                status: app.status,
+                textFeed: app.text_feed
+            };
+
+            res.json({ success: true, application: transformedApp });
+
+        } catch (error) {
+            await connection.rollback();
+            connection.release();
+            throw error;
+        }
+
+    } catch (error) {
+        console.error('Error updating application:', error);
+        
+        if (error.code === 'ER_TRUNCATED_WRONG_VALUE' || error.code === 'WARN_DATA_TRUNCATED') {
+            return res.status(400).json({ 
+                error: 'Invalid data format. Please check date fields and other inputs.' 
+            });
+        }
+        
+        res.status(500).json({ error: 'Server error: ' + error.message });
+    }
+});
+
+// Delete application
+app.delete('/api/applications/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        
+        const [result] = await pool.query(
+            'DELETE FROM applications WHERE application_id = ?',
+            [id]
+        );
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: 'Application not found' });
+        }
+
+        res.json({ success: true, message: 'Application deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting application:', error);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// Get application statistics
+app.get('/api/stats', async (req, res) => {
+    try {
+        const [total] = await pool.query('SELECT COUNT(*) as count FROM applications');
+        const [pan] = await pool.query('SELECT COUNT(*) as count FROM applications WHERE type = "pan"');
+        const [ll] = await pool.query('SELECT COUNT(*) as count FROM applications WHERE type = "ll"');
+        
+        res.json({
+            total: total[0].count,
+            pan: pan[0].count,
+            ll: ll[0].count
+        });
+    } catch (error) {
+        console.error('Error fetching stats:', error);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// ===================================================
+// ================= PAN HISTORY =====================
+// ===================================================
+
+// Store PAN search history
+app.post('/api/pan-history/store', async (req, res) => {
+    try {
+        const { aadhar, userId } = req.body;
+        
+        if (!aadhar || aadhar.length !== 12) {
+            return res.status(400).json({ error: 'Invalid Aadhar number' });
+        }
+
+        const sessionId = userId || req.headers['x-session-id'] || `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        const ipAddress = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+        const userAgent = req.headers['user-agent'];
+
+        const [result] = await pool.query(
+            `INSERT INTO pan_search_history 
+            (user_id, aadhar_number, ip_address, user_agent, status, is_pan_visible) 
+            VALUES (?, ?, ?, ?, 'pending', FALSE)`,
+            [sessionId, aadhar, ipAddress, userAgent]
+        );
+
+        const [applications] = await pool.query(
+            'SELECT application_id, status, text_feed FROM applications WHERE aadhar = ? ORDER BY created_at DESC LIMIT 1',
+            [aadhar]
+        );
+
+        let panNumber = null;
+        let status = 'pending';
+        
+        if (applications.length > 0) {
+            const app = applications[0];
+            panNumber = `PAN${app.application_id}`;
+            status = app.status;
+            
+            await pool.query(
+                'UPDATE pan_search_history SET pan_number = ?, status = ? WHERE id = ?',
+                [panNumber, status, result.insertId]
+            );
+        }
+
+        res.json({ 
+            success: true, 
+            message: 'History stored successfully',
+            sessionId: sessionId,
+            historyId: result.insertId,
+            application: applications.length > 0 ? applications[0] : null
+        });
+
+    } catch (error) {
+        console.error('Error storing history:', error);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// Get user's PAN history
+app.post('/api/pan-history/get', async (req, res) => {
+    try {
+        const { userId, aadhar } = req.body;
+        
+        let query = 'SELECT * FROM pan_search_history WHERE 1=1';
+        const params = [];
+
+        if (userId) {
+            query += ' AND user_id = ?';
+            params.push(userId);
+        }
+
+        if (aadhar) {
+            query += ' AND aadhar_number = ?';
+            params.push(aadhar);
+        }
+
+        query += ' ORDER BY search_date DESC LIMIT 50';
+
+        const [history] = await pool.query(query, params);
+
+        for (let item of history) {
+            const [applications] = await pool.query(
+                'SELECT application_id, status, text_feed FROM applications WHERE aadhar = ? ORDER BY created_at DESC LIMIT 1',
+                [item.aadhar_number]
+            );
+
+            if (applications.length > 0) {
+                const app = applications[0];
+                const panNumber = `PAN${app.application_id}`;
+                
+                if (item.pan_number !== panNumber || item.status !== app.status) {
+                    await pool.query(
+                        'UPDATE pan_search_history SET pan_number = ?, status = ?, is_pan_visible = ? WHERE id = ?',
+                        [panNumber, app.status, app.status === 'completed', item.id]
+                    );
+                    item.pan_number = panNumber;
+                    item.status = app.status;
+                    item.is_pan_visible = app.status === 'completed';
+                }
+            }
+        }
+
+        const [updatedHistory] = await pool.query(
+            'SELECT * FROM pan_search_history WHERE 1=1' + (userId ? ' AND user_id = ?' : '') + ' ORDER BY search_date DESC LIMIT 50',
+            userId ? [userId] : []
+        );
+
+        const transformedHistory = updatedHistory.map(item => ({
+            id: item.id,
+            aadhar: item.aadhar_number.replace(/(\d{4})/g, '$1 ').trim(),
+            panNumber: item.is_pan_visible ? item.pan_number : '•••••••••',
+            serviceName: item.service_name,
+            date: new Date(item.search_date).toLocaleDateString('en-IN', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            }),
+            status: item.status,
+            isPanVisible: item.is_pan_visible
+        }));
+
+        res.json({ 
+            success: true, 
+            history: transformedHistory,
+            count: transformedHistory.length
+        });
+
+    } catch (error) {
+        console.error('Error fetching history:', error);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// Admin endpoint to reveal PAN numbers
+app.post('/api/admin/reveal-pan', async (req, res) => {
+    try {
+        const { adminKey } = req.body;
+        
+        if (adminKey !== process.env.ADMIN_KEY) {
+            return res.status(401).json({ error: 'Unauthorized' });
+        }
+
+        const [result] = await pool.query(
+            `UPDATE pan_search_history ph
+            JOIN applications a ON ph.aadhar_number = a.aadhar
+            SET ph.is_pan_visible = TRUE, 
+                ph.pan_number = CONCAT('PAN', a.application_id),
+                ph.status = a.status
+            WHERE a.status = 'completed' OR a.status = 'active'`
+        );
+
+        res.json({ 
+            success: true, 
+            message: `Updated ${result.affectedRows} records`,
+            count: result.affectedRows
+        });
+
+    } catch (error) {
+        console.error('Error revealing PAN:', error);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// ===================================================
+// ================= LL APPLICATIONS =================
+// ===================================================
+
+// Submit LL application
+app.post('/api/submit-ll', async (req, res) => {
+    try {
+        const { appNo, dob, password } = req.body;
+        
+        if (!appNo || !dob || !password) {
+            return res.status(400).json({ error: 'All fields are required' });
+        }
+
+        const [existing] = await pool.query(
+            'SELECT * FROM applications WHERE app_no = ? AND type = "ll"',
+            [appNo]
+        );
+
+        if (existing.length > 0) {
+            return res.status(400).json({ error: 'Application number already exists' });
+        }
+
+        const appId = await getNextApplicationId();
+
+        const [result] = await pool.query(
+            `INSERT INTO applications 
+            (application_id, app_no, dob, password, type, status, name, mobile, aadhar, document_status) 
+            VALUES (?, ?, ?, ?, 'll', 'pending', ?, ?, ?, 'pending')`,
+            [
+                appId,
+                appNo,
+                dob,
+                password,
+                `User ${appId}`,
+                '9876543210',
+                '000000000000'
+            ]
+        );
+
+        await pool.query(
+            `INSERT INTO ll_test_results (application_id, test_status) VALUES (?, 'pending')`,
+            [appId]
+        );
+
+        const [newApp] = await pool.query(
+            `SELECT a.*, lr.test_status, lr.test_score, lr.examiner_remarks 
+             FROM applications a 
+             LEFT JOIN ll_test_results lr ON a.application_id = lr.application_id 
+             WHERE a.id = ?`,
+            [result.insertId]
+        );
+
+        res.json({ 
+            success: true, 
+            message: 'LL application submitted successfully',
+            application: transformLLApp(newApp[0])
+        });
+
+    } catch (error) {
+        console.error('Error submitting LL application:', error);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// Get LL applications with filters
+app.get('/api/ll-applications', async (req, res) => {
+    try {
+        const { search, status } = req.query;
+        
+        let query = `
+            SELECT a.*, lr.test_status, lr.test_score, lr.examiner_remarks, lr.test_date 
+            FROM applications a 
+            LEFT JOIN ll_test_results lr ON a.application_id = lr.application_id 
+            WHERE a.type = 'll'
+        `;
+        const params = [];
+
+        if (status && status !== 'all') {
+            query += ' AND a.status = ?';
+            params.push(status);
+        }
+
+        if (search) {
+            query += ` AND (a.app_no LIKE ? OR a.name LIKE ? OR a.mobile LIKE ? OR a.application_id LIKE ?)`;
+            const searchPattern = `%${search}%`;
+            params.push(searchPattern, searchPattern, searchPattern, searchPattern);
+        }
+
+        query += ' ORDER BY a.created_at DESC';
+
+        const [applications] = await pool.query(query, params);
+        
+        const transformedApps = applications.map(app => transformLLApp(app));
+
+        res.json(transformedApps);
+    } catch (error) {
+        console.error('Error fetching LL applications:', error);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// Update LL test result
+app.put('/api/ll-applications/:id/test-result', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { testScore, testStatus, examinerRemarks } = req.body;
+
+        if (!testStatus || !['pending', 'passed', 'failed'].includes(testStatus)) {
+            return res.status(400).json({ error: 'Invalid test status' });
+        }
+
+        await pool.query(
+            `UPDATE ll_test_results 
+             SET test_score = ?, test_status = ?, examiner_remarks = ?, test_date = CURRENT_DATE 
+             WHERE application_id = ?`,
+            [testScore || 0, testStatus, examinerRemarks, id]
+        );
+
+        if (testStatus === 'passed') {
+            await pool.query(
+                'UPDATE applications SET status = "active" WHERE application_id = ?',
+                [id]
+            );
+        } else if (testStatus === 'failed') {
+            await pool.query(
+                'UPDATE applications SET status = "pending" WHERE application_id = ?',
+                [id]
+            );
+        }
+
+        const [updatedApp] = await pool.query(
+            `SELECT a.*, lr.test_status, lr.test_score, lr.examiner_remarks 
+             FROM applications a 
+             LEFT JOIN ll_test_results lr ON a.application_id = lr.application_id 
+             WHERE a.application_id = ?`,
+            [id]
+        );
+
+        res.json({ 
+            success: true, 
+            message: 'Test result updated successfully',
+            application: transformLLApp(updatedApp[0])
+        });
+
+    } catch (error) {
+        console.error('Error updating test result:', error);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// Get LL application statistics
+app.get('/api/ll-stats', async (req, res) => {
+    try {
+        const [total] = await pool.query(
+            'SELECT COUNT(*) as count FROM applications WHERE type = "ll"'
+        );
+        
+        const [pending] = await pool.query(
+            'SELECT COUNT(*) as count FROM applications WHERE type = "ll" AND status = "pending"'
+        );
+        
+        const [active] = await pool.query(
+            'SELECT COUNT(*) as count FROM applications WHERE type = "ll" AND status = "active"'
+        );
+        
+        const [passed] = await pool.query(
+            `SELECT COUNT(*) as count FROM ll_test_results lr 
+             JOIN applications a ON lr.application_id = a.application_id 
+             WHERE a.type = "ll" AND lr.test_status = "passed"`
+        );
+
+        res.json({
+            total: total[0].count,
+            pending: pending[0].count,
+            active: active[0].count,
+            passed: passed[0].count
+        });
+    } catch (error) {
+        console.error('Error fetching LL stats:', error);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// Helper function to transform LL application data
+function transformLLApp(app) {
+    return {
+        id: app.application_id,
+        date: app.date,
+        type: app.type,
+        name: app.name,
+        mobile: app.mobile,
+        aadhar: app.aadhar,
+        appNo: app.app_no,
+        dob: app.dob,
+        password: app.password,
+        walletBal: app.wallet_bal,
+        status: app.status,
+        textFeed: app.text_feed,
+        testScore: app.test_score,
+        testStatus: app.test_status || 'pending',
+        examinerRemarks: app.examiner_remarks,
+        documentStatus: app.document_status
+    };
+}
+
+// ===================================================
+// ================= VOTING APPLICATIONS =============
+// ===================================================
+
+// Submit Voting Application (from server1.js)
+app.post('/api/voting/apply', async (req, res) => {
+    try {
+        const {
+            full_name,
+            mobile,
+            email,
+            address
+        } = req.body;
+
+        const application_id = generateApplicationId();
+        const session_id = generateSessionId();
+
+        await pool.query(
+            `INSERT INTO voting_applications
+            (application_id, user_session_id, full_name, mobile, email, address, status, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, 'pending', NOW())`,
+            [application_id, session_id, full_name, mobile, email, address]
+        );
+
+        res.json({
+            success: true,
+            application_id,
+            session_id
+        });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+// app
+
+
+// Get Application Status (from server1.js)
+app.get('/api/voting/applications/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const [rows] = await pool.query(
+            'SELECT * FROM voting_applications WHERE application_id = ?',
+            [id]
+        );
+
+        if (rows.length === 0) {
+            return res.status(404).json({ error: 'Application not found' });
+        }
+
+        res.json(rows[0]);
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// Admin Upload PDF (from server1.js)
+app.post(
+    '/api/admin/voting-applications/:id/upload-pdf',
+    upload.single('pdf'),
+    async (req, res) => {
+        try {
+            const { id } = req.params;
+            const adminKey = req.body.adminKey;
+
+            if (!adminKey || adminKey !== process.env.ADMIN_KEY) {
+                return res.status(401).json({ error: 'Unauthorized' });
+            }
+
+            if (!req.file) {
+                return res.status(400).json({ error: 'PDF required' });
+            }
+
+            const pdfPath = `/uploads/voting/pdfs/${req.file.filename}`;
+
+            const [result] = await pool.query(
+                `UPDATE voting_applications
+                 SET status = 'completed',
+                     pdf_path = ?,
+                     pdf_original_name = ?,
+                     completed_at = NOW()
+                 WHERE application_id = ?`,
+                [pdfPath, req.file.originalname, id]
+            );
+
+            if (result.affectedRows === 0) {
+                return res.status(404).json({ error: 'Application not found' });
+            }
+
+            res.json({
+                success: true,
+                message: 'PDF uploaded successfully'
+            });
+
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ error: error.message });
+        }
+    }
+);
+
+// Secure PDF Download (from server1.js)
+app.get('/api/voting/pdf/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const sessionId = req.headers['x-session-id'];
+
+        const [rows] = await pool.query(
+            'SELECT * FROM voting_applications WHERE application_id = ?',
+            [id]
+        );
+
+        if (rows.length === 0) {
+            return res.status(404).json({ error: 'Application not found' });
+        }
+
+        const appData = rows[0];
+
+        if (appData.user_session_id !== sessionId) {
+            return res.status(403).json({ error: 'Access denied' });
+        }
+
+        if (!appData.pdf_path || appData.status !== 'completed') {
+            return res.status(404).json({ error: 'PDF not available' });
+        }
+
+        const filePath = path.join(__dirname, appData.pdf_path);
+
+        if (!fs.existsSync(filePath)) {
+            return res.status(404).json({ error: 'File not found' });
+        }
+
+        res.download(filePath, appData.pdf_original_name);
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// Submit voting application (from server.js)
+app.post('/api/voting/submit', async (req, res) => {
+    try {
+        const { votingNo, state } = req.body;
+        
+        if (!votingNo || !state) {
+            return res.status(400).json({ 
+                error: 'Voting card number and state are required' 
+            });
+        }
+
+        const votingNoRegex = /^[A-Z0-9]{6,20}$/;
+        if (!votingNoRegex.test(votingNo)) {
+            return res.status(400).json({ 
+                error: 'Invalid voting card number format' 
+            });
+        }
+
+        const sessionId = req.headers['x-session-id'] || 
+                         `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        
+        const ipAddress = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+        const appId = await getNextVotingApplicationId();
+
+        const [result] = await pool.query(
+            `INSERT INTO voting_applications 
+            (application_id, voting_card_no, state, user_session_id, user_ip, status, payment_status) 
+            VALUES (?, ?, ?, ?, ?, 'pending', 'paid')`,
+            [appId, votingNo, state, sessionId, ipAddress]
+        );
+
+        const [newApp] = await pool.query(
+            'SELECT * FROM voting_applications WHERE id = ?',
+            [result.insertId]
+        );
+
+        res.json({ 
+            success: true, 
+            message: 'Voting application submitted successfully',
+            application: transformVotingApp(newApp[0]),
+            sessionId: sessionId
+        });
+
+    } catch (error) {
+        console.error('Error submitting voting application:', error);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// Get user's voting history
+app.post('/api/voting/history', async (req, res) => {
+    try {
+        const { sessionId, votingNo } = req.body;
+        
+        let query = 'SELECT * FROM voting_applications WHERE 1=1';
+        const params = [];
+
+        if (sessionId) {
+            query += ' AND user_session_id = ?';
+            params.push(sessionId);
+        }
+
+        if (votingNo) {
+            query += ' AND voting_card_no = ?';
+            params.push(votingNo);
+        }
+
+        query += ' ORDER BY created_at DESC LIMIT 50';
+
+        const [applications] = await pool.query(query, params);
+        
+        const transformedApps = applications.map(app => transformVotingApp(app));
+
+        res.json({ 
+            success: true, 
+            history: transformedApps,
+            count: transformedApps.length
+        });
+
+    } catch (error) {
+        console.error('Error fetching voting history:', error);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// ADMIN: Get all voting applications (with filters)
+app.get('/api/admin/voting-applications', async (req, res) => {
+    try {
+        const { status, search, page = 1, limit = 20 } = req.query;
+        const offset = (page - 1) * limit;
+        
+        let query = 'SELECT * FROM voting_applications WHERE 1=1';
+        const params = [];
+        const countParams = [];
+
+        if (status && status !== 'all') {
+            query += ' AND status = ?';
+            params.push(status);
+            countParams.push(status);
+        }
+
+        if (search) {
+            query += ` AND (voting_card_no LIKE ? OR state LIKE ? OR application_id LIKE ?)`;
+            const searchPattern = `%${search}%`;
+            params.push(searchPattern, searchPattern, searchPattern);
+        }
+
+        const countQuery = query.replace(
+            'SELECT *', 
+            'SELECT COUNT(*) as total'
+        );
+        const [countResult] = await pool.query(countQuery, countParams);
+
+        query += ' ORDER BY created_at DESC LIMIT ? OFFSET ?';
+        params.push(parseInt(limit), offset);
+
+        const [applications] = await pool.query(query, params);
+        
+        const transformedApps = applications.map(app => transformVotingApp(app));
+
+        res.json({
+            applications: transformedApps,
+            pagination: {
+                currentPage: parseInt(page),
+                totalPages: Math.ceil(countResult[0].total / limit),
+                totalItems: countResult[0].total,
+                itemsPerPage: parseInt(limit)
+            }
+        });
+
+    } catch (error) {
+        console.error('Error fetching voting applications:', error);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// ADMIN: Update application status
+app.put('/api/admin/voting-applications/:id/status', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { status, adminKey, remarks } = req.body;
+        
+        if (adminKey !== process.env.ADMIN_KEY) {
+            return res.status(401).json({ error: 'Unauthorized' });
+        }
+
+        const validStatuses = ['pending', 'processing', 'completed', 'rejected'];
+        if (!validStatuses.includes(status)) {
+            return res.status(400).json({ error: 'Invalid status' });
+        }
+
+        const updateData = {
+            status: status
+        };
+
+        if (status === 'completed') {
+            updateData.completed_at = new Date();
+        }
+
+        const [result] = await pool.query(
+            'UPDATE voting_applications SET ? WHERE application_id = ? OR id = ?',
+            [updateData, id, id]
+        );
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: 'Application not found' });
+        }
+
+        res.json({ 
+            success: true, 
+            message: `Status updated to ${status}` 
+        });
+
+    } catch (error) {
+        console.error('Error updating status:', error);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// Get voting statistics
+app.get('/api/voting/stats', async (req, res) => {
+    try {
+        const [total] = await pool.query('SELECT COUNT(*) as count FROM voting_applications');
+        const [pending] = await pool.query('SELECT COUNT(*) as count FROM voting_applications WHERE status = "pending"');
+        const [completed] = await pool.query('SELECT COUNT(*) as count FROM voting_applications WHERE status = "completed"');
+        
+        res.json({
+            total: total[0].count,
+            pending: pending[0].count,
+            completed: completed[0].count
+        });
+    } catch (error) {
+        console.error('Error fetching voting stats:', error);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// Helper function to transform voting application data
+function transformVotingApp(app) {
+    return {
+        id: app.application_id,
+        internalId: app.id,
+        votingCardNo: app.voting_card_no,
+        fullName: app.full_name,
+        mobile: app.mobile,
+        email: app.email,
+        address: app.address,
+        state: app.state,
+        date: new Date(app.created_at).toLocaleDateString('en-IN', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        }),
+        status: app.status,
+        paymentStatus: app.payment_status,
+        amount: app.amount,
+        pdfUrl: app.pdf_path ? `/api/voting/pdf/${app.application_id}` : null,
+        pdfName: app.pdf_original_name,
+        canDownload: app.status === 'completed' && app.pdf_path
+    };
+}
+
+// ===================================================
+// ================= PLACEHOLDER ENDPOINTS ===========
+// ===================================================
+
+// PAN placeholder
+app.post('/api/pan/apply', (req, res) => {
+    res.json({ message: 'PAN API placeholder working' });
+});
+
+// LL placeholder
+app.post('/api/ll/apply', (req, res) => {
+    res.json({ message: 'LL API placeholder working' });
+});
+
+// =================== START SERVER ===================
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+});

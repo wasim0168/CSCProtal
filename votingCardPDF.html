@@ -709,8 +709,8 @@
                     </select>
                 </div>
 
-                <button class="submit-btn" onclick="submitVotingForm()">GET PDF (₹50)</button>
-                <button class="back-btn" onclick="showHome()">Back to Home</button>
+                <button class="submit-btn" >GET PDF (₹50)</button>
+                <button class="back-btn">Back to Home</button>
                 
                 <div style="text-align: center; margin-top: 5px;">
                     <button class="history-link-btn" onclick="showVotingHistory()">View Voting History</button>
@@ -929,6 +929,274 @@
 
     <!-- JavaScript Logic -->
     <script>
+// ==================== VOTING CARD FUNCTIONS ====================
+
+// Session management
+function getSessionId() {
+    let sessionId = localStorage.getItem('voting_session_id');
+    if (!sessionId) {
+        sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        localStorage.setItem('voting_session_id', sessionId);
+    }
+    return sessionId;
+}
+
+// Submit voting form
+async function submitVotingForm() {
+    const votingNo = document.getElementById('voteNoInput').value.trim();
+    const state = document.getElementById('voteStateInput').value;
+    
+    // Validation
+    if (!votingNo) {
+        alert('Please enter Voting Card Number');
+        return;
+    }
+    
+    if (!state) {
+        alert('Please select a state');
+        return;
+    }
+    
+    // Show loading state
+    const submitBtn = document.querySelector('.submit-btn');
+    const originalText = submitBtn.textContent;
+    submitBtn.textContent = 'Processing...';
+    submitBtn.disabled = true;
+    
+    try {
+        const response = await fetch('http://localhost:5000/api/voting/submit', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'x-session-id': getSessionId()
+            },
+            body: JSON.stringify({
+                votingNo: votingNo,
+                state: state
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            alert('Application submitted successfully! ₹50 payment processed.');
+            
+            // Clear form
+            document.getElementById('voteNoInput').value = '';
+            document.getElementById('voteStateInput').value = '';
+            
+            // Show history
+            showVotingHistory();
+        } else {
+            alert('Error: ' + data.error);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Failed to submit application. Please try again.');
+    } finally {
+        // Restore button
+        submitBtn.textContent = originalText;
+        submitBtn.disabled = false;
+    }
+}
+
+// Show voting history
+async function showVotingHistory() {
+    // Hide other sections
+    document.getElementById('voting-input-section').classList.add('hidden');
+    document.getElementById('voting-history-section').classList.remove('hidden');
+    
+    // Load history
+    await loadVotingHistory();
+}
+
+// Show voting form
+function showVotingForm() {
+    document.getElementById('voting-history-section').classList.add('hidden');
+    document.getElementById('voting-input-section').classList.remove('hidden');
+}
+
+// Load voting history
+async function loadVotingHistory() {
+    const tbody = document.querySelector('#votingHistoryTable tbody');
+    const noMsg = document.getElementById('noVotingHistoryMsg');
+    
+    tbody.innerHTML = '<tr><td colspan="4" style="text-align: center;">Loading...</td></tr>';
+    
+    try {
+        const response = await fetch('http://localhost:5000/api/voting/history', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                sessionId: getSessionId()
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success && data.history.length > 0) {
+            tbody.innerHTML = '';
+            noMsg.classList.add('hidden');
+            
+            data.history.forEach(item => {
+                const row = document.createElement('tr');
+                
+                // Status badge with color
+                let statusBadge = '';
+                switch(item.status) {
+                    case 'completed':
+                        statusBadge = '<span style="color: #4CAF50; font-weight: bold;">✓ PDF Ready</span>';
+                        break;
+                    case 'processing':
+                        statusBadge = '<span style="color: #FF9800; font-weight: bold;">⟳ Processing</span>';
+                        break;
+                    case 'rejected':
+                        statusBadge = '<span style="color: #f44336; font-weight: bold;">✗ Rejected</span>';
+                        break;
+                    default:
+                        statusBadge = '<span style="color: #999; font-weight: bold;">⏳ Pending</span>';
+                }
+                
+                // Download link if available
+                let statusDisplay = statusBadge;
+                if (item.canDownload) {
+                    statusDisplay += ' <button class="download-pdf-btn" onclick="downloadVotingPDF(\'' + item.id + '\')">📥 Download</button>';
+                }
+                
+                row.innerHTML = `
+                    <td>${item.votingCardNo}</td>
+                    <td>${item.state}</td>
+                    <td>${item.date}</td>
+                    <td>${statusDisplay}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        } else {
+            tbody.innerHTML = '';
+            noMsg.classList.remove('hidden');
+        }
+    } catch (error) {
+        console.error('Error loading history:', error);
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #f44336;">Error loading history</td></tr>';
+    }
+}
+
+// Download PDF
+async function downloadVotingPDF(applicationId) {
+    try {
+        const response = await fetch(`http://localhost:5000/api/voting/pdf/${applicationId}`, {
+            headers: {
+                'x-session-id': getSessionId()
+            }
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+            alert('Download started: ' + data.fileName);
+            // In production, you would trigger actual file download
+            // window.open(data.pdfUrl, '_blank');
+        } else {
+            alert('Error: ' + data.error);
+        }
+    } catch (error) {
+        console.error('Error downloading PDF:', error);
+        alert('Failed to download PDF');
+    }
+}
+
+// Simulate admin upload (for demo purposes)
+async function simulateVotingAdminUpload() {
+    // Get the first pending application
+    try {
+        const response = await fetch('http://localhost:5000/api/voting/history', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                sessionId: getSessionId()
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success && data.history.length > 0) {
+            const latestApp = data.history[0];
+            
+            // Simulate admin upload
+            const adminResponse = await fetch(`http://localhost:5000/api/admin/voting-applications/${latestApp.id}/upload-pdf`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    adminKey: 'admin123', // Use environment variable in production
+                    fileName: `Voting_Card_${latestApp.votingCardNo}.pdf`
+                })
+            });
+            
+            const adminData = await adminResponse.json();
+            
+            if (adminData.success) {
+                alert('PDF uploaded successfully! Reloading history...');
+                await loadVotingHistory();
+            } else {
+                alert('Admin upload failed: ' + adminData.error);
+            }
+        } else {
+            alert('No applications found to simulate upload');
+        }
+    } catch (error) {
+        console.error('Error simulating admin upload:', error);
+        alert('Failed to simulate admin upload');
+    }
+}
+
+// Add CSS for new elements
+const style = document.createElement('style');
+style.textContent = `
+    .download-pdf-btn {
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 12px;
+        margin-left: 8px;
+    }
+    
+    .download-pdf-btn:hover {
+        background-color: #45a049;
+    }
+    
+    .admin-sim-btn {
+        background-color: var(--card-5-color);
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 4px;
+        cursor: pointer;
+        margin-bottom: 15px;
+        font-size: 14px;
+    }
+    
+    .admin-sim-btn:hover {
+        opacity: 0.9;
+    }
+    
+    #votingHistoryTable td {
+        vertical-align: middle;
+    }
+`;
+document.head.appendChild(style);
+
+
+
+
         // === GLOBAL NAVIGATION LOGIC ===
         const homePage = document.getElementById('home-page');
         const panMenuPage = document.getElementById('pan-menu-page'); 

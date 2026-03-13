@@ -1,0 +1,228 @@
+<!-- public/admin.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Panel</title>
+    <style>
+        body { font-family: Arial; padding: 20px; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 10px; border: 1px solid #ddd; text-align: left; }
+        th { background-color: #f2f2f2; }
+        .status-badge { padding: 5px 10px; border-radius: 3px; }
+        .pending { background-color: #fff3cd; color: #856404; }
+        .completed { background-color: #d4edda; color: #155724; }
+        .rejected { background-color: #f8d7da; color: #721c24; }
+        .upload-btn { background-color: #28a745; color: white; padding: 5px 10px; border: none; border-radius: 3px; cursor: pointer; }
+        .error { color: red; }
+        .success { color: green; }
+        #loginBox { max-width: 400px; margin: 50px auto; padding: 20px; border: 1px solid #ddd; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="loginBox">
+            <h2>Admin Login</h2>
+            <input type="password" id="adminToken" placeholder="Enter Admin Token" style="width: 100%; padding: 10px; margin: 10px 0;">
+            <button onclick="login()" style="width: 100%; padding: 10px; background-color: #007bff; color: white; border: none; cursor: pointer;">Login</button>
+            <div id="loginMessage"></div>
+        </div>
+
+        <div id="adminPanel" style="display: none;">
+            <h2>Admin Panel <button onclick="logout()" style="float: right;">Logout</button></h2>
+            
+            <div>
+                <input type="text" id="searchInput" placeholder="Search by ID, Name, or Card No" style="padding: 8px; width: 300px;">
+                <select id="statusFilter" style="padding: 8px;">
+                    <option value="all">All Status</option>
+                    <option value="pending">Pending</option>
+                    <option value="processing">Processing</option>
+                    <option value="completed">Completed</option>
+                    <option value="rejected">Rejected</option>
+                </select>
+                <button onclick="loadApplications()" style="padding: 8px;">Apply Filters</button>
+            </div>
+
+            <div id="stats" style="margin: 20px 0; display: flex; gap: 20px;">
+                <div style="padding: 15px; background-color: #e3f2fd; border-radius: 5px;">Total: <span id="totalCount">0</span></div>
+                <div style="padding: 15px; background-color: #fff3cd; border-radius: 5px;">Pending: <span id="pendingCount">0</span></div>
+                <div style="padding: 15px; background-color: #d4edda; border-radius: 5px;">Completed: <span id="completedCount">0</span></div>
+            </div>
+
+            <table id="applicationsTable">
+                <thead>
+                    <tr>
+                        <th>App ID</th>
+                        <th>Voting No</th>
+                        <th>Name</th>
+                        <th>State</th>
+                        <th>Status</th>
+                        <th>Payment</th>
+                        <th>Downloads</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <tr><td colspan="9">Loading...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = window.location.origin;
+        let adminToken = localStorage.getItem('adminToken');
+
+        // Check if already logged in
+        if (adminToken) {
+            document.getElementById('loginBox').style.display = 'none';
+            document.getElementById('adminPanel').style.display = 'block';
+            loadApplications();
+            loadStats();
+        }
+
+        function login() {
+            const token = document.getElementById('adminToken').value;
+            if (!token) {
+                document.getElementById('loginMessage').innerHTML = '<p class="error">Please enter token</p>';
+                return;
+            }
+
+            // Simple check - you can make an API call to validate if needed
+            localStorage.setItem('adminToken', token);
+            adminToken = token;
+            document.getElementById('loginBox').style.display = 'none';
+            document.getElementById('adminPanel').style.display = 'block';
+            loadApplications();
+            loadStats();
+        }
+
+        function logout() {
+            localStorage.removeItem('adminToken');
+            adminToken = null;
+            document.getElementById('loginBox').style.display = 'block';
+            document.getElementById('adminPanel').style.display = 'none';
+            document.getElementById('adminToken').value = '';
+        }
+
+        async function loadApplications() {
+            const search = document.getElementById('searchInput').value;
+            const status = document.getElementById('statusFilter').value;
+            
+            try {
+                const res = await fetch(`${API_BASE_URL}/api/admin/applications?search=${search}&status=${status}`, {
+                    headers: {
+                        'x-admin-token': adminToken
+                    }
+                });
+                
+                const data = await res.json();
+                
+                if (!data.success) {
+                    if (res.status === 401) {
+                        alert('Session expired. Please login again.');
+                        logout();
+                    }
+                    return;
+                }
+
+                displayApplications(data.data.applications);
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('tableBody').innerHTML = '<tr><td colspan="9" class="error">Error loading data</td></tr>';
+            }
+        }
+
+        async function loadStats() {
+            try {
+                const res = await fetch(`${API_BASE_URL}/api/admin/stats`, {
+                    headers: {
+                        'x-admin-token': adminToken
+                    }
+                });
+                
+                const data = await res.json();
+                
+                if (data.success) {
+                    document.getElementById('totalCount').textContent = data.data.total;
+                    document.getElementById('pendingCount').textContent = data.data.pending;
+                    document.getElementById('completedCount').textContent = data.data.completed;
+                }
+            } catch (error) {
+                console.error('Error loading stats:', error);
+            }
+        }
+
+        function displayApplications(applications) {
+            const tbody = document.getElementById('tableBody');
+            
+            if (!applications || applications.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="9">No applications found</td></tr>';
+                return;
+            }
+
+            let html = '';
+            applications.forEach(app => {
+                html += `
+                    <tr>
+                        <td>${app.application_id || app.id}</td>
+                        <td>${app.voting_card_no || '-'}</td>
+                        <td>${app.full_name || 'N/A'}</td>
+                        <td>${app.state || 'N/A'}</td>
+                        <td><span class="status-badge ${app.status || 'pending'}">${app.status || 'pending'}</span></td>
+                        <td><span class="status-badge ${app.payment_status === 'completed' ? 'completed' : 'pending'}">${app.payment_status || 'pending'}</span></td>
+                        <td>${app.download_count || 0}/1</td>
+                        <td>${app.created_at ? new Date(app.created_at).toLocaleDateString() : '-'}</td>
+                        <td>
+                            ${app.status !== 'completed' ? `
+                                <button class="upload-btn" onclick="uploadPDF('${app.application_id || app.id}')">Upload PDF</button>
+                            ` : 'PDF Uploaded'}
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            tbody.innerHTML = html;
+        }
+
+        function uploadPDF(applicationId) {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.pdf';
+            
+            input.onchange = async (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                const formData = new FormData();
+                formData.append('pdf', file);
+
+                try {
+                    const res = await fetch(`${API_BASE_URL}/api/admin/upload-pdf/${applicationId}`, {
+                        method: 'POST',
+                        headers: {
+                            'x-admin-token': adminToken
+                        },
+                        body: formData
+                    });
+
+                    const data = await res.json();
+
+                    if (data.success) {
+                        alert('PDF uploaded successfully!');
+                        loadApplications();
+                    } else {
+                        alert(data.message || 'Upload failed');
+                    }
+                } catch (error) {
+                    console.error('Upload error:', error);
+                    alert('Upload failed');
+                }
+            };
+
+            input.click();
+        }
+    </script>
+</body>
+</html>

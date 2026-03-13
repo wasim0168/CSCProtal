@@ -5,8 +5,6 @@ let currentFilter = 'pan'; // Default to pan view for submitted applications
 // Fetch applications on load
 document.addEventListener('DOMContentLoaded', () => {
     fetchApplications();
-    
-    // Add filter buttons if needed
     addFilterButtons();
 });
 
