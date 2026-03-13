@@ -1,0 +1,1245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VoteSecure • Digital Voting Card Application</title>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.95;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            transform: translateY(0);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 30px 70px rgba(0,0,0,0.4);
+        }
+
+        .card h2 {
+            color: #333;
+            margin-bottom: 25px;
+            font-size: 1.8em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card h2 i {
+            color: #667eea;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .input-group i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+            font-size: 1.1em;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 15px 15px 15px 45px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        }
+
+        input::placeholder {
+            color: #aaa;
+        }
+
+        button {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-payment {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+
+        .btn-payment:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(245, 87, 108, 0.4);
+        }
+
+        .btn-download {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+
+        .btn-download:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(79, 172, 254, 0.4);
+        }
+
+        .btn:disabled, .btn-disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            opacity: 0.7;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .status-container {
+            margin-top: 25px;
+        }
+
+        .status-card {
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .status-pending {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffe69b 100%);
+            border-left: 6px solid #ffc107;
+        }
+
+        .status-processing {
+            background: linear-gradient(135deg, #cce5ff 0%, #b8daff 100%);
+            border-left: 6px solid #17a2b8;
+        }
+
+        .status-approved, .status-completed {
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+            border-left: 6px solid #28a745;
+        }
+
+        .status-rejected {
+            background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+            border-left: 6px solid #dc3545;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .info-item {
+            background: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(5px);
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .info-item i {
+            font-size: 1.5em;
+            color: #667eea;
+            margin-bottom: 8px;
+        }
+
+        .info-item .label {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .info-item .value {
+            font-size: 1.2em;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .action-banner {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 5px 20px rgba(102, 126, 234, 0.2); }
+            50% { box-shadow: 0 5px 30px rgba(102, 126, 234, 0.4); }
+            100% { box-shadow: 0 5px 20px rgba(102, 126, 234, 0.2); }
+        }
+
+        .loader {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: white;
+            border-radius: 12px;
+            padding: 16px 24px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast.success {
+            border-left: 6px solid #28a745;
+        }
+
+        .toast.error {
+            border-left: 6px solid #dc3545;
+        }
+
+        .toast.info {
+            border-left: 6px solid #17a2b8;
+        }
+
+        .progress-bar {
+            height: 4px;
+            background: #e0e0e0;
+            border-radius: 2px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge-pending {
+            background: rgba(255, 193, 7, 0.2);
+            color: #856404;
+        }
+
+        .badge-processing {
+            background: rgba(23, 162, 184, 0.2);
+            color: #0c5460;
+        }
+
+        .badge-completed {
+            background: rgba(40, 167, 69, 0.2);
+            color: #155724;
+        }
+
+        .badge-rejected {
+            background: rgba(220, 53, 69, 0.2);
+            color: #721c24;
+        }
+
+        .download-count {
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .download-count i {
+            margin-right: 5px;
+        }
+
+        @media (max-width: 600px) {
+            .card {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .floating-shape {
+            position: fixed;
+            width: 300px;
+            height: 300px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .shape-1 {
+            top: -100px;
+            left: -100px;
+        }
+
+        .shape-2 {
+            bottom: -100px;
+            right: -100px;
+        }
+
+        .download-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #28a745;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 8px 16px;
+            background: rgba(40, 167, 69, 0.1);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .download-link:hover {
+            background: rgba(40, 167, 69, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .download-link i {
+            font-size: 1.2em;
+        }
+    </style>
+</head>
+<body>
+    <div class="floating-shape shape-1"></div>
+    <div class="floating-shape shape-2"></div>
+
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-id-card"></i> VoteSecure</h1>
+            <p>Your Digital Voting Card Solution</p>
+            <div class="badge badge-pending" id="connection-status" style="margin-top: 10px;">
+                <i class="fas fa-circle" style="font-size: 0.5em; margin-right: 5px;"></i>
+                Checking connection...
+            </div>
+        </div>
+
+        <!-- Application Card -->
+        <div class="card">
+            <h2><i class="fas fa-file-alt"></i> New Application</h2>
+            <div class="input-group">
+                <i class="fas fa-id-card"></i>
+                <input type="text" id="votingNo" placeholder="Enter Voting Card Number" maxlength="20" />
+            </div>
+            <div class="input-group">
+                <i class="fas fa-map-marker-alt"></i>
+                <input type="text" id="state" placeholder="Enter State" maxlength="50" />
+            </div>
+            <button class="btn-primary" onclick="submitApplication()">
+                <i class="fas fa-paper-plane"></i> Submit Application
+            </button>
+            <div class="progress-bar" id="submitProgress" style="display: none;">
+                <div class="progress-fill"></div>
+            </div>
+        </div>
+
+        <!-- Status Check Card -->
+        <div class="card">
+            <h2><i class="fas fa-search"></i> Check Application Status</h2>
+            <div class="input-group">
+                <i class="fas fa-id-card"></i>
+                <input type="text" id="votingCheckNo" placeholder="Enter Voting Card Number" 
+                       onkeypress="if(event.key==='Enter') checkStatus()" maxlength="20" />
+            </div>
+            <button class="btn-primary" onclick="checkStatus()">
+                <i class="fas fa-check-circle"></i> Check Status
+            </button>
+            <div id="result" class="status-container"></div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast">
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <i id="toastIcon" class="fas"></i>
+            <span id="toastMessage"></span>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = "http://localhost:5001/api";
+        let razorpayKey = null;
+
+        // Toast notification system
+        function showToast(message, type = 'info') {
+            const toast = document.getElementById('toast');
+            const icon = document.getElementById('toastIcon');
+            const messageEl = document.getElementById('toastMessage');
+            
+            toast.className = `toast ${type}`;
+            icon.className = `fas ${
+                type === 'success' ? 'fa-check-circle' : 
+                type === 'error' ? 'fa-exclamation-circle' : 
+                'fa-info-circle'
+            }`;
+            
+            messageEl.textContent = message;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Show loading state
+        function showLoading(elementId, show = true) {
+            const element = document.getElementById(elementId);
+            if (show) {
+                element.style.display = 'block';
+                animateProgress(element.querySelector('.progress-fill'));
+            } else {
+                element.style.display = 'none';
+            }
+        }
+
+        function animateProgress(progressElement) {
+            let width = 0;
+            const interval = setInterval(() => {
+                if (width >= 90) {
+                    clearInterval(interval);
+                } else {
+                    width += 10;
+                    progressElement.style.width = width + '%';
+                }
+            }, 200);
+        }
+
+        // Update connection status
+        function updateConnectionStatus(connected) {
+            const statusEl = document.getElementById('connection-status');
+            if (connected) {
+                statusEl.innerHTML = '<i class="fas fa-circle" style="font-size: 0.5em; margin-right: 5px; color: #28a745;"></i> Connected to server';
+                statusEl.className = 'badge badge-completed';
+            } else {
+                statusEl.innerHTML = '<i class="fas fa-circle" style="font-size: 0.5em; margin-right: 5px; color: #dc3545;"></i> Disconnected from server';
+                statusEl.className = 'badge badge-rejected';
+            }
+        }
+
+        // Load Razorpay key on page load
+        async function loadRazorpayKey() {
+            try {
+                const res = await fetch(`${API_BASE_URL}/razorpay-key`);
+                const data = await res.json();
+                razorpayKey = data.key;
+                console.log("✅ Razorpay key loaded");
+                return true;
+            } catch (err) {
+                console.error("❌ Failed to load Razorpay key:", err);
+                return false;
+            }
+        }
+
+        // Initialize payment
+        async function initiatePayment(applicationId, amount = 50) {
+            try {
+                showLoading('paymentProgress', true);
+                
+                const orderRes = await fetch(`${API_BASE_URL}/create-order`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ applicationId, amount })
+                });
+
+                const orderData = await orderRes.json();
+                showLoading('paymentProgress', false);
+
+                if (!orderData.success) {
+                    showToast('Failed to create payment order: ' + (orderData.error || 'Unknown error'), 'error');
+                    return;
+                }
+
+                const options = {
+                    key: razorpayKey,
+                    amount: orderData.order.amount,
+                    currency: orderData.order.currency,
+                    name: 'VoteSecure',
+                    description: 'Voting Card PDF Download',
+                    image: 'https://via.placeholder.com/100x100/667eea/ffffff?text=VS',
+                    order_id: orderData.order.id,
+                    handler: async function(response) {
+                        showToast('Processing payment...', 'info');
+                        
+                        const verifyRes = await fetch(`${API_BASE_URL}/verify-payment`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                razorpay_order_id: response.razorpay_order_id,
+                                razorpay_payment_id: response.razorpay_payment_id,
+                                razorpay_signature: response.razorpay_signature,
+                                applicationId: applicationId
+                            })
+                        });
+
+                        const verifyData = await verifyRes.json();
+
+                        if (verifyData.success) {
+                            showToast('Payment successful! You can now download your PDF.', 'success');
+                            // Refresh status to show download button
+                            setTimeout(() => {
+                                const votingNo = document.getElementById("votingCheckNo").value.trim();
+                                if (votingNo) checkStatus();
+                            }, 1000);
+                        } else {
+                            showToast('Payment verification failed: ' + (verifyData.error || 'Unknown error'), 'error');
+                        }
+                    },
+                    prefill: {
+                        name: 'Voter',
+                        email: 'voter@example.com',
+                        contact: '9999999999'
+                    },
+                    theme: {
+                        color: '#667eea'
+                    },
+                    modal: {
+                        ondismiss: function() {
+                            showToast('Payment cancelled', 'info');
+                        }
+                    }
+                };
+
+                const razorpay = new Razorpay(options);
+                razorpay.open();
+
+            } catch (err) {
+                console.error('Payment initiation error:', err);
+                showToast('Failed to initiate payment: ' + err.message, 'error');
+                showLoading('paymentProgress', false);
+            }
+        }
+
+        // FIXED: Download PDF with proper error handling and multiple methods
+       // FIXED: Download PDF with multiple endpoint fallbacks
+async function downloadPDF(applicationId) {
+    try {
+        showToast('Checking download status...', 'info');
+        
+        // List of possible status endpoints to try
+        const statusEndpoints = [
+            `${API_BASE_URL}/download-status/${applicationId}`,
+            `${API_BASE_URL}/voting/download-status/${applicationId}`,
+            `${API_BASE_URL}/voting/status/download/${applicationId}`,
+            `http://localhost:5001/api/download-status/${applicationId}`,
+            `http://localhost:5001/api/voting/download-status/${applicationId}`
+        ];
+
+        let statusData = null;
+        let statusSuccess = false;
+
+        // Try each endpoint until one works
+        for (const endpoint of statusEndpoints) {
+            try {
+                console.log('Trying status endpoint:', endpoint);
+                
+                const statusRes = await fetch(endpoint, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+
+                console.log(`Status endpoint ${endpoint} responded with:`, statusRes.status);
+
+                if (statusRes.ok) {
+                    const data = await statusRes.json();
+                    if (data.success !== false) {
+                        statusData = data;
+                        statusSuccess = true;
+                        console.log('✅ Found working status endpoint:', endpoint);
+                        break;
+                    }
+                }
+            } catch (e) {
+                console.log(`Endpoint ${endpoint} failed:`, e.message);
+            }
+        }
+
+        if (!statusSuccess) {
+            // If no status endpoint works, try direct download
+            console.log('No status endpoint found, trying direct download...');
+            await performDirectDownload(applicationId);
+            return;
+        }
+
+        if (!statusData.canDownload) {
+            if (statusData.lastDownloaded) {
+                const date = new Date(statusData.lastDownloaded).toLocaleString();
+                showToast(`Already downloaded on ${date}`, 'error');
+            } else {
+                showToast('Download limit reached (1 per payment)', 'error');
+            }
+            return;
+        }
+
+        // Proceed with download
+        await performDownload(applicationId);
+
+    } catch (err) {
+        console.error('Download error:', err);
+        showToast('Failed to download PDF: ' + err.message, 'error');
+        
+        // Last resort: try direct download
+        try {
+            await performDirectDownload(applicationId);
+        } catch (fallbackErr) {
+            console.error('Fallback download failed:', fallbackErr);
+        }
+    }
+}
+
+// Direct download without status check (fallback method)
+async function performDirectDownload(applicationId) {
+    try {
+        showToast('Attempting direct download...', 'info');
+        
+        // List of possible download endpoints
+        const downloadEndpoints = [
+            `${API_BASE_URL}/voting/pdf/${applicationId}`,
+            `${API_BASE_URL}/voting/download/${applicationId}`,
+            `${API_BASE_URL}/pdf/${applicationId}`,
+            `http://localhost:5001/api/voting/pdf/${applicationId}`,
+            `http://localhost:5001/api/voting/download/${applicationId}`
+        ];
+
+        for (const endpoint of downloadEndpoints) {
+            try {
+                console.log('Trying download endpoint:', endpoint);
+                
+                const response = await fetch(endpoint, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/pdf'
+                    }
+                });
+
+                if (response.ok) {
+                    const contentType = response.headers.get('content-type');
+                    if (contentType && contentType.includes('application/pdf')) {
+                        const blob = await response.blob();
+                        
+                        if (blob.size > 0) {
+                            const url = window.URL.createObjectURL(blob);
+                            const link = document.createElement('a');
+                            link.href = url;
+                            link.download = `voting-card-${applicationId}.pdf`;
+                            document.body.appendChild(link);
+                            link.click();
+                            document.body.removeChild(link);
+                            window.URL.revokeObjectURL(url);
+                            
+                            showToast('Download started! Please save the PDF safely.', 'success');
+                            return;
+                        }
+                    }
+                }
+            } catch (e) {
+                console.log(`Download endpoint ${endpoint} failed:`, e.message);
+            }
+        }
+
+        // If all blob downloads fail, try opening in new tab
+        window.open(`${API_BASE_URL}/voting/pdf/${applicationId}`, '_blank');
+        showToast('Opening PDF in new tab. Please save it manually.', 'info');
+
+    } catch (err) {
+        console.error('Direct download error:', err);
+        showToast('Failed to download PDF', 'error');
+    }
+}
+
+// Original download method with blob
+async function performDownload(applicationId) {
+    try {
+        showToast('Preparing download...', 'info');
+        
+        const response = await fetch(`${API_BASE_URL}/voting/pdf/${applicationId}`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/pdf'
+            }
+        });
+
+        console.log('Download response:', response.status);
+
+        if (!response.ok) {
+            if (response.status === 403) {
+                const error = await response.json();
+                showToast(error.error || 'Download not allowed', 'error');
+                return;
+            }
+            if (response.status === 404) {
+                showToast('PDF not found', 'error');
+                return;
+            }
+            throw new Error(`Download failed: ${response.status}`);
+        }
+
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/pdf')) {
+            console.warn('Unexpected content type:', contentType);
+        }
+
+        const blob = await response.blob();
+        
+        if (blob.size === 0) {
+            throw new Error('Downloaded file is empty');
+        }
+
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `voting-card-${applicationId}.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+        
+        showToast('Download started! Please save the PDF safely.', 'success');
+        
+        setTimeout(() => {
+            const votingNo = document.getElementById("votingCheckNo").value.trim();
+            if (votingNo) checkStatus();
+        }, 2000);
+
+    } catch (err) {
+        console.error('Download execution error:', err);
+        throw err;
+    }
+}
+
+// Enhanced status check function
+async function checkStatus() {
+    const votingNo = document.getElementById("votingCheckNo").value.trim();
+    
+    if (!votingNo) {
+        showToast("Enter Voting Card Number", "error");
+        return;
+    }
+
+    const resultDiv = document.getElementById("result");
+    resultDiv.innerHTML = '<div class="loader"></div>';
+
+    try {
+        // Try multiple status endpoints
+        const statusEndpoints = [
+            `${API_BASE_URL}/voting/status/voting/${encodeURIComponent(votingNo)}`,
+            `http://localhost:5001/api/voting/status/voting/${encodeURIComponent(votingNo)}`,
+            `${API_BASE_URL}/voting/status/${encodeURIComponent(votingNo)}`
+        ];
+
+        let data = null;
+        let success = false;
+
+        for (const endpoint of statusEndpoints) {
+            try {
+                console.log('Trying status endpoint:', endpoint);
+                const res = await fetch(endpoint);
+                
+                if (res.ok) {
+                    data = await res.json();
+                    success = true;
+                    break;
+                } else if (res.status === 404) {
+                    // If not found, continue to next endpoint
+                    continue;
+                }
+            } catch (e) {
+                console.log(`Endpoint ${endpoint} failed:`, e.message);
+            }
+        }
+
+        if (!success || !data) {
+            resultDiv.innerHTML = `<div class="status-card status-rejected">
+                <i class="fas fa-exclamation-circle" style="font-size: 2em; color: #dc3545; margin-bottom: 10px;"></i>
+                <h3>Application Not Found</h3>
+                <p>No application found with this voting card number</p>
+                <p style="margin-top: 10px; font-size: 0.9rem;">
+                    <i class="fas fa-lightbulb"></i> 
+                    Apply for a new voting card using the form above
+                </p>
+            </div>`;
+            return;
+        }
+
+        if (!data.success) {
+            resultDiv.innerHTML = `<div class="status-card status-rejected">
+                <i class="fas fa-exclamation-triangle" style="font-size: 2em; color: #dc3545; margin-bottom: 10px;"></i>
+                <h3>Error</h3>
+                <p>${data.error || "Failed to fetch status"}</p>
+            </div>`;
+            return;
+        }
+
+        // Rest of your status display code remains the same...
+        // [Keep all the existing status display code here]
+        
+    } catch (err) {
+        resultDiv.innerHTML = `<div class="status-card status-rejected">
+            <i class="fas fa-plug" style="font-size: 2em; color: #dc3545; margin-bottom: 10px;"></i>
+            <h3>Connection Error</h3>
+            <p>Cannot connect to server. Make sure it's running on port 5001</p>
+            <p style="margin-top: 10px; font-size: 0.9rem;">
+                <i class="fas fa-terminal"></i> 
+                Run: node server.js in your backend folder
+            </p>
+        </div>`;
+        console.error("Fetch error:", err);
+        updateConnectionStatus(false);
+    }
+}
+        // Test function for debugging
+        async function testDownloadEndpoints(applicationId) {
+            console.log('Testing download endpoints for:', applicationId);
+            
+            const endpoints = [
+                `/download-status/${applicationId}`,
+                `/voting/pdf/${applicationId}`,
+                `/voting/download/${applicationId}`
+            ];
+            
+            for (const endpoint of endpoints) {
+                try {
+                    const url = `http://localhost:5001/api${endpoint}`;
+                    console.log(`Testing ${url}...`);
+                    
+                    const res = await fetch(url, {
+                        method: 'GET',
+                        headers: {
+                            'Accept': 'application/json'
+                        }
+                    });
+                    
+                    console.log(`${endpoint}: Status ${res.status}`);
+                    
+                    if (res.headers.get('content-type')?.includes('application/json')) {
+                        const data = await res.json();
+                        console.log('Response:', data);
+                    } else {
+                        console.log('Response is not JSON (might be PDF)');
+                    }
+                } catch (e) {
+                    console.log(`${endpoint}: Error -`, e.message);
+                }
+            }
+        }
+
+        async function submitApplication() {
+            const votingNo = document.getElementById("votingNo").value.trim();
+            const state = document.getElementById("state").value.trim();
+
+            if (!votingNo || !state) {
+                showToast("Please fill all fields", "error");
+                return;
+            }
+
+            if (votingNo.length < 3) {
+                showToast("Voting card number must be at least 3 characters", "error");
+                return;
+            }
+
+            showLoading('submitProgress', true);
+
+            try {
+                const res = await fetch(`${API_BASE_URL}/voting/submit`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ votingNo, state })
+                });
+
+                const data = await res.json();
+
+                if (data.success) {
+                    showToast(`Application Submitted! ID: ${data.application.id}`, "success");
+                    document.getElementById("votingNo").value = "";
+                    document.getElementById("state").value = "";
+                    
+                    // Auto-fill the check field with the same number
+                    document.getElementById("votingCheckNo").value = votingNo;
+                    
+                    // Check status after 1 second
+                    setTimeout(() => checkStatus(), 1000);
+                } else {
+                    showToast(data.error || "Submission failed", "error");
+                }
+
+            } catch (err) {
+                showToast("Unable to connect to server. Make sure it's running on port 5001", "error");
+                console.error(err);
+                updateConnectionStatus(false);
+            } finally {
+                showLoading('submitProgress', false);
+            }
+        }
+
+        async function checkStatus() {
+            const votingNo = document.getElementById("votingCheckNo").value.trim();
+            
+            if (!votingNo) {
+                showToast("Enter Voting Card Number", "error");
+                return;
+            }
+
+            const resultDiv = document.getElementById("result");
+            resultDiv.innerHTML = '<div class="loader"></div>';
+
+            try {
+                const res = await fetch(`${API_BASE_URL}/voting/status/voting/${encodeURIComponent(votingNo)}`);
+                const data = await res.json();
+
+                if (res.status === 404) {
+                    resultDiv.innerHTML = `<div class="status-card status-rejected">
+                        <i class="fas fa-exclamation-circle" style="font-size: 2em; color: #dc3545; margin-bottom: 10px;"></i>
+                        <h3>Application Not Found</h3>
+                        <p>${data.error || "No application found with this voting card number"}</p>
+                        <p style="margin-top: 10px; font-size: 0.9rem;">
+                            <i class="fas fa-lightbulb"></i> 
+                            Apply for a new voting card using the form above
+                        </p>
+                    </div>`;
+                    return;
+                }
+
+                if (!res.ok || !data.success) {
+                    resultDiv.innerHTML = `<div class="status-card status-rejected">
+                        <i class="fas fa-exclamation-triangle" style="font-size: 2em; color: #dc3545; margin-bottom: 10px;"></i>
+                        <h3>Error</h3>
+                        <p>${data.error || "Failed to fetch status"}</p>
+                    </div>`;
+                    return;
+                }
+
+                let statusClass = "status-pending";
+                let statusIcon = "fa-clock";
+                let statusText = data.status || "pending";
+                
+                if (statusText === "processing") {
+                    statusClass = "status-processing";
+                    statusIcon = "fa-spinner fa-spin";
+                } else if (statusText === "completed") {
+                    statusClass = "status-completed";
+                    statusIcon = "fa-check-circle";
+                } else if (statusText === "rejected") {
+                    statusClass = "status-rejected";
+                    statusIcon = "fa-times-circle";
+                }
+
+                let html = `
+                    <div class="status-card ${statusClass}">
+                        <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
+                            <i class="fas ${statusIcon}" style="font-size: 2.5em;"></i>
+                            <div>
+                                <h3 style="margin-bottom: 5px; text-transform: uppercase;">${statusText}</h3>
+                                <p style="opacity: 0.8;">Application ID: ${data.applicationId}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <i class="fas fa-credit-card"></i>
+                                <div class="label">Payment Status</div>
+                                <div class="value">${(data.paymentStatus || 'pending').toUpperCase()}</div>
+                            </div>
+                `;
+
+                if (data.downloadCount !== undefined) {
+                    html += `
+                            <div class="info-item">
+                                <i class="fas fa-download"></i>
+                                <div class="label">Downloads</div>
+                                <div class="value">${data.downloadCount}/1</div>
+                            </div>
+                    `;
+                }
+
+                if (data.lastDownloaded) {
+                    html += `
+                            <div class="info-item">
+                                <i class="fas fa-history"></i>
+                                <div class="label">Last Downloaded</div>
+                                <div class="value">${new Date(data.lastDownloaded).toLocaleString()}</div>
+                            </div>
+                    `;
+                }
+
+                html += `</div>`;
+
+                // Action buttons based on status
+                if (statusText === "completed") {
+                    if (data.paymentStatus === 'completed') {
+                        if (data.alreadyDownloaded) {
+                            html += `
+                                <div class="action-banner" style="background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%); animation: none;">
+                                    <i class="fas fa-exclamation-triangle" style="color: #dc3545; font-size: 1.5em; margin-bottom: 10px;"></i>
+                                    <h4 style="color: #721c24; margin-bottom: 10px;">Download Limit Reached</h4>
+                                    <p style="color: #721c24;">You have already downloaded this PDF. Each payment allows only one download.</p>
+                                    <div class="download-count">
+                                        <i class="fas fa-calendar-alt"></i> 
+                                        Downloaded on: ${new Date(data.lastDownloaded).toLocaleString()}
+                                    </div>
+                                    <button class="btn-primary" style="background: #6c757d; margin-top: 15px;" disabled>
+                                        <i class="fas fa-ban"></i> Already Downloaded
+                                    </button>
+                                </div>
+                            `;
+                        } else {
+                            html += `
+                                <div class="action-banner" style="background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);">
+                                    <i class="fas fa-check-circle" style="color: #28a745; font-size: 1.5em; margin-bottom: 10px;"></i>
+                                    <h4 style="color: #155724; margin-bottom: 10px;">Ready to Download</h4>
+                                    <p style="color: #155724;">Your payment is confirmed. Download your PDF (one-time only)</p>
+                                    <button class="btn-download" onclick="downloadPDF('${data.applicationId}')" style="margin-top: 15px;">
+                                        <i class="fas fa-download"></i> Download PDF (One-time)
+                                    </button>
+                                </div>
+                            `;
+                        }
+                    } else {
+                        html += `
+                            <div class="action-banner" style="background: linear-gradient(135deg, #cce5ff 0%, #b8daff 100%);">
+                                <i class="fas fa-lock" style="color: #004085; font-size: 1.5em; margin-bottom: 10px;"></i>
+                                <h4 style="color: #004085; margin-bottom: 10px;">Payment Required</h4>
+                                <p style="color: #004085;">Complete payment to download your voting card PDF (₹50 - One-time download)</p>
+                                <button class="btn-payment" onclick="initiatePayment('${data.applicationId}', 50)" style="margin-top: 15px;">
+                                    <i class="fas fa-credit-card"></i> Pay ₹50 & Download
+                                </button>
+                                <div id="paymentProgress" class="progress-bar" style="margin-top: 15px; display: none;">
+                                    <div class="progress-fill"></div>
+                                </div>
+                            </div>
+                        `;
+                    }
+                } else if (statusText === "processing") {
+                    html += `
+                        <div class="action-banner" style="background: linear-gradient(135deg, #cce5ff 0%, #b8daff 100%);">
+                            <i class="fas fa-cogs" style="color: #004085; font-size: 1.5em; margin-bottom: 10px;"></i>
+                            <h4 style="color: #004085; margin-bottom: 10px;">Processing Application</h4>
+                            <p style="color: #004085;">Your application is being processed. PDF will be available once approved.</p>
+                            <p style="color: #004085; font-size: 0.9rem; margin-top: 10px;">
+                                <i class="fas fa-clock"></i> Please check back later
+                            </p>
+                        </div>
+                    `;
+                } else if (statusText === "pending") {
+                    html += `
+                        <div class="action-banner" style="background: linear-gradient(135deg, #fff3cd 0%, #ffe69b 100%);">
+                            <i class="fas fa-hourglass-half" style="color: #856404; font-size: 1.5em; margin-bottom: 10px;"></i>
+                            <h4 style="color: #856404; margin-bottom: 10px;">Pending Approval</h4>
+                            <p style="color: #856404;">Your application is pending review. You'll be notified once processed.</p>
+                            <p style="color: #856404; font-size: 0.9rem; margin-top: 10px;">
+                                <i class="fas fa-info-circle"></i> 
+                                Complete payment after status changes to "completed"
+                            </p>
+                        </div>
+                    `;
+                } else if (statusText === "rejected") {
+                    html += `
+                        <div class="action-banner" style="background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%); animation: none;">
+                            <i class="fas fa-times-circle" style="color: #dc3545; font-size: 1.5em; margin-bottom: 10px;"></i>
+                            <h4 style="color: #721c24; margin-bottom: 10px;">Application Rejected</h4>
+                            <p style="color: #721c24;">Your application has been rejected. Please contact support for more information.</p>
+                            <button class="btn-primary" style="background: #6c757d; margin-top: 15px;" onclick="window.location.reload()">
+                                <i class="fas fa-redo"></i> Try Again
+                            </button>
+                        </div>
+                    `;
+                }
+
+                html += `</div>`;
+                resultDiv.innerHTML = html;
+
+            } catch (err) {
+                resultDiv.innerHTML = `<div class="status-card status-rejected">
+                    <i class="fas fa-plug" style="font-size: 2em; color: #dc3545; margin-bottom: 10px;"></i>
+                    <h3>Connection Error</h3>
+                    <p>Cannot connect to server. Make sure it's running on port 5001</p>
+                    <p style="margin-top: 10px; font-size: 0.9rem;">
+                        <i class="fas fa-terminal"></i> 
+                        Run: node server.js in your backend folder
+                    </p>
+                </div>`;
+                console.error("Fetch error:", err);
+                updateConnectionStatus(false);
+            }
+        }
+
+        // Test server connection on page load
+        async function testServerConnection() {
+            try {
+                const res = await fetch(`http://localhost:5001/test`);
+                if (res.ok) {
+                    console.log("✅ Connected to server successfully");
+                    updateConnectionStatus(true);
+                    await loadRazorpayKey();
+                } else {
+                    updateConnectionStatus(false);
+                    showToast('Server connection failed', 'error');
+                }
+            } catch (err) {
+                updateConnectionStatus(false);
+                showToast('Server not reachable. Make sure it\'s running on port 5001', 'error');
+                console.log("❌ Server not reachable. Make sure it's running on port 5001");
+            }
+        }
+
+        // Load saved voting number from localStorage
+        function loadSavedVotingNumber() {
+            const saved = localStorage.getItem('lastVotingNumber');
+            if (saved) {
+                document.getElementById("votingCheckNo").value = saved;
+            }
+        }
+
+        // Save voting number to localStorage
+        function saveVotingNumber(number) {
+            if (number) {
+                localStorage.setItem('lastVotingNumber', number);
+            }
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            testServerConnection();
+            loadSavedVotingNumber();
+            
+            // Add floating animation to cards
+            const cards = document.querySelectorAll('.card');
+            cards.forEach((card, index) => {
+                card.style.animation = `slideIn 0.5s ease ${index * 0.1}s both`;
+            });
+
+            // Check for voting number in URL params
+            const urlParams = new URLSearchParams(window.location.search);
+            const votingNo = urlParams.get('votingNo');
+            if (votingNo) {
+                document.getElementById("votingCheckNo").value = votingNo;
+                setTimeout(() => checkStatus(), 500);
+            }
+        });
+
+        // Save voting number when checking status
+        const originalCheckStatus = checkStatus;
+        checkStatus = function() {
+            const votingNo = document.getElementById("votingCheckNo").value.trim();
+            if (votingNo) {
+                saveVotingNumber(votingNo);
+            }
+            return originalCheckStatus.apply(this, arguments);
+        };
+
+        // Expose test function to console for debugging
+        window.testDownloadEndpoints = testDownloadEndpoints;
+    </script>
+</body>
+</html>

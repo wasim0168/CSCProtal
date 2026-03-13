@@ -1,0 +1,320 @@
+[2026-03-03T16:31:45.488Z] [INFO] 🚀 Server running on port 5001
+[2026-03-03T16:31:45.500Z] [INFO] GET /test
+[2026-03-03T16:31:45.989Z] [INFO] GET /test
+[2026-03-03T16:31:46.369Z] [INFO] GET /test
+[2026-03-03T16:31:46.751Z] [INFO] GET /test
+[2026-03-03T16:31:57.585Z] [INFO] GET /api/razorpay-key
+[2026-03-03T16:31:57.956Z] [INFO] GET /test
+[2026-03-03T16:31:57.972Z] [INFO] GET /test
+[2026-03-03T16:31:58.459Z] [INFO] GET /test
+[2026-03-03T16:31:58.875Z] [INFO] GET /test
+[2026-03-03T16:31:58.890Z] [INFO] GET /test
+[2026-03-03T16:32:00.193Z] [INFO] GET /test
+[2026-03-03T16:32:01.032Z] [INFO] GET /test
+[2026-03-03T16:32:01.033Z] [INFO] GET /test
+[2026-03-03T16:32:01.785Z] [INFO] GET /test
+[2026-03-03T16:32:02.139Z] [INFO] GET /test
+[2026-03-03T16:32:02.504Z] [INFO] GET /test
+[2026-03-03T16:32:02.969Z] [INFO] GET /test
+[2026-03-03T16:32:03.007Z] [INFO] GET /test
+[2026-03-03T16:32:03.389Z] [INFO] GET /test
+[2026-03-03T16:32:03.862Z] [INFO] GET /test
+[2026-03-03T16:32:04.122Z] [INFO] GET /test
+[2026-03-03T16:32:04.617Z] [INFO] GET /test
+[2026-03-03T16:32:04.619Z] [INFO] GET /test
+[2026-03-03T16:32:05.083Z] [INFO] GET /test
+[2026-03-03T16:32:05.299Z] [INFO] GET /test
+[2026-03-03T16:32:05.600Z] [INFO] GET /test
+[2026-03-03T16:32:05.754Z] [INFO] GET /test
+[2026-03-03T16:32:06.012Z] [INFO] GET /test
+[2026-03-03T16:32:06.408Z] [INFO] GET /test
+[2026-03-03T16:32:06.668Z] [INFO] GET /test
+[2026-03-03T16:32:06.726Z] [INFO] GET /test
+[2026-03-03T16:32:07.156Z] [INFO] GET /test
+[2026-03-03T16:32:07.487Z] [INFO] GET /test
+[2026-03-03T16:32:07.719Z] [INFO] GET /test
+[2026-03-03T16:32:07.770Z] [INFO] GET /test
+[2026-03-03T16:32:08.148Z] [INFO] GET /test
+[2026-03-03T16:32:08.219Z] [INFO] GET /test
+[2026-03-03T16:32:28.132Z] [INFO] GET /api/applications
+[2026-03-03T16:32:28.209Z] [INFO] GET /api/admin/voting-applications?limit=100
+[2026-03-03T16:32:28.211Z] [WARN] Unauthorized admin access attempt from ::1
+[2026-03-03T16:32:28.457Z] [INFO] GET /test
+[2026-03-03T16:32:28.671Z] [INFO] GET /test
+[2026-03-03T16:32:29.111Z] [INFO] GET /test
+[2026-03-03T16:32:29.115Z] [INFO] GET /test
+[2026-03-03T16:32:29.561Z] [INFO] GET /test
+[2026-03-03T16:32:29.958Z] [INFO] GET /test
+[2026-03-03T16:32:30.129Z] [INFO] GET /test
+[2026-03-03T16:32:30.630Z] [INFO] GET /test
+[2026-03-03T16:32:30.633Z] [INFO] GET /test
+[2026-03-03T16:32:30.978Z] [INFO] GET /test
+[2026-03-03T16:32:31.315Z] [INFO] GET /test
+[2026-03-03T16:32:31.427Z] [INFO] GET /test
+[2026-03-03T16:32:31.764Z] [INFO] GET /test
+[2026-03-03T16:32:31.780Z] [INFO] GET /test
+[2026-03-03T16:32:32.171Z] [INFO] GET /test
+[2026-03-03T16:32:32.499Z] [INFO] GET /test
+[2026-03-03T16:32:32.624Z] [INFO] GET /test
+[2026-03-03T16:32:33.387Z] [INFO] GET /test
+[2026-03-03T16:32:33.466Z] [INFO] GET /test
+[2026-03-03T16:32:33.814Z] [INFO] GET /test
+[2026-03-03T16:32:33.912Z] [INFO] GET /test
+[2026-03-03T16:32:34.257Z] [INFO] GET /test
+[2026-03-03T16:32:34.374Z] [INFO] GET /test
+[2026-03-03T16:32:34.631Z] [INFO] GET /test
+[2026-03-03T16:32:34.857Z] [INFO] GET /test
+[2026-03-03T16:32:34.880Z] [INFO] GET /test
+[2026-03-03T16:34:12.938Z] [INFO] GET /api/applications
+[2026-03-03T16:34:12.944Z] [INFO] GET /api/admin/voting-applications?limit=100
+[2026-03-03T16:34:12.945Z] [WARN] Unauthorized admin access attempt from ::1
+[2026-03-03T16:34:13.223Z] [INFO] GET /test
+[2026-03-03T16:34:13.745Z] [INFO] GET /test
+[2026-03-03T16:34:14.031Z] [INFO] GET /test
+[2026-03-03T16:34:14.428Z] [INFO] GET /test
+[2026-03-03T16:34:14.834Z] [INFO] GET /test
+[2026-03-03T16:34:14.989Z] [INFO] GET /test
+[2026-03-03T16:35:45.350Z] [INFO] 🚀 Server running on port 5001
+[2026-03-03T16:35:45.387Z] [INFO] GET /test
+[2026-03-03T16:35:45.408Z] [INFO] GET /test
+[2026-03-03T16:35:45.782Z] [INFO] GET /test
+[2026-03-03T16:35:45.883Z] [INFO] GET /test
+[2026-03-03T16:35:46.239Z] [INFO] GET /test
+[2026-03-03T16:35:46.382Z] [INFO] GET /test
+[2026-03-03T16:35:46.925Z] [INFO] GET /test
+[2026-03-03T16:35:47.002Z] [INFO] GET /test
+[2026-03-03T16:35:47.585Z] [INFO] GET /test
+[2026-03-03T16:35:47.712Z] [INFO] GET /test
+[2026-03-03T16:35:48.317Z] [INFO] GET /test
+[2026-03-03T16:35:48.503Z] [INFO] GET /test
+[2026-03-03T16:35:48.683Z] [INFO] GET /test
+[2026-03-03T16:35:49.041Z] [INFO] GET /test
+[2026-03-03T16:35:49.331Z] [INFO] GET /test
+[2026-03-03T16:35:49.412Z] [INFO] GET /test
+[2026-03-03T16:35:49.571Z] [INFO] GET /test
+[2026-03-03T16:35:50.003Z] [INFO] GET /test
+[2026-03-03T16:35:50.344Z] [INFO] GET /test
+[2026-03-03T16:35:50.411Z] [INFO] GET /test
+[2026-03-03T16:35:50.695Z] [INFO] GET /test
+[2026-03-03T16:35:50.929Z] [INFO] GET /test
+[2026-03-03T16:35:51.275Z] [INFO] GET /test
+[2026-03-03T16:35:51.389Z] [INFO] GET /test
+[2026-03-03T16:35:51.727Z] [INFO] GET /test
+[2026-03-03T16:35:51.791Z] [INFO] GET /test
+[2026-03-03T16:35:52.122Z] [INFO] GET /test
+[2026-03-03T16:35:52.299Z] [INFO] GET /test
+[2026-03-03T16:35:52.677Z] [INFO] GET /test
+[2026-03-03T16:35:52.727Z] [INFO] GET /test
+[2026-03-03T16:35:52.967Z] [INFO] GET /test
+[2026-03-03T16:35:53.252Z] [INFO] GET /test
+[2026-03-03T16:35:53.439Z] [INFO] GET /test
+[2026-03-03T16:35:53.724Z] [INFO] GET /test
+[2026-03-03T16:35:53.730Z] [INFO] GET /test
+[2026-03-03T16:35:54.147Z] [INFO] GET /test
+[2026-03-03T16:35:54.509Z] [INFO] GET /test
+[2026-03-03T16:35:54.651Z] [INFO] GET /test
+[2026-03-03T16:35:55.116Z] [INFO] GET /test
+[2026-03-03T16:35:55.169Z] [INFO] GET /test
+[2026-03-03T16:35:55.514Z] [INFO] GET /test
+[2026-03-03T16:35:55.681Z] [INFO] GET /test
+[2026-03-03T16:35:56.033Z] [INFO] GET /test
+[2026-03-03T16:35:56.155Z] [INFO] GET /test
+[2026-03-03T16:35:56.550Z] [INFO] GET /test
+[2026-03-03T16:35:56.595Z] [INFO] GET /test
+[2026-03-03T16:36:48.226Z] [INFO] GET /test
+[2026-03-03T16:36:48.323Z] [INFO] GET /test
+[2026-03-03T16:36:48.856Z] [INFO] GET /test
+[2026-03-03T16:36:49.336Z] [INFO] GET /test
+[2026-03-03T16:36:49.646Z] [INFO] GET /test
+[2026-03-03T16:36:49.991Z] [INFO] GET /test
+[2026-03-03T16:36:50.142Z] [INFO] GET /test
+[2026-03-03T16:36:50.445Z] [INFO] GET /test
+[2026-03-03T16:36:50.574Z] [INFO] GET /test
+[2026-03-03T16:36:50.844Z] [INFO] GET /test
+[2026-03-03T16:36:51.222Z] [INFO] GET /test
+[2026-03-03T16:36:51.494Z] [INFO] GET /test
+[2026-03-03T16:36:51.631Z] [INFO] GET /test
+[2026-03-03T16:37:13.241Z] [INFO] 🚀 Server running on port 5001
+[2026-03-03T16:37:13.262Z] [INFO] GET /test
+[2026-03-03T16:37:13.357Z] [INFO] GET /test
+[2026-03-03T16:37:13.599Z] [INFO] GET /test
+[2026-03-03T16:37:13.653Z] [INFO] GET /test
+[2026-03-03T16:37:14.187Z] [INFO] GET /test
+[2026-03-03T16:37:14.567Z] [INFO] GET /test
+[2026-03-03T16:37:14.614Z] [INFO] GET /test
+[2026-03-03T16:37:15.061Z] [INFO] GET /test
+[2026-03-03T16:37:15.503Z] [INFO] GET /test
+[2026-03-03T16:37:15.593Z] [INFO] GET /test
+[2026-03-03T16:37:16.055Z] [INFO] GET /test
+[2026-03-03T16:37:16.117Z] [INFO] GET /test
+[2026-03-03T16:37:16.761Z] [INFO] GET /test
+[2026-03-03T16:37:16.879Z] [INFO] GET /test
+[2026-03-03T16:37:17.289Z] [INFO] GET /test
+[2026-03-03T16:37:17.898Z] [INFO] GET /test
+[2026-03-03T16:37:18.206Z] [INFO] GET /test
+[2026-03-03T16:37:18.570Z] [INFO] GET /test
+[2026-03-03T16:37:18.659Z] [INFO] GET /test
+[2026-03-03T16:37:31.152Z] [INFO] GET /favicon.ico
+[2026-03-03T16:37:31.382Z] [INFO] GET /test
+[2026-03-03T16:37:31.514Z] [INFO] GET /test
+[2026-03-03T16:37:31.770Z] [INFO] GET /test
+[2026-03-03T16:37:31.959Z] [INFO] GET /test
+[2026-03-03T16:37:32.156Z] [INFO] GET /test
+[2026-03-03T16:37:32.552Z] [INFO] GET /test
+[2026-03-03T16:37:32.920Z] [INFO] GET /test
+[2026-03-03T16:37:33.325Z] [INFO] GET /test
+[2026-03-03T16:37:33.597Z] [INFO] GET /test
+[2026-03-03T16:37:33.824Z] [INFO] GET /test
+[2026-03-03T16:37:34.183Z] [INFO] GET /test
+[2026-03-03T16:37:34.237Z] [INFO] GET /test
+[2026-03-03T16:37:34.636Z] [INFO] GET /test
+[2026-03-03T16:37:34.685Z] [INFO] GET /test
+[2026-03-03T16:37:37.868Z] [INFO] GET /api/applications
+[2026-03-03T16:37:38.017Z] [INFO] GET /api/admin/voting-applications?limit=100
+[2026-03-03T16:37:38.018Z] [WARN] Unauthorized admin access attempt from ::1 - No token provided
+[2026-03-03T16:37:38.214Z] [INFO] GET /test
+[2026-03-03T16:37:38.266Z] [INFO] GET /test
+[2026-03-03T16:38:01.063Z] [INFO] GET /api/applications
+[2026-03-03T16:38:01.071Z] [INFO] GET /api/admin/voting-applications?limit=100
+[2026-03-03T16:38:01.072Z] [WARN] Unauthorized admin access attempt from ::1 - No token provided
+[2026-03-03T16:38:01.350Z] [INFO] GET /test
+[2026-03-03T16:38:01.491Z] [INFO] GET /test
+[2026-03-03T16:38:01.880Z] [INFO] GET /test
+[2026-03-03T16:38:01.930Z] [INFO] GET /test
+[2026-03-03T16:38:02.442Z] [INFO] GET /test
+[2026-03-03T16:38:02.477Z] [INFO] GET /test
+[2026-03-03T16:38:02.673Z] [INFO] GET /api/admin/voting-applications?limit=100
+[2026-03-03T16:38:02.674Z] [WARN] Unauthorized admin access attempt from ::1 - No token provided
+[2026-03-03T16:38:02.940Z] [INFO] GET /test
+[2026-03-03T16:38:03.059Z] [INFO] GET /test
+[2026-03-03T16:38:24.010Z] [INFO] GET /.well-known/appspecific/com.chrome.devtools.json
+[2026-03-03T16:38:24.527Z] [INFO] GET /test
+[2026-03-03T16:38:24.607Z] [INFO] GET /test
+[2026-03-03T16:38:25.139Z] [INFO] GET /test
+[2026-03-03T16:38:25.233Z] [INFO] GET /test
+[2026-03-03T16:38:25.519Z] [INFO] GET /test
+[2026-03-03T16:38:25.789Z] [INFO] GET /test
+[2026-03-03T16:38:26.000Z] [INFO] GET /test
+[2026-03-03T16:38:26.291Z] [INFO] GET /test
+[2026-03-03T16:38:26.570Z] [INFO] GET /test
+[2026-03-03T16:38:31.343Z] [INFO] GET /api/applications
+[2026-03-03T16:38:31.967Z] [INFO] GET /api/admin/voting-applications?limit=100
+[2026-03-03T16:38:31.968Z] [WARN] Unauthorized admin access attempt from ::1 - No token provided
+[2026-03-03T16:38:32.031Z] [INFO] GET /test
+[2026-03-03T16:38:32.284Z] [INFO] GET /test
+[2026-03-03T16:39:15.251Z] [INFO] GET /api/admin/applications?search=&status=all
+[2026-03-03T16:39:15.252Z] [WARN] Unauthorized admin access attempt from ::1 - Invalid token
+[2026-03-03T16:39:15.253Z] [INFO] GET /api/admin/stats
+[2026-03-03T16:39:15.254Z] [WARN] Unauthorized admin access attempt from ::1 - Invalid token
+[2026-03-03T16:39:16.445Z] [INFO] GET /test
+[2026-03-03T16:39:16.714Z] [INFO] GET /test
+[2026-03-03T16:39:34.194Z] [INFO] 🚀 Server running on port 5001
+[2026-03-03T16:39:34.620Z] [INFO] GET /test
+[2026-03-03T16:39:34.917Z] [INFO] GET /test
+[2026-03-03T16:39:46.534Z] [INFO] GET /api/admin/applications?search=&status=all
+[2026-03-03T16:39:46.536Z] [WARN] Unauthorized admin access attempt from ::1 - Invalid token
+[2026-03-03T16:39:46.540Z] [INFO] GET /api/admin/stats
+[2026-03-03T16:39:46.541Z] [WARN] Unauthorized admin access attempt from ::1 - Invalid token
+[2026-03-03T16:39:46.927Z] [INFO] GET /test
+[2026-03-03T16:39:47.217Z] [INFO] GET /test
+[2026-03-03T16:39:58.863Z] [INFO] GET /.well-known/appspecific/com.chrome.devtools.json
+[2026-03-03T16:39:59.121Z] [INFO] GET /test
+[2026-03-03T16:39:59.621Z] [INFO] GET /test
+[2026-03-03T16:39:59.930Z] [INFO] GET /test
+[2026-03-03T16:40:15.744Z] [INFO] GET /api/applications
+[2026-03-03T16:40:15.751Z] [INFO] GET /api/admin/voting-applications?limit=100
+[2026-03-03T16:40:15.752Z] [WARN] Unauthorized admin access attempt from ::1 - No token provided
+[2026-03-03T16:40:15.969Z] [INFO] GET /test
+[2026-03-03T16:40:36.694Z] [INFO] GET /api/applications
+[2026-03-03T16:40:36.701Z] [INFO] GET /api/admin/voting-applications?limit=100
+[2026-03-03T16:40:36.702Z] [WARN] Unauthorized admin access attempt from ::1 - No token provided
+[2026-03-03T16:40:37.000Z] [INFO] GET /test
+[2026-03-03T16:40:37.253Z] [INFO] GET /test
+[2026-03-03T16:41:05.357Z] [INFO] GET /api/applications
+[2026-03-03T16:41:05.364Z] [INFO] GET /api/admin/voting-applications?limit=100
+[2026-03-03T16:41:05.365Z] [WARN] Unauthorized admin access attempt from ::1 - No token provided
+[2026-03-03T16:41:07.214Z] [INFO] GET /api/applications
+[2026-03-03T16:41:07.226Z] [INFO] GET /api/admin/voting-applications?limit=100
+[2026-03-03T16:41:07.227Z] [WARN] Unauthorized admin access attempt from ::1 - No token provided
+[2026-03-03T16:41:10.032Z] [INFO] GET /api/applications
+[2026-03-03T16:41:10.038Z] [INFO] GET /api/admin/voting-applications?limit=100
+[2026-03-03T16:41:10.038Z] [WARN] Unauthorized admin access attempt from ::1 - No token provided
+[2026-03-03T16:41:23.709Z] [INFO] GET /api/applications
+[2026-03-03T16:41:23.720Z] [INFO] GET /api/admin/voting-applications?limit=100
+[2026-03-03T16:41:23.721Z] [WARN] Unauthorized admin access attempt from ::1 - No token provided
+[2026-03-03T16:41:49.222Z] [INFO] GET /api/applications
+[2026-03-03T16:41:49.228Z] [INFO] GET /api/admin/voting-applications?limit=100
+[2026-03-03T16:41:49.229Z] [WARN] Unauthorized admin access attempt from ::1 - No token provided
+[2026-03-03T16:42:19.227Z] [INFO] GET /api/applications
+[2026-03-03T16:42:19.234Z] [INFO] GET /api/admin/voting-applications?limit=100
+[2026-03-03T16:42:19.234Z] [WARN] Unauthorized admin access attempt from ::1 - No token provided
+[2026-03-03T16:42:36.130Z] [INFO] 🚀 Server running on port 5001
+[2026-03-03T16:42:53.644Z] [INFO] GET /api/applications
+[2026-03-03T16:42:53.655Z] [INFO] GET /api/admin/voting-applications?limit=100
+[2026-03-03T16:42:53.657Z] [WARN] Unauthorized admin access attempt from ::1 - No token provided
+[2026-03-03T16:43:18.210Z] [INFO] GET /api/applications
+[2026-03-03T16:43:18.217Z] [INFO] GET /api/admin/voting-applications?limit=100
+[2026-03-03T16:43:18.218Z] [WARN] Unauthorized admin access attempt from ::1 - No token provided
+[2026-03-03T16:46:55.478Z] [INFO] 🚀 Server running on port 5001
+[2026-03-03T16:47:04.992Z] [INFO] GET /api/applications
+[2026-03-03T16:47:05.004Z] [INFO] GET /api/admin/voting-applications?limit=100
+[2026-03-03T16:47:05.006Z] [INFO] Admin authenticated from ::1
+[2026-03-03T16:47:21.456Z] [INFO] GET /api/applications
+[2026-03-03T16:47:21.468Z] [INFO] GET /api/admin/voting-applications?limit=100
+[2026-03-03T16:47:21.468Z] [INFO] Admin authenticated from ::1
+[2026-03-03T16:47:21.594Z] [INFO] GET /api/applications
+[2026-03-03T16:47:21.602Z] [INFO] GET /api/admin/voting-applications?limit=100
+[2026-03-03T16:47:21.603Z] [INFO] Admin authenticated from ::1
+[2026-03-03T16:47:21.757Z] [INFO] GET /api/applications
+[2026-03-03T16:47:21.763Z] [INFO] GET /api/admin/voting-applications?limit=100
+[2026-03-03T16:47:21.764Z] [INFO] Admin authenticated from ::1
+[2026-03-03T16:47:45.404Z] [INFO] GET /api/applications
+[2026-03-03T16:47:45.411Z] [INFO] GET /api/admin/voting-applications?limit=100
+[2026-03-03T16:47:45.412Z] [WARN] Unauthorized admin access attempt from ::1 - No token provided
+[2026-03-03T16:47:47.200Z] [INFO] GET /api/admin/voting-applications?limit=100
+[2026-03-03T16:47:47.200Z] [WARN] Unauthorized admin access attempt from ::1 - No token provided
+[2026-03-03T16:47:48.474Z] [INFO] GET /api/admin/voting-applications?limit=100
+[2026-03-03T16:47:48.475Z] [WARN] Unauthorized admin access attempt from ::1 - No token provided
+[2026-03-03T16:48:10.220Z] [INFO] GET /api/applications
+[2026-03-03T16:48:10.226Z] [INFO] GET /api/admin/voting-applications?limit=100
+[2026-03-03T16:48:10.227Z] [WARN] Unauthorized admin access attempt from ::1 - No token provided
+[2026-03-03T16:49:55.468Z] [INFO] 🚀 Server running on port 5001
+[2026-03-03T16:50:05.622Z] [INFO] GET /api/applications
+[2026-03-03T16:50:05.637Z] [INFO] GET /api/admin/voting-applications?limit=100
+[2026-03-03T16:50:05.639Z] [WARN] Unauthorized admin access attempt from ::1 - No token provided
+[2026-03-03T16:50:10.376Z] [INFO] GET /.well-known/appspecific/com.chrome.devtools.json
+[2026-03-03T16:50:29.815Z] [INFO] GET /api/applications
+[2026-03-03T16:50:29.824Z] [INFO] GET /api/admin/voting-applications?limit=100
+[2026-03-03T16:50:29.825Z] [WARN] Unauthorized admin access attempt from ::1 - No token provided
+[2026-03-03T16:50:30.418Z] [INFO] GET /api/admin/voting-applications?limit=100
+[2026-03-03T16:50:30.419Z] [WARN] Unauthorized admin access attempt from ::1 - No token provided
+[2026-03-03T16:50:39.917Z] [INFO] 🚀 Server running on port 5001
+[2026-03-03T16:51:00.228Z] [INFO] GET /api/applications
+[2026-03-03T16:51:00.241Z] [INFO] GET /api/admin/voting-applications?limit=100
+[2026-03-03T16:51:00.242Z] [WARN] Unauthorized admin access attempt from ::1 - No token provided
+[2026-03-03T16:51:44.351Z] [INFO] 🚀 Server running on port 5001
+[2026-03-03T16:52:00.541Z] [INFO] GET /api/applications
+[2026-03-03T16:52:00.554Z] [INFO] GET /api/admin/voting-applications?limit=100
+[2026-03-03T16:52:00.557Z] [WARN] Unauthorized admin access attempt from ::1 - No token provided
+[2026-03-03T16:52:22.637Z] [INFO] GET /.well-known/appspecific/com.chrome.devtools.json
+[2026-03-03T16:52:24.681Z] [INFO] GET /api/applications
+[2026-03-03T16:52:24.688Z] [INFO] GET /api/admin/voting-applications?limit=100
+[2026-03-03T16:52:24.688Z] [WARN] Unauthorized admin access attempt from ::1 - No token provided
+[2026-03-03T16:52:55.225Z] [INFO] GET /api/applications
+[2026-03-03T16:52:55.231Z] [INFO] GET /api/admin/voting-applications?limit=100
+[2026-03-03T16:52:55.232Z] [WARN] Unauthorized admin access attempt from ::1 - No token provided
+[2026-03-03T16:53:25.214Z] [INFO] GET /api/applications
+[2026-03-03T16:53:25.226Z] [INFO] GET /api/admin/voting-applications?limit=100
+[2026-03-03T16:53:25.227Z] [WARN] Unauthorized admin access attempt from ::1 - No token provided
+[2026-03-03T16:53:54.618Z] [INFO] 🚀 Server running on port 5001
+[2026-03-03T16:53:55.221Z] [INFO] GET /api/applications
+[2026-03-03T16:53:55.234Z] [INFO] GET /api/admin/voting-applications?limit=100
+[2026-03-03T16:54:05.957Z] [INFO] GET /.well-known/appspecific/com.chrome.devtools.json
+[2026-03-03T16:54:11.789Z] [INFO] GET /api/applications
+[2026-03-03T16:54:11.806Z] [INFO] GET /api/admin/voting-applications?limit=100
+[2026-03-03T16:54:35.971Z] [INFO] GET /api/applications
+[2026-03-03T16:54:35.979Z] [INFO] GET /api/admin/voting-applications?limit=100
+[2026-03-03T16:55:06.210Z] [INFO] GET /api/applications
+[2026-03-03T16:55:06.217Z] [INFO] GET /api/admin/voting-applications?limit=100
+[2026-03-03T16:55:36.216Z] [INFO] GET /api/applications
+[2026-03-03T16:55:36.223Z] [INFO] GET /api/admin/voting-applications?limit=100

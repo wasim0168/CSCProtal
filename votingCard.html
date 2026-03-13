@@ -1,0 +1,1222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voter ID Card Generator - Advanced</title>
+    <!-- QR Code Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+
+    <style>
+        /* --- CSS VARIABLES --- */
+        :root {
+            --primary-color: #1a73e8;
+            --primary-dark: #0d47a1;
+            --secondary-color: #34a853;
+            --accent-color: #ea4335;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --border-color: #dadce0;
+            --text-primary: #202124;
+            --text-secondary: #5f6368;
+            --text-disabled: #9aa0a6;
+            --success-color: #34a853;
+            --warning-color: #fbbc05;
+            --error-color: #ea4335;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.12);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 40px rgba(0,0,0,0.1);
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 16px;
+            --transition: all 0.3s ease;
+        }
+
+        /* --- BASE STYLES --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', 'Segoe UI', Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            background-image: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1000px;
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+        }
+
+        h2 {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            color: var(--primary-dark);
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 28px;
+            position: relative;
+            padding-bottom: 15px;
+        }
+
+        h2::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            border-radius: 2px;
+        }
+
+        /* --- FORM STYLES --- */
+        .form-section {
+            margin-bottom: 30px;
+            padding: 25px;
+            background: linear-gradient(to bottom, #ffffff, #f9fbff);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .form-section:hover {
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary-color);
+        }
+
+        .section-title {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            color: var(--primary-dark);
+            margin-bottom: 20px;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title i {
+            color: var(--primary-color);
+            font-size: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text-primary);
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .form-group label i {
+            color: var(--primary-color);
+            font-size: 14px;
+        }
+
+        .required::after {
+            content: ' *';
+            color: var(--error-color);
+        }
+
+        .row {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .row .col {
+            flex: 1;
+        }
+
+        input[type="text"],
+        input[type="date"],
+        select,
+        input[type="file"] {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1.5px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            font-size: 15px;
+            font-family: 'Roboto', sans-serif;
+            transition: var(--transition);
+            background-color: white;
+            color: var(--text-primary);
+        }
+
+        input[type="text"]:focus,
+        input[type="date"]:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.1);
+        }
+
+        input[type="file"] {
+            padding: 12px 16px;
+            background-color: #f8f9fa;
+            cursor: pointer;
+        }
+
+        input[type="file"]::-webkit-file-upload-button {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: var(--radius-sm);
+            margin-right: 15px;
+            font-family: 'Roboto', sans-serif;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        input[type="file"]::-webkit-file-upload-button:hover {
+            background: var(--primary-dark);
+        }
+
+        /* Disabled State for Local Language Fields */
+        input:disabled, select:disabled {
+            background-color: #f8f9fa;
+            cursor: not-allowed;
+            color: var(--text-disabled);
+            border-color: #e8eaed;
+        }
+
+        /* Translation Status Indicators */
+        .translation-status {
+            position: absolute;
+            right: 12px;
+            top: 42px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .status-pending {
+            color: var(--warning-color);
+        }
+
+        .status-success {
+            color: var(--success-color);
+        }
+
+        .status-error {
+            color: var(--error-color);
+        }
+
+        /* Language Selector Styling */
+        .language-selector {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: linear-gradient(135deg, #f0f7ff, #e3f2fd);
+            padding: 15px;
+            border-radius: var(--radius-sm);
+            margin-bottom: 20px;
+        }
+
+        .language-selector label {
+            font-weight: 600;
+            color: var(--primary-dark);
+            min-width: 200px;
+        }
+
+        .language-selector select {
+            flex: 1;
+            max-width: 300px;
+        }
+
+        /* Relation Toggle */
+        .relation-toggle {
+            display: flex;
+            border: 1.5px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .relation-option {
+            flex: 1;
+            text-align: center;
+            padding: 12px;
+            background: white;
+            cursor: pointer;
+            transition: var(--transition);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .relation-option:last-child {
+            border-right: none;
+        }
+
+        .relation-option:hover {
+            background-color: #f8f9fa;
+        }
+
+        .relation-option.active {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: 500;
+        }
+
+        .relation-option i {
+            font-size: 16px;
+        }
+
+        /* Submit Button */
+        .btn-submit {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 18px;
+            font-weight: 600;
+            font-family: 'Poppins', sans-serif;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 10px;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 15px rgba(26, 115, 232, 0.3);
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(26, 115, 232, 0.4);
+        }
+
+        .btn-submit:active {
+            transform: translateY(0);
+        }
+
+        .btn-submit:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Error Message */
+        .error-msg {
+            color: var(--error-color);
+            text-align: center;
+            margin: 15px 0;
+            padding: 12px;
+            background-color: rgba(234, 67, 53, 0.1);
+            border-radius: var(--radius-sm);
+            border-left: 4px solid var(--error-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            display: none;
+        }
+
+        /* Success Message */
+        .success-msg {
+            color: var(--success-color);
+            text-align: center;
+            margin: 15px 0;
+            padding: 12px;
+            background-color: rgba(52, 168, 83, 0.1);
+            border-radius: var(--radius-sm);
+            border-left: 4px solid var(--success-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            display: none;
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            width: 100%;
+            height: 6px;
+            background-color: #e8eaed;
+            border-radius: 3px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            width: 0%;
+            transition: width 0.5s ease;
+            border-radius: 3px;
+        }
+
+        /* Field Help Text */
+        .help-text {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-top: 5px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* Photo Preview */
+        .photo-preview-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .photo-preview {
+            width: 120px;
+            height: 150px;
+            border: 2px dashed var(--border-color);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            background-color: #f8f9fa;
+        }
+
+        .photo-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 25px;
+            }
+            
+            .row {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            h2 {
+                font-size: 24px;
+            }
+            
+            .form-section {
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+            
+            .container {
+                padding: 20px;
+            }
+            
+            h2 {
+                font-size: 22px;
+            }
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Character Counter */
+        .char-counter {
+            position: absolute;
+            right: 16px;
+            top: 42px;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .char-counter.warning {
+            color: var(--warning-color);
+        }
+
+        .char-counter.error {
+            color: var(--error-color);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Progress Bar -->
+    <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <!-- PAGE 1: INPUT FORM -->
+    <div id="page-1">
+        <h2><i class="fas fa-id-card"></i> Voter ID Registration Form</h2>
+        
+        <div id="errorMsg" class="error-msg">
+            <i class="fas fa-exclamation-circle"></i>
+            <span id="errorText"></span>
+        </div>
+        
+        <div id="successMsg" class="success-msg">
+            <i class="fas fa-check-circle"></i>
+            <span id="successText"></span>
+        </div>
+
+        <!-- Language Selection -->
+        <div class="form-section">
+            <div class="section-title">
+                <i class="fas fa-language"></i>
+                Language Settings
+            </div>
+            <div class="language-selector">
+                <label><i class="fas fa-globe"></i> Select Local Language</label>
+                <select id="langSelect">
+                    <option value="">-- Select Language --</option>
+                    <option value="hi">Hindi</option>
+                    <option value="mr">Marathi</option>
+                    <option value="bn">Bengali</option>
+                    <option value="ta">Tamil</option>
+                    <option value="te">Telugu</option>
+                    <option value="gu">Gujarati</option>
+                    <option value="kn">Kannada</option>
+                    <option value="ml">Malayalam</option>
+                    <option value="pa">Punjabi</option>
+                    <option value="or">Odia</option>
+                    <option value="ur">Urdu</option>
+                </select>
+            </div>
+            <div class="help-text">
+                <i class="fas fa-info-circle"></i>
+                Select a language to enable automatic translation of English fields
+            </div>
+        </div>
+
+        <!-- Personal Details -->
+        <div class="form-section">
+            <div class="section-title">
+                <i class="fas fa-user"></i>
+                Personal Details
+            </div>
+            
+            <div class="row">
+                <div class="col form-group">
+                    <label class="required"><i class="fas fa-id-badge"></i> EPIC Number</label>
+                    <input type="text" id="epicNo" placeholder="e.g., ABC1234567" maxlength="10">
+                    <div class="help-text">10-character unique ID (e.g., ABC1234567)</div>
+                </div>
+                <div class="col form-group">
+                    <label class="required"><i class="fas fa-camera"></i> Photo Upload</label>
+                    <input type="file" id="photoUpload" accept="image/*">
+                    <div class="photo-preview-container">
+                        <div class="photo-preview" id="photoPreview">
+                            <i class="fas fa-user" style="font-size: 40px; color: #ccc;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col form-group">
+                    <label class="required"><i class="fas fa-signature"></i> Full Name (English)</label>
+                    <input type="text" id="nameEng" placeholder="Enter your full name">
+                    <div class="char-counter" id="nameCounter">0/50</div>
+                </div>
+                <div class="col form-group">
+                    <label><i class="fas fa-signature"></i> Full Name (Local Language)</label>
+                    <input type="text" id="nameLocal" disabled placeholder="Auto-translated...">
+                    <div class="translation-status" id="nameStatus"></div>
+                </div>
+            </div>
+
+            <!-- Relation Selection -->
+            <div class="form-group">
+                <label class="required"><i class="fas fa-users"></i> Relationship</label>
+                <div class="relation-toggle">
+                    <div class="relation-option active" data-value="father">
+                        <i class="fas fa-male"></i> Father's Name
+                    </div>
+                    <div class="relation-option" data-value="husband">
+                        <i class="fas fa-user-friends"></i> Husband's Name
+                    </div>
+                </div>
+                <input type="hidden" id="relationType" value="father">
+            </div>
+
+            <!-- Father Section -->
+            <div id="fatherSection">
+                <div class="row">
+                    <div class="col form-group">
+                        <label class="required"><i class="fas fa-male"></i> Father's Name (English)</label>
+                        <input type="text" id="fatherNameEng" placeholder="Enter father's name">
+                        <div class="char-counter" id="fatherCounter">0/50</div>
+                    </div>
+                    <div class="col form-group">
+                        <label><i class="fas fa-male"></i> Father's Name (Local)</label>
+                        <input type="text" id="fatherNameLocal" disabled>
+                        <div class="translation-status" id="fatherStatus"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Husband Section (Hidden initially) -->
+            <div id="husbandSection" style="display:none;">
+                <div class="row">
+                    <div class="col form-group">
+                        <label class="required"><i class="fas fa-user-friends"></i> Husband's Name (English)</label>
+                        <input type="text" id="husbandNameEng" placeholder="Enter husband's name">
+                        <div class="char-counter" id="husbandCounter">0/50</div>
+                    </div>
+                    <div class="col form-group">
+                        <label><i class="fas fa-user-friends"></i> Husband's Name (Local)</label>
+                        <input type="text" id="husbandNameLocal" disabled>
+                        <div class="translation-status" id="husbandStatus"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col form-group">
+                    <label class="required"><i class="fas fa-venus-mars"></i> Gender</label>
+                    <select id="genderEng">
+                        <option value="Male">Male</option>
+                        <option value="Female" selected>Female</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div class="col form-group">
+                    <label><i class="fas fa-venus-mars"></i> Gender (Local Language)</label>
+                    <input type="text" id="genderLocal" disabled>
+                    <div class="translation-status" id="genderStatus"></div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="required"><i class="fas fa-birthday-cake"></i> Date of Birth</label>
+                <input type="date" id="dob">
+                <div class="help-text">Must be 18 years or older</div>
+            </div>
+        </div>
+
+        <!-- Location Details -->
+        <div class="form-section">
+            <div class="section-title">
+                <i class="fas fa-map-marker-alt"></i>
+                Location Details
+            </div>
+            
+            <div class="row">
+                <div class="col form-group">
+                    <label class="required"><i class="fas fa-home"></i> Address (English)</label>
+                    <input type="text" id="addressEng" placeholder="Full address with city and PIN code">
+                    <div class="char-counter" id="addressCounter">0/200</div>
+                </div>
+                <div class="col form-group">
+                    <label><i class="fas fa-home"></i> Address (Local)</label>
+                    <input type="text" id="addressLocal" disabled>
+                    <div class="translation-status" id="addressStatus"></div>
+                </div>
+            </div>
+
+            <!-- NEW: Polling Station Address Section -->
+            <div class="row">
+                <div class="col form-group">
+                    <label class="required"><i class="fas fa-vote-yea"></i> Polling Station Address (English)</label>
+                    <input type="text" id="pollingAddressEng" placeholder="Polling station location with details">
+                    <div class="char-counter" id="pollingAddressCounter">0/200</div>
+                </div>
+                <div class="col form-group">
+                    <label><i class="fas fa-vote-yea"></i> Polling Station Address (Local)</label>
+                    <input type="text" id="pollingAddressLocal" disabled>
+                    <div class="translation-status" id="pollingAddressStatus"></div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col form-group">
+                    <label class="required"><i class="fas fa-map-pin"></i> Part Number and Name</label>
+                    <input type="text" id="partEng" placeholder="e.g., 123, Ward 5">
+                    <div class="char-counter" id="partCounter">0/100</div>
+                </div>
+                <div class="col form-group">
+                    <label><i class="fas fa-map-pin"></i> Part Number and Name (Local)</label>
+                    <input type="text" id="partLocal" disabled>
+                    <div class="translation-status" id="partStatus"></div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col form-group">
+                    <label class="required"><i class="fas fa-landmark"></i> Assembly Name and Number</label>
+                    <input type="text" id="assemblyEng" placeholder="e.g., 050, New Delhi">
+                    <div class="char-counter" id="assemblyCounter">0/100</div>
+                </div>
+                <div class="col form-group">
+                    <label><i class="fas fa-landmark"></i> Assembly Name and Number (Local)</label>
+                    <input type="text" id="assemblyLocal" disabled>
+                    <div class="translation-status" id="assemblyStatus"></div>
+                </div>
+            </div>
+            <!-- sr no -->
+            <div class="form-group">
+                <label><i class="fas fa-hashtag"></i> Serial Number (Optional)</label>
+                <input type="text" id="serialNo" placeholder="Enter serial number if any">
+                <div class="help-text">Optional field for additional identification</div>
+
+        </div>
+
+        <button class="btn-submit" onclick="validateAndSubmit()" id="submitBtn">
+            <i class="fas fa-paper-plane"></i>
+            <span id="submitText">Generate Voter ID Card</span>
+        </button>
+        
+        <div class="help-text" style="text-align: center; margin-top: 15px;">
+            <i class="fas fa-shield-alt"></i>
+            Your information is securely processed and stored locally in your browser
+        </div>
+    </div>
+</div>
+
+<script>
+    // --- VARIABLES ---
+    const langSelect = document.getElementById('langSelect');
+    const relationToggle = document.querySelectorAll('.relation-option');
+    const relationType = document.getElementById('relationType');
+    const submitBtn = document.getElementById('submitBtn');
+    const submitText = document.getElementById('submitText');
+    const errorMsg = document.getElementById('errorMsg');
+    const errorText = document.getElementById('errorText');
+    const successMsg = document.getElementById('successMsg');
+    const successText = document.getElementById('successText');
+    const progressBar = document.getElementById('progressBar');
+    const photoPreview = document.getElementById('photoPreview');
+    const photoUpload = document.getElementById('photoUpload');
+    const srNoInput = document.getElementById('serialNo');
+
+    // Field mapping for translation
+    const fields = [
+        { eng: 'nameEng', loc: 'nameLocal', status: 'nameStatus', counter: 'nameCounter', max: 50 },
+        { eng: 'fatherNameEng', loc: 'fatherNameLocal', status: 'fatherStatus', counter: 'fatherCounter', max: 50 },
+        { eng: 'husbandNameEng', loc: 'husbandNameLocal', status: 'husbandStatus', counter: 'husbandCounter', max: 50 },
+        { eng: 'addressEng', loc: 'addressLocal', status: 'addressStatus', counter: 'addressCounter', max: 200 },
+        { eng: 'pollingAddressEng', loc: 'pollingAddressLocal', status: 'pollingAddressStatus', counter: 'pollingAddressCounter', max: 200 },
+        { eng: 'partEng', loc: 'partLocal', status: 'partStatus', counter: 'partCounter', max: 100 },
+        { eng: 'assemblyEng', loc: 'assemblyLocal', status: 'assemblyStatus', counter: 'assemblyCounter', max: 100 }
+    ];
+
+    // Translation cache to reduce API calls
+    const translationCache = new Map();
+    let isTranslating = false;
+    let translationQueue = [];
+
+    // --- INITIALIZATION ---
+    document.addEventListener('DOMContentLoaded', function() {
+        // Set max date for DOB (18 years ago)
+        const dobInput = document.getElementById('dob');
+        const today = new Date();
+        const maxDate = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
+        dobInput.max = maxDate.toISOString().split('T')[0];
+        
+        // Set a default date (25 years ago)
+        const defaultDate = new Date(today.getFullYear() - 25, today.getMonth(), today.getDate());
+        dobInput.value = defaultDate.toISOString().split('T')[0];
+        
+        updateProgressBar();
+        setupEventListeners();
+    });
+
+    // --- PROGRESS BAR ---
+    function updateProgressBar() {
+        const requiredFields = [
+            'epicNo', 'nameEng', 'fatherNameEng', 
+            'dob', 'addressEng', 'pollingAddressEng', 'partEng', 'assemblyEng'
+        ];
+        
+        let filledCount = 0;
+        requiredFields.forEach(fieldId => {
+            const field = document.getElementById(fieldId);
+            if (field && field.value.trim()) filledCount++;
+        });
+        
+        // Check photo
+        if (photoUpload.files.length > 0) filledCount++;
+        
+        const progress = Math.min(100, (filledCount / (requiredFields.length + 1)) * 100);
+        progressBar.style.width = `${progress}%`;
+    }
+
+    // --- EVENT LISTENERS ---
+    function setupEventListeners() {
+        // Photo preview
+        photoUpload.addEventListener('change', function(e) {
+            if (this.files && this.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    photoPreview.innerHTML = `<img src="${e.target.result}" alt="Preview">`;
+                };
+                reader.readAsDataURL(this.files[0]);
+                updateProgressBar();
+            }
+        });
+
+        // Character counters
+        fields.forEach(field => {
+            const engInput = document.getElementById(field.eng);
+            const counter = document.getElementById(field.counter);
+            
+            engInput.addEventListener('input', function() {
+                const count = this.value.length;
+                counter.textContent = `${count}/${field.max}`;
+                
+                if (count > field.max * 0.9) {
+                    counter.classList.add('warning');
+                    counter.classList.remove('error');
+                } else if (count > field.max) {
+                    counter.classList.remove('warning');
+                    counter.classList.add('error');
+                } else {
+                    counter.classList.remove('warning', 'error');
+                }
+                
+                updateProgressBar();
+                queueTranslation(field);
+            });
+        });
+
+        // EPIC number validation
+        document.getElementById('epicNo').addEventListener('input', function() {
+            this.value = this.value.toUpperCase();
+            updateProgressBar();
+        });
+
+        // Relation toggle
+        relationToggle.forEach(option => {
+            option.addEventListener('click', function() {
+                const value = this.getAttribute('data-value');
+                
+                // Update UI
+                relationToggle.forEach(opt => opt.classList.remove('active'));
+                this.classList.add('active');
+                relationType.value = value;
+                
+                // Show/hide sections
+                if (value === 'father') {
+                    document.getElementById('fatherSection').style.display = 'block';
+                    document.getElementById('husbandSection').style.display = 'none';
+                } else {
+                    document.getElementById('fatherSection').style.display = 'none';
+                    document.getElementById('husbandSection').style.display = 'block';
+                }
+                
+                // Update progress bar
+                updateProgressBar();
+            });
+        });
+
+        // Language selection
+        langSelect.addEventListener('change', function() {
+            const lang = this.value;
+            const localInputs = document.querySelectorAll('input[id$="Local"]');
+            
+            localInputs.forEach(input => {
+                input.disabled = !lang;
+                input.placeholder = lang ? 'Auto-translating...' : 'Select language first';
+            });
+            
+            if (lang) {
+                // Translate all filled fields
+                fields.forEach(field => {
+                    const source = document.getElementById(field.eng);
+                    if (source.value.trim()) {
+                        translateField(field, lang);
+                    }
+                });
+                
+                // Translate gender
+                translateGender(lang);
+            }
+        });
+
+        // Gender translation
+        document.getElementById('genderEng').addEventListener('change', function() {
+            if (langSelect.value) {
+                translateGender(langSelect.value);
+            }
+        });
+
+        // Update progress on any input
+        document.querySelectorAll('input, select').forEach(input => {
+            input.addEventListener('input', updateProgressBar);
+        });
+    }
+
+    // --- TRANSLATION SYSTEM ---
+    function queueTranslation(field) {
+        const lang = langSelect.value;
+        if (!lang || !document.getElementById(field.eng).value.trim()) return;
+        
+        // Clear existing timer for this field
+        if (field.timer) clearTimeout(field.timer);
+        
+        // Set new timer
+        field.timer = setTimeout(() => {
+            translateField(field, lang);
+        }, 1000);
+    }
+
+    async function translateField(field, lang) {
+        const source = document.getElementById(field.eng);
+        const target = document.getElementById(field.loc);
+        const status = document.getElementById(field.status);
+        
+        if (!source.value.trim()) {
+            target.value = '';
+            status.innerHTML = '';
+            return;
+        }
+        
+        const text = source.value.trim();
+        const cacheKey = `${text}-${lang}`;
+        
+        // Check cache
+        if (translationCache.has(cacheKey)) {
+            target.value = translationCache.get(cacheKey);
+            updateStatus(status, 'success', 'Translated');
+            return;
+        }
+        
+        // Update UI
+        target.value = 'Translating...';
+        updateStatus(status, 'pending', 'Translating...');
+        
+        try {
+            // Try multiple translation APIs with fallback
+            const translatedText = await translateWithFallback(text, lang);
+            
+            if (translatedText) {
+                target.value = translatedText;
+                translationCache.set(cacheKey, translatedText);
+                updateStatus(status, 'success', 'Translated');
+            } else {
+                throw new Error('Translation failed');
+            }
+        } catch (error) {
+            console.error('Translation error:', error);
+            target.value = text; // Fallback to original text
+            updateStatus(status, 'error', 'Translation failed');
+        }
+    }
+
+    async function translateWithFallback(text, lang) {
+        // Fallback 1: MyMemory API
+        try {
+            const response = await fetch(
+                `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=en|${lang}`
+            );
+            const data = await response.json();
+            
+            if (data.responseData && data.responseData.translatedText) {
+                return data.responseData.translatedText;
+            }
+        } catch (error) {
+            console.log('MyMemory API failed, trying fallback...');
+        }
+        
+        // Fallback 2: LibreTranslate (public instance)
+        try {
+            const response = await fetch('https://libretranslate.com/translate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    q: text,
+                    source: 'en',
+                    target: lang
+                })
+            });
+            const data = await response.json();
+            
+            if (data.translatedText) {
+                return data.translatedText;
+            }
+        } catch (error) {
+            console.log('LibreTranslate failed');
+        }
+        
+        // Fallback 3: Simple transliteration for Indian languages
+        return transliterateFallback(text, lang);
+    }
+
+    function transliterateFallback(text, lang) {
+        // Simple transliteration rules for common Indian languages
+        const rules = {
+            'hi': (t) => t, // Hindi - return as is for demo
+            'mr': (t) => t, // Marathi
+            'ta': (t) => t, // Tamil
+            'te': (t) => t, // Telugu
+            'bn': (t) => t, // Bengali
+            'gu': (t) => t, // Gujarati
+            'kn': (t) => t, // Kannada
+            'ml': (t) => t, // Malayalam
+        };
+        
+        return rules[lang] ? rules[lang](text) : text;
+    }
+
+    async function translateGender(lang) {
+        const gender = document.getElementById('genderEng').value;
+        const target = document.getElementById('genderLocal');
+        const status = document.getElementById('genderStatus');
+        
+        if (!gender) return;
+        
+        try {
+            const translated = await translateWithFallback(gender, lang);
+            target.value = translated;
+            updateStatus(status, 'success', 'Translated');
+        } catch (error) {
+            target.value = gender;
+            updateStatus(status, 'error', 'Translation failed');
+        }
+    }
+
+    function updateStatus(element, type, text) {
+        element.className = 'translation-status';
+        element.classList.add(`status-${type}`);
+        
+        let icon = '';
+        switch(type) {
+            case 'pending': icon = '⏳'; break;
+            case 'success': icon = '✓'; break;
+            case 'error': icon = '✗'; break;
+        }
+        
+        element.innerHTML = `${icon} ${text}`;
+    }
+
+    // --- VALIDATION AND SUBMISSION ---
+    function validateAndSubmit() {
+        // Reset messages
+        hideMessages();
+        
+        // Validate required fields
+        let errors = [];
+        
+        // EPIC Validation
+        const epicNo = document.getElementById('epicNo').value.trim();
+        if (!epicNo) {
+            errors.push('EPIC Number is required');
+        } else if (!/^[A-Z]{3}[0-9]{7}$/.test(epicNo)) {
+            errors.push('EPIC must be in format: ABC1234567 (3 letters + 7 digits)');
+        }
+        
+        // Name Validation
+        const nameEng = document.getElementById('nameEng').value.trim();
+        if (!nameEng) errors.push('Full Name is required');
+        
+        // Father/Husband Name Validation
+        const relation = relationType.value;
+        if (relation === 'father') {
+            const fatherName = document.getElementById('fatherNameEng').value.trim();
+            if (!fatherName) errors.push("Father's Name is required");
+        } else {
+            const husbandName = document.getElementById('husbandNameEng').value.trim();
+            if (!husbandName) errors.push("Husband's Name is required");
+        }
+        
+        // DOB Validation
+        const dob = document.getElementById('dob').value;
+        if (!dob) {
+            errors.push('Date of Birth is required');
+        } else {
+            const birthDate = new Date(dob);
+            const today = new Date();
+            const age = today.getFullYear() - birthDate.getFullYear();
+            const monthDiff = today.getMonth() - birthDate.getMonth();
+            
+            
+            
+            if (age < 18) {
+                errors.push('You must be at least 18 years old');
+            }
+        }
+        
+        // Address Validation
+        const addressEng = document.getElementById('addressEng').value.trim();
+        if (!addressEng) errors.push('Address is required');
+        
+        // NEW: Polling Station Address Validation
+        const pollingAddressEng = document.getElementById('pollingAddressEng').value.trim();
+        if (!pollingAddressEng) errors.push('Polling Station Address is required');
+        
+        // Part and Assembly Validation
+        const partEng = document.getElementById('partEng').value.trim();
+        if (!partEng) errors.push('Part Number and Name is required');
+        
+        const assemblyEng = document.getElementById('assemblyEng').value.trim();
+        if (!assemblyEng) errors.push('Assembly Name and Number is required');
+        
+        // Photo Validation
+        if (!photoUpload.files.length) {
+            errors.push('Photo is required');
+        } else if (photoUpload.files[0].size > 2 * 1024 * 1024) { // 2MB limit
+            errors.push('Photo size should be less than 2MB');
+        }
+        
+        // Show errors or submit
+        if (errors.length > 0) {
+            showError(errors.join('<br>'));
+            // Scroll to first error
+            document.querySelector('.container').scrollIntoView({ behavior: 'smooth' });
+        } else {
+            submitData();
+        }
+    }
+
+    function submitData() {
+        // Disable submit button
+        submitBtn.disabled = true;
+        submitText.innerHTML = '<div class="loading"></div> Processing...';
+        
+        // Collect data
+        const data = {
+            epic: document.getElementById('epicNo').value.trim().toUpperCase(),
+            nameEng: document.getElementById('nameEng').value.trim(),
+            nameLocal: document.getElementById('nameLocal').value.trim(),
+            relationType: relationType.value,
+            fatherEng: document.getElementById('fatherNameEng').value.trim(),
+            fatherLocal: document.getElementById('fatherNameLocal').value.trim(),
+            husbandEng: document.getElementById('husbandNameEng').value.trim(),
+            husbandLocal: document.getElementById('husbandNameLocal').value.trim(),
+            genderEng: document.getElementById('genderEng').value,
+            genderLocal: document.getElementById('genderLocal').value.trim(),
+            dob: document.getElementById('dob').value,
+            addressEng: document.getElementById('addressEng').value.trim(),
+            addressLocal: document.getElementById('addressLocal').value.trim(),
+            pollingAddressEng: document.getElementById('pollingAddressEng').value.trim(),
+            pollingAddressLocal: document.getElementById('pollingAddressLocal').value.trim(),
+            assemblyEng: document.getElementById('assemblyEng').value.trim(),
+            assemblyLocal: document.getElementById('assemblyLocal').value.trim(),
+            partEng: document.getElementById('partEng').value.trim(),
+            partLocal: document.getElementById('partLocal').value.trim(),
+            downloadDate: new Date().toLocaleDateString('en-GB'),
+            srNoInput: srNoInput.value.trim()
+        };
+        
+        // Handle photo
+        const photoInput = document.getElementById('photoUpload');
+        if (photoInput.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                data.photo = e.target.result;
+                saveAndRedirect(data);
+            };
+            reader.readAsDataURL(photoInput.files[0]);
+        } else {
+            data.photo = "";
+            saveAndRedirect(data);
+        }
+    }
+    
+    function saveAndRedirect(data) {
+        // Save to localStorage
+        localStorage.setItem("voterData", JSON.stringify(data));
+        
+        // Show success message
+        showSuccess('Data saved successfully! Redirecting...');
+        
+        // Redirect after delay
+        setTimeout(() => {
+            window.location.href = "votingcard.html";
+        }, 1500);
+    }
+
+    // --- UI HELPER FUNCTIONS ---
+    function showError(message) {
+        errorText.innerHTML = message;
+        errorMsg.style.display = 'flex';
+        successMsg.style.display = 'none';
+    }
+    
+    function showSuccess(message) {
+        successText.innerHTML = message;
+        successMsg.style.display = 'flex';
+        errorMsg.style.display = 'none';
+    }
+    
+    function hideMessages() {
+        errorMsg.style.display = 'none';
+        successMsg.style.display = 'none';
+    }
+
+    // --- UTILITY FUNCTIONS ---
+    function formatDate(dateString) {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-GB', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric'
+        });
+    }
+</script>
+
+</body>
+</html>

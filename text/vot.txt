@@ -1,0 +1,150 @@
+const express = require('express');
+const mysql = require('mysql2');
+const app = express();
+
+// Middleware
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// CORS
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+    next();
+});
+
+// Database connection - UPDATE THESE WITH YOUR CREDENTIALS
+const pool = mysql.createPool({
+    host: 'localhost',
+    user: 'root',  // your MySQL username
+    password: '02769500',  // your MySQL password
+    database: 'pan_card_system', // your database name
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0
+}).promise();
+
+// Test route
+app.get('/test', (req, res) => {
+    res.json({ 
+        success: true, 
+        message: 'Server is working!',
+        time: new Date().toISOString()
+    });
+});
+
+// Simple status check route
+app.get("/api/voting/status/:votingNo", async (req, res) => {
+    const votingNo = req.params.votingNo;
+    
+    console.log("\n=== STATUS CHECK REQUEST ===");
+    console.log("Searching for:", votingNo);
+    console.log("Type:", typeof votingNo);
+    console.log("Length:", votingNo.length);
+
+    try {
+        // First, check if table exists and has any data
+        const [tables] = await pool.query("SHOW TABLES LIKE 'voting_applications'");
+        console.log("Table exists:", tables.length > 0);
+
+        if (tables.length === 0) {
+            return res.status(500).json({
+                success: false,
+                error: "Table 'voting_applications' does not exist"
+            });
+        }
+
+        // Get count of all records
+        const [countResult] = await pool.query("SELECT COUNT(*) as total FROM voting_applications");
+        console.log("Total records in table:", countResult[0].total);
+
+        if (countResult[0].total === 0) {
+            return res.status(404).json({
+                success: false,
+                error: "No records found in database"
+            });
+        }
+
+        // Show first 5 records
+        const [sample] = await pool.query("SELECT application_id, voting_card_no FROM voting_applications LIMIT 5");
+        console.log("Sample records:", sample);
+
+        // Search for the specific voting number
+        const [rows] = await pool.query(
+            "SELECT * FROM voting_applications WHERE voting_card_no = ?",
+            [votingNo]
+        );
+
+        console.log("Search result rows:", rows.length);
+
+        if (rows.length === 0) {
+            // Try case insensitive
+            const [rows2] = await pool.query(
+                "SELECT * FROM voting_applications WHERE LOWER(voting_card_no) = LOWER(?)",
+                [votingNo]
+            );
+            
+            if (rows2.length > 0) {
+                console.log("Found with case insensitive match");
+                return res.json({
+                    success: true,
+                    applicationId: rows2[0].application_id,
+                    status: rows2[0].status,
+                    canDownload: !!rows2[0].pdf_path
+                });
+            }
+
+            // Try LIKE
+            const [rows3] = await pool.query(
+                "SELECT * FROM voting_applications WHERE voting_card_no LIKE ?",
+                [`%${votingNo}%`]
+            );
+
+            if (rows3.length > 0) {
+                console.log("Found with LIKE match");
+                return res.json({
+                    success: true,
+                    applicationId: rows3[0].application_id,
+                    status: rows3[0].status,
+                    canDownload: !!rows3[0].pdf_path,
+                    note: "Found with partial match"
+                });
+            }
+
+            return res.status(404).json({
+                success: false,
+                error: "Application not found",
+                debug: {
+                    searched: votingNo,
+                    totalRecords: countResult[0].total,
+                    sampleRecords: sample
+                }
+            });
+        }
+
+        // Found exact match
+        console.log("Found exact match!");
+        res.json({
+            success: true,
+            applicationId: rows[0].application_id,
+            status: rows[0].status,
+            canDownload: !!rows[0].pdf_path
+        });
+
+    } catch (err) {
+        console.error("Database error:", err);
+        res.status(500).json({
+            success: false,
+            error: "Server error: " + err.message
+        });
+    }
+});
+
+// Start server
+const PORT = 5001;
+app.listen(PORT, () => {
+    console.log(`\n✅ Server running on http://localhost:${PORT}`);
+    console.log(`📝 Test endpoint: http://localhost:${PORT}/test`);
+    console.log(`🔍 Status endpoint: http://localhost:${PORT}/api/voting/status/EPIC78612`);
+    console.log(`📊 Make sure your database is connected\n`);
+});
