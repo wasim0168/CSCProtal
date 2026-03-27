@@ -17,7 +17,10 @@ const app = express();
 const PORT = process.env.PORT || 5001;
 
 // =================== MIDDLEWARE ===================
-app.use(cors());
+// add this on brosff
+app.use(cors({
+    origin: "*"
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
