@@ -741,87 +741,54 @@
         // Update the fetchApplications function in admin.html
 // Update fetchApplications in admin.html
 // Update the fetchApplications function in admin.html
+// Update the fetchApplications function to properly capture mobile numbers
+// Update fetchApplications in admin.html
 async function fetchApplications() {
     try {
-        console.log('Fetching applications...'); // Debug log
+        console.log('Fetching applications...');
         
         const response = await fetch(`${API_BASE_URL}/applications`);
 
         if (!response.ok) throw new Error("Fetch failed");
 
         const data = await response.json();
-        console.log('Raw applications data:', data); // Debug log
+        console.log('Raw applications data:', data);
         
-        // Fetch LL test results separately - USE CORRECT ENDPOINT
-        let llTestResults = {};
-        try {
-            // Use the correct endpoint for LL applications with test results
-            const llResponse = await fetch(`${API_BASE_URL}/ll-applications`);
-            if (llResponse.ok) {
-                const llData = await llResponse.json();
-                console.log('LL test results:', llData); // Debug log
-                
-                // Create a map of application_id to test results
-                llData.forEach(app => {
-                    const appId = app.id || app.application_id;
-                    if (appId) {
-                        llTestResults[appId] = {
-                            testScore: app.testScore || app.test_score || 0,
-                            testStatus: app.testStatus || app.test_status || 'pending',
-                            examinerRemarks: app.examinerRemarks || app.examiner_remarks || ''
-                        };
-                    }
-                });
-            } else {
-                console.warn('LL applications endpoint returned:', llResponse.status);
-                
-                // Fallback: Try to get LL data from the main applications with test results
-                const llTestResponse = await fetch(`${API_BASE_URL}/ll-applications?type=ll`);
-                if (llTestResponse.ok) {
-                    const llTestData = await llTestResponse.json();
-                    llTestData.forEach(app => {
-                        const appId = app.id || app.application_id;
-                        if (appId) {
-                            llTestResults[appId] = {
-                                testScore: app.testScore || 0,
-                                testStatus: app.testStatus || 'pending',
-                                examinerRemarks: app.examinerRemarks || ''
-                            };
-                        }
-                    });
-                }
-            }
-        } catch (llError) {
-            console.error('Error fetching LL test results:', llError);
-        }
-
         applications = data.map(app => {
-            const appId = app.application_id || app.id;
-            const llData = llTestResults[appId] || {};
-            
-            return {
-                id: appId,
-                type: app.type,
+            console.log(`Processing app ${app.application_id || app.id}:`, {
                 name: app.name,
                 mobile: app.mobile,
-                aadhar: app.aadhar,
+                aadhar: app.aadhar
+            });
+            
+            return {
+                id: app.application_id || app.id,
+                type: app.type,
+                name: app.name || 'N/A',
+                mobile: app.mobile || app.phone || 'N/A',  // Ensure mobile is captured
+                aadhar: app.aadhar || 'N/A',
                 panNumber: app.panNumber || app.pan_number,
                 appNo: app.appNo || app.application_no || app.app_no,
                 status: app.status,
                 dob: app.dob,
                 walletBal: app.walletBal || app.wallet_bal || 0,
                 password: app.password || '',
-                testScore: llData.testScore || app.testScore || app.test_score || 0,
-                testStatus: llData.testStatus || app.testStatus || app.test_status || 'pending',
-                examinerRemarks: llData.examinerRemarks || app.examinerRemarks || app.examiner_remarks || '',
+                testScore: app.testScore || app.test_score || 0,
+                testStatus: app.testStatus || app.test_status || 'pending',
+                examinerRemarks: app.examinerRemarks || app.examiner_remarks || '',
                 textFeed: app.textFeed || app.text_feed || '',
                 documentStatus: app.documentStatus || app.document_status || 'pending',
                 date: app.date || app.created_at || ''
             };
         });
 
-        console.log('Processed applications:', applications); // Debug log
-        console.log('LL applications:', applications.filter(a => a.type === 'll')); // Debug log
+        console.log('Processed applications with mobile numbers:', 
+            applications.map(a => ({ 
+                id: a.id, 
+                name: a.name, 
+                mobile: a.mobile,
+                type: a.type 
+            })));
         
         updateStats();
         renderTable();
@@ -923,132 +890,134 @@ async function fetchVotingApplications() {
         }
 
         // --- RENDER MAIN TABLE ---
-        function renderTable() {
-            const thead = document.getElementById('table-head');
-            const tbody = document.getElementById('table-body');
-            const search = document.getElementById('search-input').value.toLowerCase();
-            
-            tbody.innerHTML = '';
-            thead.innerHTML = '';
+       // --- RENDER MAIN TABLE ---
+function renderTable() {
+    const thead = document.getElementById('table-head');
+    const tbody = document.getElementById('table-body');
+    const search = document.getElementById('search-input').value.toLowerCase();
+    
+    tbody.innerHTML = '';
+    thead.innerHTML = '';
 
-            // Determine headers based on filter
-            let headers = [];
-            
-            if (currentFilter === 'all') {
-                headers = ['ID', 'Date', 'Category', 'Name', 'Mobile', 'PAN/App No', 'Password', 'Wallet', 'Status', 'Actions'];
-            } else if (currentFilter === 'pan') {
-                headers = ['ID', 'Date', 'Name', 'Mobile', 'Aadhar', 'PAN Number', 'Status', 'Actions'];
-            } else {
-                headers = ['ID', 'Date', 'App No', 'Name', 'Mobile', 'DOB', 'Test Score', 'Status', 'Actions'];
-            }
+    // Determine headers based on filter
+    let headers = [];
+    
+    if (currentFilter === 'all') {
+        headers = ['ID', 'Date', 'Category', 'Name', 'Mobile', 'PAN/App No', 'Password', 'Wallet', 'Status', 'Actions'];
+    } else if (currentFilter === 'pan') {
+        headers = ['ID', 'Date', 'Name', 'Mobile', 'Aadhar', 'PAN Number', 'Status', 'Actions'];
+    } else {
+        headers = ['ID', 'Date', 'App No', 'Name', 'Mobile', 'DOB', 'Test Score', 'Status', 'Actions'];
+    }
 
-            // Render Headers
-            let headerHTML = '<tr>';
-            headers.forEach(h => {
-                headerHTML += `<th>${h}</th>`;
-            });
-            headerHTML += '</tr>';
-            thead.innerHTML = headerHTML;
+    // Render Headers
+    let headerHTML = '<tr>';
+    headers.forEach(h => {
+        headerHTML += `<th>${h}</th>`;
+    });
+    headerHTML += '</tr>';
+    thead.innerHTML = headerHTML;
 
-            // Filter data
-            let filtered = applications.filter(app => {
-                if (currentFilter === 'all') return true;
-                return app.type === currentFilter;
-            });
+    // Filter data
+    let filtered = applications.filter(app => {
+        if (currentFilter === 'all') return true;
+        return app.type === currentFilter;
+    });
 
-            filtered = filtered.filter(app => 
-                (app.name && app.name.toLowerCase().includes(search)) || 
-                (app.aadhar && app.aadhar.includes(search)) ||
-                (app.mobile && app.mobile.includes(search)) ||
-                (app.appNo && app.appNo.includes(search)) ||
-                String(app.id).includes(search)
-            );
+    filtered = filtered.filter(app => 
+        (app.name && app.name.toLowerCase().includes(search)) || 
+        (app.aadhar && app.aadhar.includes(search)) ||
+        (app.mobile && app.mobile.includes(search)) ||
+        (app.appNo && app.appNo.includes(search)) ||
+        String(app.id).includes(search)
+    );
 
-            if(filtered.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="${headers.length}" style="text-align:center; padding:30px; color:var(--text-muted);">No records found</td></tr>`;
-                return;
-            }
+    if(filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="${headers.length}" style="text-align:center; padding:30px; color:var(--text-muted);">No records found</td></tr>`;
+        return;
+    }
 
-            // Render rows
-            filtered.forEach(app => {
-                let statusClass = 'badge-pending';
-                let statusText = app.status;
-                
-                if (app.status === 'active' || app.status === 'completed') {
-                    statusClass = 'badge-active';
-                    statusText = app.status === 'active' ? 'Active' : 'Completed';
-                }
-
-                const typeBadge = app.type === 'll' ? 'badge-ll' : 'badge-pan';
-                const typeName = app.type === 'll' ? 'LL' : 'PAN';
-
-                let rowHTML = `<tr>
-                    <td style="font-family:monospace;">#${app.id}</td>
-                    <td>${app.date || '-'}</td>`;
-
-                if (currentFilter === 'all') {
-                    rowHTML += `
-                        <td><span class="badge-type ${typeBadge}">${typeName}</span></td>
-                        <td>${app.name || '-'}</td>
-                        <td>${app.mobile || '-'}</td>
-                        <td>${app.panNumber || app.appNo || '-'}</td>
-                        <td><code>${app.password || '-'}</code></td>
-                        <td>₹${app.walletBal || 0}</td>
-                        <td><span class="badge ${statusClass}">${statusText}</span></td>
-                        <td style="text-align: right;">
-                            <div style="display: flex; gap: 5px; justify-content: flex-end; flex-wrap: wrap;">
-                                <button class="btn btn-outline btn-sm" onclick="openPasswordModal(${app.id})" title="Update Password">🔒</button>
-                                <button class="btn btn-primary btn-sm" onclick="openEditModal(${app.id})" title="Edit Details">✏️</button>
-                                <button class="btn btn-info btn-sm" onclick="viewUserDashboard(${app.id})" title="View Dashboard">👤</button>
-                                <button class="btn btn-danger btn-sm" onclick="deleteUser(${app.id})" title="Delete">🗑️</button>
-                            </div>
-                        </td>
-                    `;
-                } else if (currentFilter === 'pan') {
-                    rowHTML += `
-                        <td>${app.name || '-'}</td>
-                        <td>${app.mobile || '-'}</td>
-                        <td>${app.aadhar ? app.aadhar.replace(/(\d{4})/g, '$1 ').trim() : '-'}</td>
-                        <td><span style="font-family: monospace; font-weight: 600; color: #059669;">${app.panNumber || 'Not assigned'}</span></td>
-                        <td><span class="badge ${statusClass}">${statusText}</span></td>
-                        <td style="text-align: right;">
-                            <div style="display: flex; gap: 5px; justify-content: flex-end; flex-wrap: wrap;">
-                                <button class="btn btn-primary btn-sm" onclick="openEditModal(${app.id})" title="Edit">✏️</button>
-                                <button class="btn btn-success btn-sm" onclick="generateAndSetPAN(${app.id})" title="Generate PAN">🎲</button>
-                                <button class="btn btn-warning btn-sm" onclick="updateStatus(${app.id}, 'completed')" title="Complete" ${app.status === 'completed' ? 'disabled' : ''}>✅</button>
-                                <button class="btn btn-info btn-sm" onclick="viewUserDashboard(${app.id})" title="View">👤</button>
-                                <button class="btn btn-danger btn-sm" onclick="deleteUser(${app.id})" title="Delete">🗑️</button>
-                            </div>
-                        </td>
-                    `;
-                } else {
-                    // LL View
-                    const testScore = app.testScore || 0;
-                    const scoreClass = testScore >= 70 ? 'score-high' : (testScore >= 40 ? 'score-medium' : 'score-low');
-                    
-                    rowHTML += `
-                        <td>${app.appNo || '-'}</td>
-                        <td>${app.name || '-'}</td>
-                        <td>${app.mobile || '-'}</td>
-                        <td>${app.dob || '-'}</td>
-                        <td><span class="test-score ${scoreClass}">${testScore}/100</span></td>
-                        <td><span class="badge ${statusClass}">${statusText}</span></td>
-                        <td style="text-align: right;">
-                            <div style="display: flex; gap: 5px; justify-content: flex-end; flex-wrap: wrap;">
-                                <button class="btn btn-primary btn-sm" onclick="openEditModal(${app.id})" title="Edit">✏️</button>
-                                <button class="btn btn-success btn-sm" onclick="openLLTestModal(${app.id})" title="Update Test">📝</button>
-                                <button class="btn btn-warning btn-sm" onclick="updateDocumentStatus(${app.id})" title="Documents">📄</button>
-                                <button class="btn btn-info btn-sm" onclick="viewUserDashboard(${app.id})" title="View">👤</button>
-                                <button class="btn btn-danger btn-sm" onclick="deleteUser(${app.id})" title="Delete">🗑️</button>
-                            </div>
-                        </td>
-                    `;
-                }
-
-                rowHTML += `</tr>`;
-                tbody.innerHTML += rowHTML;
-            });
+    // Render rows
+    filtered.forEach(app => {
+        let statusClass = 'badge-pending';
+        let statusText = app.status;
+        
+        if (app.status === 'active' || app.status === 'completed') {
+            statusClass = 'badge-active';
+            statusText = app.status === 'active' ? 'Active' : 'Completed';
         }
+
+        const typeBadge = app.type === 'll' ? 'badge-ll' : 'badge-pan';
+        const typeName = app.type === 'll' ? 'LL' : 'PAN';
+
+        let rowHTML = `<tr>
+            <td style="font-family:monospace;">#${app.id}</td>
+            <td>${app.date || '-'}</td>`;
+
+        if (currentFilter === 'all') {
+            rowHTML += `
+                <td><span class="badge-type ${typeBadge}">${typeName}</span></td>
+                <td>${app.name || '-'}</td>
+                <td><strong>${app.mobile || '-'}</strong></td>
+                <td>${app.panNumber || app.appNo || '-'}</td>
+                <td><code>${app.password || '-'}</code></td>
+                <td>₹${app.walletBal || 0}</td>
+                <td><span class="badge ${statusClass}">${statusText}</span></td>
+                <td style="text-align: right;">
+                    <div style="display: flex; gap: 5px; justify-content: flex-end; flex-wrap: wrap;">
+                        <button class="btn btn-outline btn-sm" onclick="openPasswordModal(${app.id})" title="Update Password">🔒</button>
+                        <button class="btn btn-primary btn-sm" onclick="openEditModal(${app.id})" title="Edit Details">✏️</button>
+                        <button class="btn btn-info btn-sm" onclick="viewUserDashboard(${app.id})" title="View Dashboard">👤</button>
+                        <button class="btn btn-danger btn-sm" onclick="deleteUser(${app.id})" title="Delete">🗑️</button>
+                    </div>
+                </td>
+            `;
+        } else if (currentFilter === 'pan') {
+            // PAN View - Show mobile number prominently
+            rowHTML += `
+                <td>${app.name || '-'}</td>
+                <td><strong style="color: #2563eb; font-size: 1.1rem;">${app.mobile || '-'}</strong></td>
+                <td>${app.aadhar ? app.aadhar.replace(/(\d{4})/g, '$1 ').trim() : '-'}</td>
+                <td><span style="font-family: monospace; font-weight: 600; color: #059669;">${app.panNumber || 'Not assigned'}</span></td>
+                <td><span class="badge ${statusClass}">${statusText}</span></td>
+                <td style="text-align: right;">
+                    <div style="display: flex; gap: 5px; justify-content: flex-end; flex-wrap: wrap;">
+                        <button class="btn btn-primary btn-sm" onclick="openEditModal(${app.id})" title="Edit">✏️</button>
+                        <button class="btn btn-success btn-sm" onclick="generateAndSetPAN(${app.id})" title="Generate PAN">🎲</button>
+                        <button class="btn btn-warning btn-sm" onclick="updateStatus(${app.id}, 'completed')" title="Complete" ${app.status === 'completed' ? 'disabled' : ''}>✅</button>
+                        <button class="btn btn-info btn-sm" onclick="viewUserDashboard(${app.id})" title="View">👤</button>
+                        <button class="btn btn-danger btn-sm" onclick="deleteUser(${app.id})" title="Delete">🗑️</button>
+                    </div>
+                </td>
+            `;
+        } else {
+            // LL View
+            const testScore = app.testScore || 0;
+            const scoreClass = testScore >= 70 ? 'score-high' : (testScore >= 40 ? 'score-medium' : 'score-low');
+            
+            rowHTML += `
+                <td>${app.appNo || '-'}</td>
+                <td>${app.name || '-'}</td>
+                <td><strong>${app.mobile || '-'}</strong></td>
+                <td>${app.dob || '-'}</td>
+                <td><span class="test-score ${scoreClass}">${testScore}/100</span></td>
+                <td><span class="badge ${statusClass}">${statusText}</span></td>
+                <td style="text-align: right;">
+                    <div style="display: flex; gap: 5px; justify-content: flex-end; flex-wrap: wrap;">
+                        <button class="btn btn-primary btn-sm" onclick="openEditModal(${app.id})" title="Edit">✏️</button>
+                        <button class="btn btn-success btn-sm" onclick="openLLTestModal(${app.id})" title="Update Test">📝</button>
+                        <button class="btn btn-warning btn-sm" onclick="updateDocumentStatus(${app.id})" title="Documents">📄</button>
+                        <button class="btn btn-info btn-sm" onclick="viewUserDashboard(${app.id})" title="View">👤</button>
+                        <button class="btn btn-danger btn-sm" onclick="deleteUser(${app.id})" title="Delete">🗑️</button>
+                    </div>
+                </td>
+            `;
+        }
+
+        rowHTML += `</tr>`;
+        tbody.innerHTML += rowHTML;
+    });
+}
 
         // --- RENDER VOTING TABLE ---
         function renderVotingTable() {

@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Print Portal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 400px;
+            padding: 20px;
+        }
+
+        .form-container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            animation: slideUp 0.5s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .tab-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            background: #f5f5f5;
+            padding: 5px;
+            border-radius: 10px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            background: transparent;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn.active {
+            background: white;
+            color: #667eea;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .form {
+            display: none;
+        }
+
+        .form.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus {
+            border-color: #667eea;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-group input.error {
+            border-color: #f44336;
+        }
+
+        .error-message {
+            color: #f44336;
+            font-size: 12px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .forgot-password {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .forgot-password a {
+            color: #667eea;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .forgot-password a:hover {
+            text-decoration: underline;
+        }
+
+        .alert {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .alert.show {
+            display: block;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .password-strength {
+            margin-top: 5px;
+            height: 4px;
+            border-radius: 2px;
+            background: #e0e0e0;
+            overflow: hidden;
+        }
+
+        .password-strength-bar {
+            height: 100%;
+            width: 0;
+            transition: all 0.3s ease;
+        }
+
+        .strength-weak {
+            background: #f44336;
+            width: 33.33%;
+        }
+
+        .strength-medium {
+            background: #ff9800;
+            width: 66.66%;
+        }
+
+        .strength-strong {
+            background: #4caf50;
+            width: 100%;
+        }
+
+        .back-to-home {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .back-to-home a {
+            color: #666;
+            text-decoration: none;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .back-to-home a:hover {
+            color: #667eea;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 8px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .btn-link {
+            background: none;
+            border: none;
+            color: #667eea;
+            cursor: pointer;
+            font-size: 14px;
+            text-decoration: underline;
+        }
+
+        .btn-link:hover {
+            color: #764ba2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="form-container">
+            <div class="header">
+                <h1>Welcome Back</h1>
+                <p>Login or create your account</p>
+            </div>
+
+            <div class="tab-buttons">
+                <button class="tab-btn active" onclick="switchTab('login')">Login</button>
+                <button class="tab-btn" onclick="switchTab('register')">Register</button>
+            </div>
+
+            <!-- Alert Message -->
+            <div id="alertMessage" class="alert"></div>
+
+            <!-- Login Form -->
+            <form id="loginForm" class="form active" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label for="loginUsername">Username or Email</label>
+                    <input type="text" id="loginUsername" placeholder="Enter username or email" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="loginPassword">Password</label>
+                    <input type="password" id="loginPassword" placeholder="Enter password" required>
+                </div>
+
+                <button type="submit" class="btn-submit" id="loginBtn">
+                    <span>Login</span>
+                </button>
+
+                <div class="forgot-password">
+                    <button class="btn-link" onclick="showForgotPassword()">Forgot Password?</button>
+                </div>
+            </form>
+
+            <!-- Register Form -->
+            <form id="registerForm" class="form" onsubmit="handleRegister(event)">
+                <div class="form-group">
+                    <label for="regUsername">Username *</label>
+                    <input type="text" id="regUsername" placeholder="Choose a username" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="regEmail">Email *</label>
+                    <input type="email" id="regEmail" placeholder="Enter your email" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="regPassword">Password *</label>
+                    <input type="password" id="regPassword" placeholder="Create a password" required onkeyup="checkPasswordStrength()">
+                    <div class="password-strength">
+                        <div class="password-strength-bar" id="passwordStrength"></div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="regConfirmPassword">Confirm Password *</label>
+                    <input type="password" id="regConfirmPassword" placeholder="Confirm your password" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="regFullName">Full Name</label>
+                    <input type="text" id="regFullName" placeholder="Enter your full name">
+                </div>
+
+                <div class="form-group">
+                    <label for="regPhone">Phone Number</label>
+                    <input type="tel" id="regPhone" placeholder="Enter 10-digit mobile number" maxlength="10">
+                </div>
+
+                <div class="form-group">
+                    <label for="regAadhar">Aadhar Number</label>
+                    <input type="text" id="regAadhar" placeholder="Enter 12-digit Aadhar number" maxlength="12">
+                </div>
+
+                <button type="submit" class="btn-submit" id="registerBtn">
+                    <span>Create Account</span>
+                </button>
+            </form>
+
+            <div class="back-to-home">
+                <a href="index.html">← Back to Home</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    const API_BASE_URL = 'http://localhost:5001/api';
+
+    // Switch between login and register tabs
+    function switchTab(tab) {
+        const tabs = document.querySelectorAll('.tab-btn');
+        const forms = document.querySelectorAll('.form');
+        
+        tabs.forEach(t => t.classList.remove('active'));
+        forms.forEach(f => f.classList.remove('active'));
+        
+        if (tab === 'login') {
+            tabs[0].classList.add('active');
+            document.getElementById('loginForm').classList.add('active');
+        } else {
+            tabs[1].classList.add('active');
+            document.getElementById('registerForm').classList.add('active');
+        }
+        
+        hideAlert();
+    }
+
+    // Show alert message
+    function showAlert(message, type = 'error') {
+        const alert = document.getElementById('alertMessage');
+        alert.textContent = message;
+        alert.className = `alert alert-${type} show`;
+        
+        // Auto hide after 5 seconds
+        setTimeout(hideAlert, 5000);
+    }
+
+    // Hide alert
+    function hideAlert() {
+        document.getElementById('alertMessage').classList.remove('show');
+    }
+
+    // Check password strength
+    function checkPasswordStrength() {
+        const password = document.getElementById('regPassword').value;
+        const strengthBar = document.getElementById('passwordStrength');
+        
+        if (!password) {
+            strengthBar.className = 'password-strength-bar';
+            return;
+        }
+        
+        const hasLowerCase = /[a-z]/.test(password);
+        const hasUpperCase = /[A-Z]/.test(password);
+        const hasNumbers = /\d/.test(password);
+        const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+        const lengthValid = password.length >= 8;
+        
+        const criteriaCount = [hasLowerCase, hasUpperCase, hasNumbers, hasSpecialChar, lengthValid].filter(Boolean).length;
+        
+        if (criteriaCount <= 2) {
+            strengthBar.className = 'password-strength-bar strength-weak';
+        } else if (criteriaCount <= 4) {
+            strengthBar.className = 'password-strength-bar strength-medium';
+        } else {
+            strengthBar.className = 'password-strength-bar strength-strong';
+        }
+    }
+
+    // Handle login
+    async function handleLogin(e) {
+        if (e) e.preventDefault();
+        
+        const username = document.getElementById('loginUsername').value.trim();
+        const password = document.getElementById('loginPassword').value;
+        const loginBtn = document.getElementById('loginBtn');
+        
+        if (!username || !password) {
+            showAlert('Please fill in all fields', 'error');
+            return;
+        }
+        
+        loginBtn.disabled = true;
+        loginBtn.innerHTML = '<span class="spinner"></span> Logging in...';
+        hideAlert();
+        
+        try {
+            const isEmail = username.includes('@');
+            const payload = isEmail ? { email: username, password } : { username, password };
+            
+            const response = await fetch(`${API_BASE_URL}/auth/login`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                localStorage.setItem('sessionToken', data.sessionToken);
+                localStorage.setItem('user', JSON.stringify(data.user));
+                localStorage.setItem('loginTime', new Date().getTime().toString());
+                
+                showAlert('Login successful! Redirecting to dashboard...', 'success');
+                
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 1500);
+            } else {
+                showAlert(data.error || 'Login failed', 'error');
+                loginBtn.disabled = false;
+                loginBtn.innerHTML = '<span>Login</span>';
+            }
+        } catch (error) {
+            console.error('Login error:', error);
+            showAlert('Network error. Please try again.', 'error');
+            loginBtn.disabled = false;
+            loginBtn.innerHTML = '<span>Login</span>';
+        }
+    }
+
+    // Handle registration
+    async function handleRegister(e) {
+        e.preventDefault();
+        
+        const username = document.getElementById('regUsername').value.trim();
+        const email = document.getElementById('regEmail').value.trim();
+        const password = document.getElementById('regPassword').value;
+        const confirmPassword = document.getElementById('regConfirmPassword').value;
+        const fullName = document.getElementById('regFullName').value.trim();
+        const phone = document.getElementById('regPhone').value.trim();
+        const aadhar = document.getElementById('regAadhar').value.trim();
+        
+        if (!username || !email || !password || !confirmPassword) {
+            showAlert('Please fill in all required fields', 'error');
+            return;
+        }
+        
+        if (password !== confirmPassword) {
+            showAlert('Passwords do not match', 'error');
+            return;
+        }
+        
+        if (password.length < 6) {
+            showAlert('Password must be at least 6 characters', 'error');
+            return;
+        }
+        
+        if (phone && !/^\d{10}$/.test(phone)) {
+            showAlert('Phone number must be 10 digits', 'error');
+            return;
+        }
+        
+        if (aadhar && !/^\d{12}$/.test(aadhar)) {
+            showAlert('Aadhar number must be 12 digits', 'error');
+            return;
+        }
+        
+        const registerBtn = document.getElementById('registerBtn');
+        registerBtn.disabled = true;
+        registerBtn.innerHTML = '<span class="spinner"></span> Creating account...';
+        hideAlert();
+        
+        try {
+            const response = await fetch(`${API_BASE_URL}/auth/register`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    username,
+                    email,
+                    password,
+                    full_name: fullName || null,
+                    phone: phone || null,
+                    aadhar_number: aadhar || null
+                })
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                showAlert('Registration successful! Redirecting to login...', 'success');
+                
+                setTimeout(() => {
+                    switchTab('login');
+                    document.getElementById('loginUsername').value = username;
+                    document.getElementById('loginPassword').value = '';
+                    registerBtn.disabled = false;
+                    registerBtn.innerHTML = '<span>Create Account</span>';
+                }, 2000);
+            } else {
+                showAlert(data.error || 'Registration failed', 'error');
+                registerBtn.disabled = false;
+                registerBtn.innerHTML = '<span>Create Account</span>';
+            }
+        } catch (error) {
+            console.error('Registration error:', error);
+            showAlert('Network error. Please try again.', 'error');
+            registerBtn.disabled = false;
+            registerBtn.innerHTML = '<span>Create Account</span>';
+        }
+    }
+
+    // FIXED: Enter key handler for login
+    function setupEnterKeyHandler() {
+        const loginPassword = document.getElementById('loginPassword');
+        if (loginPassword) {
+            // Remove any existing listeners to prevent duplicates
+            loginPassword.removeEventListener('keypress', handleEnterKey);
+            // Add fresh listener
+            loginPassword.addEventListener('keypress', handleEnterKey);
+            console.log('Enter key handler setup for login');
+        } else {
+            console.error('Login password field not found');
+        }
+    }
+
+    function handleEnterKey(e) {
+        if (e.key === 'Enter') {
+            console.log('Enter key pressed in password field');
+            e.preventDefault(); // Prevent default form submission
+            
+            // Check if login form is active
+            const loginForm = document.getElementById('loginForm');
+            if (loginForm.classList.contains('active')) {
+                handleLogin(e);
+            }
+        }
+    }
+
+    // Alternative: Handle Enter on both username and password fields
+    function setupGlobalEnterHandler() {
+        const loginUsername = document.getElementById('loginUsername');
+        const loginPassword = document.getElementById('loginPassword');
+        
+        if (loginUsername) {
+            loginUsername.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    if (document.getElementById('loginForm').classList.contains('active')) {
+                        handleLogin(e);
+                    }
+                }
+            });
+        }
+        
+        if (loginPassword) {
+            loginPassword.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    if (document.getElementById('loginForm').classList.contains('active')) {
+                        handleLogin(e);
+                    }
+                }
+            });
+        }
+    }
+
+    // Show forgot password
+    function showForgotPassword() {
+        showAlert('Password reset feature coming soon! Please contact support.', 'info');
+    }
+
+    // Check if user is already logged in
+    async function checkAuth() {
+        const sessionToken = localStorage.getItem('sessionToken');
+        
+        if (sessionToken && window.location.pathname.includes('login.html')) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/auth/verify`, {
+                    headers: {
+                        'Authorization': `Bearer ${sessionToken}`
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showAlert('You are already logged in! Redirecting...', 'info');
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 2000);
+                } else {
+                    localStorage.removeItem('sessionToken');
+                    localStorage.removeItem('user');
+                }
+            } catch (error) {
+                console.error('Auth check error:', error);
+            }
+        }
+    }
+
+    // Initialize everything when DOM is loaded
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('DOM loaded, setting up login page...');
+        
+        // Check authentication
+        checkAuth();
+        
+        // Setup Enter key handlers
+        setupGlobalEnterHandler();
+        
+        // Handle URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const tab = urlParams.get('tab');
+        if (tab === 'register') {
+            switchTab('register');
+        }
+        
+        // Auto-focus username field
+        const loginUsername = document.getElementById('loginUsername');
+        if (loginUsername) {
+            loginUsername.focus();
+        }
+    });
+
+    // Also setup when window loads (backup)
+    window.addEventListener('load', function() {
+        console.log('Window loaded, ensuring Enter key handler...');
+        setupGlobalEnterHandler();
+    });
+
+    // Debug function to test Enter key
+    function testEnterKey() {
+        console.log('Testing Enter key handler...');
+        const passwordField = document.getElementById('loginPassword');
+        if (passwordField) {
+            console.log('Password field found:', passwordField);
+            console.log('Current listeners:', passwordField);
+        } else {
+            console.log('Password field NOT found');
+        }
+    }
+
+    // Call test function (can be removed in production)
+    setTimeout(testEnterKey, 1000);
+</script>
+</body>
+</html>

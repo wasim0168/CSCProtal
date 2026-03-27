@@ -2,11 +2,22 @@ const pool = require('../config/db');
 const { getNextApplicationId } = require('../utils/idGenerator');
 
 // Submit PAN application
+// controllers/panController.js - Update submitPan function
 const submitPan = async (req, res) => {
     try {
-        const { aadhar } = req.body;
+        const { name, mobile, aadhar } = req.body;
         
-        if (!aadhar || aadhar.length !== 12 || !/^\d+$/.test(aadhar)) {
+        if (!name || !mobile || !aadhar) {
+            return res.status(400).json({ error: 'All fields are required' });
+        }
+
+        // Validate mobile
+        if (!/^\d{10}$/.test(mobile)) {
+            return res.status(400).json({ error: 'Invalid mobile number' });
+        }
+
+        // Validate Aadhar
+        if (!/^\d{12}$/.test(aadhar)) {
             return res.status(400).json({ error: 'Invalid Aadhar number' });
         }
 
@@ -15,15 +26,13 @@ const submitPan = async (req, res) => {
         const [result] = await pool.query(
             `INSERT INTO applications 
             (application_id, name, mobile, aadhar, password, type, status) 
-            VALUES (?, ?, ?, ?, ?, ?, ?)`,
+            VALUES (?, ?, ?, ?, ?, 'pan', 'pending')`,
             [
                 appId,
-                `User ${appId}`,
-                '9876543210',
+                name,
+                mobile,
                 aadhar,
                 `PAN${appId}`,
-                'pan',
-                'pending'
             ]
         );
 

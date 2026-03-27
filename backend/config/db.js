@@ -2,10 +2,15 @@ const mysql = require('mysql2/promise');
 require('dotenv').config();
 
 const pool = mysql.createPool({
-    host: process.env.DB_HOST || 'localhost',
-    user: process.env.DB_USER || 'root',
-    password: process.env.DB_PASSWORD || '02769500',
-    database: process.env.DB_NAME || 'pan_card_system',
+    host: process.env.DB_HOST,
+    port: process.env.DB_PORT || 4000,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
+    ssl: {
+        minVersion: 'TLSv1.2',
+        rejectUnauthorized: true
+    },
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0
@@ -15,11 +20,11 @@ const pool = mysql.createPool({
 async function testConnection() {
     try {
         const connection = await pool.getConnection();
-        console.log('✅ MySQL Connected successfully to:', process.env.DB_HOST || 'localhost');
-        console.log('📊 Database:', process.env.DB_NAME || 'pan_card_system');
+        console.log('✅ TiDB Connected successfully');
+        console.log('📊 Database:', process.env.DB_NAME);
         connection.release();
     } catch (error) {
-        console.error('❌ MySQL Connection error:', error.message);
+        console.error('❌ TiDB Connection error:', error.message);
     }
 }
 
@@ -35,10 +40,10 @@ async function createPaymentTable() {
                 payment_id VARCHAR(100),
                 status VARCHAR(50) DEFAULT 'created',
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-                FOREIGN KEY (application_id) REFERENCES voting_applications(application_id)
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
             )
         `);
+
         console.log('✅ Payment orders table ready');
     } catch (err) {
         console.error('Error creating payment table:', err);

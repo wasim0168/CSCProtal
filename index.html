@@ -134,7 +134,7 @@
         #nav-time {
             color: var(--primary-color);
             font-weight: 700;
-            min-width: 80px; /* Prevents jitter when numbers change */
+            min-width: 80px;
             display: inline-block;
         }
 
@@ -146,17 +146,24 @@
             50% { opacity: 0.3; }
         }
 
-        /* Existing Links */
-        .nav-links { list-style: none; display: flex; gap: 15px; align-items: center; margin: 0; }
-        .nav-links a { text-decoration: none; color: #333; font-weight: 600; transition: color 0.3s; cursor: pointer; font-size: 0.95rem; }
-
-        .wallet-link {
-            color: white !important;
-            background: linear-gradient(45deg, #11998e, #38ef7d);
-            padding: 6px 16px;
-            border-radius: 20px;
-            box-shadow: 0 4px 10px rgba(56, 239, 125, 0.4);
-            font-size: 0.9rem !important;
+        /* Navigation Links */
+        .nav-links { 
+            list-style: none; 
+            display: flex; 
+            gap: 15px; 
+            align-items: center; 
+            margin: 0; 
+        }
+        .nav-links a { 
+            text-decoration: none; 
+            color: #333; 
+            font-weight: 600; 
+            transition: color 0.3s; 
+            cursor: pointer; 
+            font-size: 0.95rem; 
+        }
+        .nav-links a:hover { 
+            color: var(--primary-color); 
         }
 
         /* Page Sections */
@@ -409,7 +416,6 @@
         .btn-no { background-color: #95a5a6; color: white; }
         .btn-confirm:hover { opacity: 0.9; }
 
-
         /* =========================================
            PHOTO MAKER STYLES
            ========================================= */
@@ -554,19 +560,14 @@
            USER PROFILE STYLES
            ========================================= */
         .profile-wrapper {
-            max-width: 600px;
+            max-width: 800px;
             margin: 0 auto;
             background: white;
             border-radius: 20px;
-            padding: 40px;
+            padding: 30px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 20px;
         }
-        
+
         .profile-avatar {
             width: 120px;
             height: 120px;
@@ -574,49 +575,248 @@
             overflow: hidden;
             border: 4px solid var(--primary-color);
             box-shadow: 0 5px 15px rgba(79, 70, 229, 0.3);
-            margin-bottom: 10px;
+            margin: 0 auto 20px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
         }
-        
+
+        .profile-avatar:hover {
+            transform: scale(1.05);
+        }
+
         .profile-avatar img {
             width: 100%;
             height: 100%;
             object-fit: cover;
         }
-        
+
+        .profile-info {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
         .profile-name {
             font-size: 1.8rem;
             font-weight: 700;
             color: #333;
             margin: 0;
         }
-        
+
         .profile-email {
             color: #666;
             font-size: 1rem;
-            margin-bottom: 20px;
+            margin: 5px 0;
         }
-        
+
         .profile-balance-card {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             width: 100%;
-            padding: 20px;
+            padding: 25px;
             border-radius: 15px;
             color: white;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
         }
-        
-        .balance-label-small { font-size: 0.9rem; opacity: 0.9; text-align: left; }
-        .balance-amount-small { font-size: 1.5rem; font-weight: bold; text-align: right; }
+
+        .balance-label-small {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        .balance-amount-small {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .form-group input[readonly] {
+            background: #f1f5f9;
+            cursor: not-allowed;
+        }
+
+        .password-strength-bar {
+            height: 100%;
+            transition: all 0.3s;
+        }
+
+        .strength-weak {
+            background: #ef4444;
+            width: 33.33%;
+        }
+
+        .strength-medium {
+            background: #f59e0b;
+            width: 66.66%;
+        }
+
+        .strength-strong {
+            background: #10b981;
+            width: 100%;
+        }
 
         .profile-actions {
-            width: 100%;
             display: grid;
-            gap: 15px;
+            gap: 10px;
+            margin-top: 20px;
         }
 
+        .profile-actions button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 12px;
+        }
+
+        /* =========================================
+           USER DASHBOARD STYLES
+           ========================================= */
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .dashboard-wallet {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 15px 25px;
+            border-radius: 12px;
+            color: white;
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .dashboard-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            background: white;
+            padding: 10px;
+            border-radius: 50px;
+            width: fit-content;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .dashboard-tab-btn {
+            padding: 10px 20px;
+            border: none;
+            background: transparent;
+            border-radius: 40px;
+            cursor: pointer;
+            font-weight: 500;
+            color: #64748b;
+            transition: all 0.3s ease;
+        }
+        
+        .dashboard-tab-btn.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 10px rgba(79, 70, 229, 0.3);
+        }
+        
+        .dashboard-tab-btn:hover {
+            background: #e2e8f0;
+        }
+        
+        .dashboard-tab-btn.active:hover {
+            background: var(--primary);
+        }
+
+        .test-score-badge {
+            padding: 4px 8px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .score-high {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .score-medium {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .score-low {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        /* Badge Styles */
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .badge-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .badge-active {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .badge-completed {
+            background: #cce5ff;
+            color: #004085;
+        }
+        
+        .badge-type {
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+            margin-right: 5px;
+        }
+        
+        .badge-ll {
+            background: rgba(5, 150, 105, 0.1);
+            color: #059669;
+        }
+        
+        .badge-pan {
+            background: rgba(234, 88, 12, 0.1);
+            color: #c2410c;
+        }
     </style>
 </head>
 <body>
@@ -637,31 +837,25 @@
         <!-- NAV RIGHT WRAPPER -->
         <div class="nav-right-wrapper">
             
-            <!-- 1. DATE & TIME (UPDATED ANIMATION) -->
+            <!-- 1. DATE & TIME -->
             <div class="nav-datetime-wrapper" id="nav-datetime">
-                <!-- Date Section -->
                 <div class="dt-section">
-                    <svg class="dt-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                    <svg class="dt-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
                     <span id="nav-date" class="dt-text">DD-MM-YYYY</span>
                 </div>
-                
-                <!-- Separator -->
                 <div class="dt-separator"></div>
-                
-                <!-- Time Section -->
                 <div class="dt-section">
-                    <svg class="dt-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 12 12"></polyline></svg>
+                    <svg class="dt-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 12 12"></polyline></svg>
                     <span id="nav-time" class="dt-text">HH<span class="blink-colon">:</span>MM<span class="blink-colon">:</span>SS</span>
                 </div>
             </div>
 
-            <!-- 2. NAV LINKS -->
-            <ul class="nav-links">
+            <!-- 2. NAV LINKS - Dynamic -->
+            <ul class="nav-links" id="navLinks">
                 <li><a href="#" onclick="showHome()">Home</a></li>
                 <li><a href="./terms.html">Terms & Conditions</a></li>
                 <li><a href="./contact.html">Contact Us</a></li>
-                <!-- REPLACED CONTACT US WITH USER PROFILE -->
-                <li><a href="#" onclick="showProfile()">User Profile</a></li>
+                <!-- Dynamic links will be added here by JavaScript -->
             </ul>
         </div>
     </nav>
@@ -672,74 +866,159 @@
 
         <!-- HOME SEARCH BAR -->
         <div class="search-container">
-            <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
             <input type="text" id="searchInput" class="search-input" placeholder="Search services (e.g., PAN, Photo, LL)...">
         </div>
 
         <div class="service-grid">
             <!-- Card 1: Find PAN Number -->
-            <div class="card card-1" onclick="showPanMenu()">
+            <div class="card card-1 auth-required" onclick="showPanMenu()">
                 <div class="badge-new">New</div>
                 <h3>Find PAN Number</h3>
                 <p>Retrieve your PAN number instantly or check history.</p>
             </div>
             
             <!-- Card 2: LL Test -->
-            <div class="card card-2" onclick="showLLForm()">
+            <div class="card card-2 auth-required" onclick="showLLForm()">
                 <div class="badge-new">New</div>
                 <h3>LL test</h3>
                 <p>Prepare for your Learning License test with our mock exams.</p>
             </div>
             
             <!-- Card 3: Voting Card -->
-            <div class="card card-3" id="vote">
+            <div class="card card-3 auth-required" id="vote">
                 <div class="badge-new">New</div>
                 <h3>Voting Card</h3>
                 <p>Apply for a new Voter ID card or update existing details.</p>
             </div>
             
             <!-- Card 4: Passport Photo -->
-            <div class="card card-4" onclick="showPhotoForm()">
+            <div class="card card-4 auth-required" onclick="showPhotoForm()">
                 <div class="badge-new">New</div>
                 <h3>Passport Photo</h3>
                 <p>Upload photo and get professional passport sized images ready for print.</p>
             </div>
-            <div class="card card-4" id="votingCardPdf">
+            <div class="card card-4 auth-required" id="votingCardPdf">
                 <div class="badge-new">New</div>
                 <h3>Voting Card PDF</h3>
-                <p>Upload photo and get professional passport sized images ready for print.</p>
+                <p>Download your voting card PDF.</p>
             </div>
-            <div class="card card-4" id="bioData">
+            <div class="card card-4 auth-required" id="bioData">
                 <div class="badge-new">New</div>
                 <h3>Bio Data</h3>
-                <p>Upload photo and get professional passport sized images ready for print.</p>
+                <p>Create and manage your bio data.</p>
             </div>
-            <div class="card card-4" id="resume">
+            <div class="card card-4 auth-required" id="resume">
                 <div class="badge-new">New</div>
                 <h3>Resume</h3>
-                <p>Upload photo and get professional passport sized images ready for print.</p>
-            </div>
-             <div class="card card-4" onclick="(()=>{window.location.href= './pan.html'})()">
-                 <div class="badge-new">New</div>
-                <div class="badge-new">New</div>
-                <h3>Pan Manual</h3>
-                <p></p>
+                <p>Create and manage your resume.</p>
             </div>
         </div>
     </main>
-    <!-- voting pdf -->
 
+    <!-- USER DASHBOARD SECTION -->
+    <main id="user-dashboard-page" class="page-section hidden">
+        <div class="dashboard-header">
+            <h2 class="title-header">My Dashboard</h2>
+            <div class="dashboard-wallet">
+                <span>Wallet Balance: </span>
+                <strong id="dashboard-wallet-balance">₹0</strong>
+            </div>
+        </div>
 
-    <!-- === NEW SECTION: PAN MENU (SUBMENU) === -->
+        <!-- Dashboard Stats Cards -->
+        <div class="stats-grid" style="margin-bottom: 30px;">
+            <div class="stat-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                <div class="stat-content">
+                    <h3 id="dashboard-total-apps">0</h3>
+                    <p>Total Applications</p>
+                </div>
+                <div class="stat-icon">📋</div>
+            </div>
+            <div class="stat-card" style="background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);">
+                <div class="stat-content">
+                    <h3 id="dashboard-pending-apps">0</h3>
+                    <p>Pending</p>
+                </div>
+                <div class="stat-icon">⏳</div>
+            </div>
+            <div class="stat-card" style="background: linear-gradient(135deg, #10b981 0%, #34d399 100%);">
+                <div class="stat-content">
+                    <h3 id="dashboard-completed-apps">0</h3>
+                    <p>Completed</p>
+                </div>
+                <div class="stat-icon">✅</div>
+            </div>
+        </div>
+
+        <!-- Tabs for different application types -->
+        <div class="dashboard-tabs">
+            <button class="dashboard-tab-btn active" onclick="switchDashboardTab('all')">All Applications</button>
+            <button class="dashboard-tab-btn" onclick="switchDashboardTab('pan')">PAN Applications</button>
+            <button class="dashboard-tab-btn" onclick="switchDashboardTab('ll')">LL Test Applications</button>
+        </div>
+
+        <!-- Applications Table -->
+        <div class="panel">
+            <div class="panel-header">
+                <h3 id="dashboard-table-title" style="color: var(--text-main);">My Applications</h3>
+                <div class="search-box">
+                    <input type="text" id="dashboard-search" placeholder="Search applications..." onkeyup="filterDashboardApplications()">
+                </div>
+            </div>
+
+            <div style="overflow-x: auto;">
+                <table id="dashboard-table">
+                    <thead>
+                        <tr>
+                            <th>Application ID</th>
+                            <th>Type</th>
+                            <th>Date</th>
+                            <th>Details</th>
+                            <th>Status</th>
+                            <th>Test Score</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dashboard-table-body">
+                        <tr><td colspan="7" style="text-align: center;">Loading...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- LL Test History Section -->
+        <div class="panel" style="margin-top: 30px;" id="ll-history-section-dashboard">
+            <div class="panel-header">
+                <h3 style="color: var(--text-main);">📝 LL Test History</h3>
+            </div>
+            <div style="overflow-x: auto;">
+                <table id="ll-history-table">
+                    <thead>
+                        <tr>
+                            <th>Application No</th>
+                            <th>Test Date</th>
+                            <th>Score</th>
+                            <th>Status</th>
+                            <th>Remarks</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ll-history-body">
+                        <tr><td colspan="5" style="text-align: center;">Loading...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- === PAN MENU PAGE === -->
     <main id="pan-menu-page" class="page-section hidden">
         <h2 class="title-header">Find PAN Options</h2>
         <div class="service-grid" style="max-width: 600px; margin-bottom: 30px;">
-            <!-- Option1 -->
             <div class="card card-1" onclick="showPanForm()">
                 <h3>Find PAN Details</h3>
                 <p>Enter Aadhar to get new PAN Number.</p>
             </div>
-            <!-- Option 2 -->
             <div class="card card-5" onclick="showPanHistory()">
                 <h3>FIND PAN HISTORY</h3>
                 <p>View your submitted PAN details (15 Days).</p>
@@ -748,36 +1027,54 @@
         <button class="back-btn" style="width: 200px; margin: 0 auto;" onclick="showHome()">Back to Home</button>
     </main>
 
-    <!-- === SECTION 2: PAN FORM PAGE === -->
+    <!-- === PAN FORM PAGE === -->
     <main id="pan-page" class="page-section hidden">
-       <div id="pan-input-section">
-    <h2 class="title-header">Find PAN Details</h2>
-    <div class="form-container">
-        <div class="form-group">
-            <label for="aadharInput">Enter Aadhar Number</label>
-            <input type="number" id="aadharInput" placeholder="Enter 12 digit number" maxlength="12">
+        <div id="pan-input-section">
+            <h2 class="title-header">Find PAN Details</h2>
+            <div class="form-container">
+                <div class="form-group">
+                    <label for="panNameInput">Full Name</label>
+                    <input type="text" id="panNameInput" placeholder="Enter your full name" required>
+                </div>
+                <div class="form-group">
+                    <label for="panMobileInput">Mobile Number</label>
+                    <input type="tel" id="panMobileInput" placeholder="Enter 10-digit mobile number" maxlength="10" pattern="[0-9]{10}" required>
+                </div>
+                <div class="form-group">
+                    <label for="panAadharInput">Aadhar Number</label>
+                    <input type="text" id="panAadharInput" placeholder="Enter 12 digit Aadhar number" maxlength="12" pattern="[0-9]{12}" required>
+                </div>
+                <button class="submit-btn" onclick="submitPanForm()">Submit</button>
+                <button class="back-btn" onclick="showPanMenu()">Back to Menu</button>
+            </div>
+            <div id="message" style="margin-top: 20px; text-align: center;"></div>
         </div>
-        <button class="submit-btn" onclick="submitPanForm()">Submit</button>
-        <button class="back-btn" onclick="showPanMenu()">Back to Menu</button>
-    </div>
-    <div id="message" style="margin-top: 20px; text-align: center;"></div>
-</div>
         <div id="pan-result-section" class="hidden">
             <h2 class="title-header">Application Details</h2>
             <div class="table-container">
-                <table id="panTable"><thead><tr><th>Aadhar No</th><th>PAN Number</th><th>Service Name</th><th>Date</th><th>Status</th></tr></thead><tbody></tbody></table>
+                <table id="panTable">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Mobile</th>
+                            <th>Aadhar No</th>
+                            <th>PAN Number</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
                 <br><button class="back-btn" onclick="showHome()">Back to Home</button>
             </div>
         </div>
     </main>
 
-    <!-- === SECTION 2.5: PAN HISTORY PAGE (UPDATED WITH BLACK LOGIC) === -->
+    <!-- === PAN HISTORY PAGE === -->
     <main id="pan-history-page" class="page-section hidden">
         <h2 class="title-header">My PAN Search History</h2>
         <p style="margin-bottom: 20px; color: #666;">Records are automatically deleted after 15 days. PAN numbers are hidden until Admin updates.</p>
-        
-        <!-- Simulation Button -->
-        <button class="admin-sim-btn" onclick="simulateAdminUpdate()">⚙ Simulate Admin Update (Reveal PAN)</button>
+
         
         <div class="table-container">
             <table id="historyTable">
@@ -790,60 +1087,64 @@
                         <th>Status</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <!-- Rows will be injected here via JS -->
-                </tbody>
+                <tbody></tbody>
             </table>
             <div id="noHistoryMsg" class="no-data-msg hidden">No history found within the last 15 days.</div>
             <br><button class="back-btn" onclick="showHome()">Back to Home</button>
         </div>
     </main>
 
-    <!-- === SECTION 3: LL TEST FORM PAGE (UPDATED) === -->
+    <!-- === LL TEST FORM PAGE === -->
     <main id="ll-page" class="page-section hidden">
-        
-        <!-- LL Input Section -->
-        <!-- LL Input Section -->
-<div id="ll-input-section">
-    <h2 class="title-header">LL Test Application</h2>
-    <div class="form-container">
-        <div class="form-group">
-            <label for="llAppNoInput">Application No</label>
-            <input type="number" id="llAppNoInput" placeholder="Enter Application Number">
+        <div id="ll-input-section">
+            <h2 class="title-header">LL Test Application</h2>
+            <div class="form-container">
+                <div class="form-group">
+                    <label for="llAppNoInput">Application No</label>
+                    <input type="number" id="llAppNoInput" placeholder="Enter Application Number">
+                </div>
+                <div class="form-group">
+                    <label for="llAadharInput">Aadhar Number</label>
+                    <input type="number" id="llAadharInput" placeholder="Enter 12 digit Aadhar" maxlength="12">
+                </div>
+                <div class="form-group">
+                    <label for="llDobInput">Date of Birth (DOB)</label>
+                    <input type="date" id="llDobInput">
+                </div>
+                <div class="form-group">
+                    <label for="llPassInput">Password</label>
+                    <input type="password" id="llPassInput" placeholder="Enter Password">
+                </div>
+                <button class="submit-btn" onclick="submitLLForm()">Submit</button>
+                <button class="back-btn" onclick="showHome()">Back to Home</button>
+                
+                <div style="text-align: center; margin-top: 5px;">
+                    <button class="history-link-btn" onclick="showLLHistory()">View LL History</button>
+                </div>
+            </div>
         </div>
-        <div class="form-group">
-            <label for="llAadharInput">Aadhar Number</label>
-            <input type="number" id="llAadharInput" placeholder="Enter 12 digit Aadhar" maxlength="12">
-        </div>
-        <div class="form-group">
-            <label for="llDobInput">Date of Birth (DOB)</label>
-            <input type="date" id="llDobInput">
-        </div>
-        <div class="form-group">
-            <label for="llPassInput">Password</label>
-            <input type="password" id="llPassInput" placeholder="Enter Password">
-        </div>
-        <button class="submit-btn" onclick="submitLLForm()">Submit</button>
-        <button class="back-btn" onclick="showHome()">Back to Home</button>
-        
-        <div style="text-align: center; margin-top: 5px;">
-            <button class="history-link-btn" onclick="showLLHistory()">View LL History</button>
-        </div>
-    </div>
-</div>
 
-        <!-- LL Single Result Section -->
         <div id="ll-result-section" class="hidden">
             <h2 class="title-header">Application Details</h2>
             <div class="table-container">
-                <table id="llTable"><thead><tr><th>Application No</th><th>DOB</th><th>Password</th><th>Service Name</th><th>Status</th></tr></thead><tbody></tbody></table>
+                <table id="llTable">
+                    <thead>
+                        <tr>
+                            <th>Application No</th>
+                            <th>DOB</th>
+                            <th>Password</th>
+                            <th>Service Name</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
                 <br>
                 <button class="back-btn" onclick="showLLForm()">Back to Form</button>
                 <button class="back-btn" onclick="showHome()">Back to Home</button>
             </div>
         </div>
 
-        <!-- === NEW: LL HISTORY SECTION === -->
         <div id="ll-history-section" class="hidden">
             <h2 class="title-header">LL Test History</h2>
             <p style="margin-bottom: 20px; color: #666;">Records are automatically deleted after 15 days.</p>
@@ -859,9 +1160,7 @@
                             <th>Status</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <!-- Rows injected via JS -->
-                    </tbody>
+                    <tbody></tbody>
                 </table>
                 <div id="noLLHistoryMsg" class="no-data-msg hidden">No history found within the last 15 days.</div>
                 <br>
@@ -869,10 +1168,9 @@
                 <button class="back-btn" onclick="showHome()">Back to Home</button>
             </div>
         </div>
-
     </main>
 
-    <!-- === SECTION 4: WALLET ADD FUNDS PAGE === -->
+    <!-- === WALLET ADD FUNDS PAGE === -->
     <main id="wallet-page" class="page-section hidden">
         <div class="wallet-container">
             <div class="wallet-header">
@@ -921,19 +1219,19 @@
         </div>
     </main>
 
-    <!-- === SECTION 5: USER PROFILE PAGE (NEW) === -->
+    <!-- === USER PROFILE PAGE === -->
     <main id="profile-page" class="page-section hidden">
         <h2 class="title-header">User Profile</h2>
         
         <div class="profile-wrapper">
-            <div class="profile-avatar">
-                <!-- Using UI Avatars service for a dynamic placeholder -->
-                <img src="https://ui-avatars.com/api/?name=Guest+User&background=4F46E5&color=fff&size=128" alt="User Avatar">
+            <div class="profile-avatar" id="profile-avatar-container">
+                <img id="profile-avatar-img" src="https://ui-avatars.com/api/?name=Guest+User&background=4F46E5&color=fff&size=128" alt="User Avatar">
             </div>
             
-            <div>
-                <h3 class="profile-name">Guest User</h3>
-                <p class="profile-email">guest@shreeprint.com</p>
+            <div class="profile-info">
+                <h3 class="profile-name" id="profile-name">Guest User</h3>
+                <p class="profile-email" id="profile-email">guest@shreeprint.com</p>
+                <p class="profile-username" id="profile-username" style="color: #666; font-size: 0.9rem;">@guest</p>
             </div>
 
             <div class="profile-balance-card">
@@ -941,27 +1239,170 @@
                 <div class="balance-amount-small" id="profile-balance-display">₹0</div>
             </div>
 
+            <div class="profile-details-card" style="width: 100%; background: #f8fafc; border-radius: 12px; padding: 20px; margin: 10px 0;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <h4 style="color: var(--text-main); font-size: 1.1rem;">Personal Information</h4>
+                    <button class="btn btn-outline btn-sm" onclick="toggleEditMode()" id="edit-toggle-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
+                        </svg>
+                        Edit Profile
+                    </button>
+                </div>
+
+                <div id="profile-view-mode">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <div>
+                            <label style="color: var(--text-muted); font-size: 0.8rem;">Full Name</label>
+                            <p style="font-weight: 600; color: var(--text-main);" id="view-fullname">-</p>
+                        </div>
+                        <div>
+                            <label style="color: var(--text-muted); font-size: 0.8rem;">Username</label>
+                            <p style="font-weight: 600; color: var(--text-main);" id="view-username">-</p>
+                        </div>
+                        <div>
+                            <label style="color: var(--text-muted); font-size: 0.8rem;">Email</label>
+                            <p style="font-weight: 600; color: var(--text-main);" id="view-email">-</p>
+                        </div>
+                        <div>
+                            <label style="color: var(--text-muted); font-size: 0.8rem;">Phone</label>
+                            <p style="font-weight: 600; color: var(--text-main);" id="view-phone">-</p>
+                        </div>
+                        <div>
+                            <label style="color: var(--text-muted); font-size: 0.8rem;">Aadhar Number</label>
+                            <p style="font-weight: 600; color: var(--text-main);" id="view-aadhar">-</p>
+                        </div>
+                        <div>
+                            <label style="color: var(--text-muted); font-size: 0.8rem;">Member Since</label>
+                            <p style="font-weight: 600; color: var(--text-main);" id="view-member-since">-</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="profile-edit-mode" style="display: none;">
+                    <form id="profile-edit-form" onsubmit="updateProfile(event)">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                            <div class="form-group">
+                                <label>Full Name</label>
+                                <input type="text" id="edit-fullname" class="form-control" placeholder="Enter your full name">
+                            </div>
+                            <div class="form-group">
+                                <label>Username</label>
+                                <input type="text" id="edit-username" class="form-control" placeholder="Username" readonly style="background: #f1f5f9;">
+                            </div>
+                            <div class="form-group">
+                                <label>Email</label>
+                                <input type="email" id="edit-email" class="form-control" placeholder="Email" readonly style="background: #f1f5f9;">
+                            </div>
+                            <div class="form-group">
+                                <label>Phone Number</label>
+                                <input type="tel" id="edit-phone" class="form-control" placeholder="10-digit mobile number" maxlength="10">
+                            </div>
+                            <div class="form-group">
+                                <label>Aadhar Number</label>
+                                <input type="text" id="edit-aadhar" class="form-control" placeholder="12-digit Aadhar number" maxlength="12">
+                            </div>
+                        </div>
+
+                        <div style="display: flex; gap: 10px; margin-top: 20px;">
+                            <button type="submit" class="btn btn-primary" id="save-profile-btn">Save Changes</button>
+                            <button type="button" class="btn btn-outline" onclick="cancelEdit()">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="password-section" style="width: 100%; margin: 10px 0;">
+                <button class="btn btn-outline" onclick="togglePasswordChange()" style="width: 100%; justify-content: center;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                    Change Password
+                </button>
+
+                <div id="password-change-form" style="display: none; margin-top: 15px; background: #f8fafc; padding: 20px; border-radius: 12px;">
+                    <form onsubmit="changePassword(event)">
+                        <div class="form-group">
+                            <label>Current Password</label>
+                            <input type="password" id="current-password" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label>New Password</label>
+                            <input type="password" id="new-password" class="form-control" required onkeyup="checkNewPasswordStrength()">
+                            <div class="password-strength" style="margin-top: 5px; height: 4px; background: #e0e0e0; border-radius: 2px;">
+                                <div class="password-strength-bar" id="new-password-strength" style="height: 100%; width: 0; transition: all 0.3s;"></div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Confirm New Password</label>
+                            <input type="password" id="confirm-new-password" class="form-control" required>
+                        </div>
+                        <div style="display: flex; gap: 10px;">
+                            <button type="submit" class="btn btn-primary">Update Password</button>
+                            <button type="button" class="btn btn-outline" onclick="togglePasswordChange()">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="transaction-history" style="width: 100%; margin: 10px 0;">
+                <button class="btn btn-outline" onclick="showTransactionHistory()" style="width: 100%; justify-content: center;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="12" y1="1" x2="12" y2="23"></line>
+                        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                    </svg>
+                    View Transaction History
+                </button>
+            </div>
+
             <div class="profile-actions">
-                <button class="submit-btn" onclick="showWalletForm()">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"></path><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"></path><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"></path></svg>
-                    Add Funds
-                </button>
-                <button class="submit-btn" style="background: #6b7280;" onclick="alert('Feature coming soon: Edit Profile')">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>
-                    Edit Profile
-                </button>
-                <button class="back-btn" style="background-color: var(--danger-color);" onclick="alert('Logged Out (Simulation)')">
+                <button class="back-btn" style="background-color: var(--danger-color);" onclick="logout()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                        <polyline points="16 17 21 12 16 7"></polyline>
+                        <line x1="21" y1="12" x2="9" y2="12"></line>
+                    </svg>
                     Log Out
                 </button>
-                <button class="back-btn" onclick="showHome()">Back to Home</button>
+                <button class="back-btn" onclick="showHome()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 12H5M12 19l-7-7 7-7"/>
+                    </svg>
+                    Back to Home
+                </button>
             </div>
         </div>
     </main>
 
-    <!-- === SECTION 6: PASSPORT PHOTO MAKER TOOL === -->
+    <!-- Transaction History Modal -->
+    <div id="transaction-modal" class="modal-overlay">
+        <div class="modal-box" style="max-width: 600px;">
+            <div class="modal-header">
+                <h3>Transaction History</h3>
+                <button class="close-btn" onclick="closeTransactionModal()">&times;</button>
+            </div>
+            <div style="max-height: 400px; overflow-y: auto;">
+                <table style="width: 100%;">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Type</th>
+                            <th>Amount</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody id="transaction-list">
+                        <tr><td colspan="4" style="text-align: center;">Loading...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- === PASSPORT PHOTO MAKER TOOL === -->
     <main id="photo-page" class="page-section hidden">
         <aside class="sidebar-dark">
-            <!-- TOP: BACK TO HOME BUTTON -->
             <div class="photo-header">
                 <button class="btn-photo-back" onclick="showHome()">← Back to Home</button>
             </div>
@@ -1012,7 +1453,6 @@
                     <button class="btn-scroll" id="scrollDownBtn">▼ Down</button>
                 </div>
             </div>
-            <!-- BOTTOM: BACK TO HOME BUTTON (For Better UX) -->
             <button class="btn-primary" onclick="printSheet()">PRINT / SAVE PDF</button>
             <button class="btn-photo-back" style="width:100%; margin-top:10px; justify-content:center;" onclick="showHome()">← Back to Home</button>
         </aside>
@@ -1058,835 +1498,1648 @@
         </div>
     </footer>
 
-    <!-- JavaScript Logic -->
-<script>
-    // === GLOBAL VARIABLES (MUST BE FIRST) ===
-    const homePage = document.getElementById('home-page');
-    const panMenuPage = document.getElementById('pan-menu-page'); 
-    const panPage = document.getElementById('pan-page');
-    const panHistoryPage = document.getElementById('pan-history-page'); 
-    const llPage = document.getElementById('ll-page');
-    const photoPage = document.getElementById('photo-page');
-    const profilePage = document.getElementById('profile-page');
+    <div id="toast-container"></div>
 
-    let currentWalletBalance = 0;
-    let tempAadhar = '';
-    let userSessionId = localStorage.getItem('userSessionId') || generateSessionId();
+    <script>
+        // === GLOBAL VARIABLES ===
+        const homePage = document.getElementById('home-page');
+        const panMenuPage = document.getElementById('pan-menu-page'); 
+        const panPage = document.getElementById('pan-page');
+        const panHistoryPage = document.getElementById('pan-history-page'); 
+        const llPage = document.getElementById('ll-page');
+        const photoPage = document.getElementById('photo-page');
+        const profilePage = document.getElementById('profile-page');
+        const userDashboardPage = document.getElementById('user-dashboard-page');
 
-    // API Base URL
-    const API_BASE_URL = 'http://localhost:5001/api';
+        let currentWalletBalance = 0;
+        let tempAadhar = '';
+        let userSessionId = localStorage.getItem('userSessionId') || generateSessionId();
+        let currentUser = null;
+        let userApplications = [];
+        let userLLTests = [];
+        let currentDashboardTab = 'all';
 
-    // === HELPER FUNCTIONS (DEFINED FIRST) ===
-    function generateSessionId() {
-        const sessionId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-        localStorage.setItem('userSessionId', sessionId);
-        return sessionId;
-    }
+        // API Base URL
+        const API_BASE_URL = 'http://localhost:5001/api';
 
-    function hideAllPages() {
-        homePage.classList.add('hidden');
-        panMenuPage.classList.add('hidden'); 
-        panPage.classList.add('hidden');
-        panHistoryPage.classList.add('hidden');
-        llPage.classList.add('hidden');
-        photoPage.classList.remove('active');
-        photoPage.classList.add('hidden');
-        profilePage.classList.add('hidden');
-    }
-
-    function showHome() {
-        hideAllPages();
-        homePage.classList.remove('hidden');
-        resetForms();
-    }
-
-    function resetForms() {
-        document.getElementById('pan-input-section').classList.remove('hidden');
-        document.getElementById('pan-result-section').classList.add('hidden');
-        document.getElementById('aadharInput').value = "";
-        tempAadhar = '';
-        
-        document.getElementById('ll-input-section').classList.remove('hidden');
-        document.getElementById('ll-result-section').classList.add('hidden');
-        document.getElementById('ll-history-section').classList.add('hidden');
-        document.getElementById('llAppNoInput').value = "";
-        document.getElementById('llDobInput').value = "";
-        document.getElementById('llPassInput').value = "";
-        
-        document.getElementById('searchInput').value = "";
-        const cards = document.querySelectorAll('.card');
-        cards.forEach(card => card.style.display = 'block');
-    }
-
-    // === PAN FUNCTIONS ===
-    function showPanMenu() {
-        hideAllPages();
-        panMenuPage.classList.remove('hidden');
-    }
-
-    function showPanForm() {
-        hideAllPages();
-        panPage.classList.remove('hidden');
-        document.getElementById('pan-input-section').classList.remove('hidden');
-        document.getElementById('pan-result-section').classList.add('hidden');
-        document.getElementById('message').innerHTML = '';
-    }
-
-    // FIXED: showPanHistory function - defined before it's used
-    async function showPanHistory() {
-        hideAllPages();
-        panHistoryPage.classList.remove('hidden');
-        await loadPanHistory();
-    }
-
-    // Load PAN History from backend
-    async function loadPanHistory() {
-        const tbody = document.querySelector('#historyTable tbody');
-        const noHistoryMsg = document.getElementById('noHistoryMsg');
-        
-        try {
-            tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 20px;">Loading history...</td></tr>';
+        // === AUTHENTICATION CHECK ===
+        (function checkInitialAuth() {
+            const sessionToken = localStorage.getItem('sessionToken');
+            const user = localStorage.getItem('user');
             
-            console.log('Fetching history for user:', userSessionId);
-            
-            const response = await fetch(`${API_BASE_URL}/history/get`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ userId: userSessionId })
-            });
+            if (!sessionToken || !user) {
+                localStorage.removeItem('sessionToken');
+                localStorage.removeItem('user');
+                localStorage.removeItem('userSessionId');
+                sessionStorage.setItem('showLoginPrompt', 'true');
+            } else {
+                try {
+                    window.currentUser = JSON.parse(user);
+                    console.log('Logged in as:', window.currentUser.username);
+                } catch (e) {
+                    console.error('Error parsing user data');
+                    localStorage.removeItem('user');
+                }
+            }
+        })();
 
-            console.log('Response status:', response.status);
+        // === HELPER FUNCTIONS ===
+        function generateSessionId() {
+            const sessionId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            localStorage.setItem('userSessionId', sessionId);
+            return sessionId;
+        }
+
+        function hideAllPages() {
+            homePage.classList.add('hidden');
+            panMenuPage.classList.add('hidden'); 
+            panPage.classList.add('hidden');
+            panHistoryPage.classList.add('hidden');
+            llPage.classList.add('hidden');
+            photoPage.classList.remove('active');
+            photoPage.classList.add('hidden');
+            profilePage.classList.add('hidden');
+            if (userDashboardPage) userDashboardPage.classList.add('hidden');
+        }
+
+        function showHome() {
+            hideAllPages();
+            homePage.classList.remove('hidden');
+            resetForms();
+            updateNavigation();
+        }
+
+        function resetForms() {
+            document.getElementById('pan-input-section').classList.remove('hidden');
+            document.getElementById('pan-result-section').classList.add('hidden');
+            if (document.getElementById('panNameInput')) document.getElementById('panNameInput').value = "";
+            if (document.getElementById('panMobileInput')) document.getElementById('panMobileInput').value = "";
+            if (document.getElementById('panAadharInput')) document.getElementById('panAadharInput').value = "";
             
-            if (!response.ok) {
-                const errorText = await response.text();
-                console.error('Error response:', errorText);
-                throw new Error(`HTTP error! status: ${response.status}`);
+            document.getElementById('ll-input-section').classList.remove('hidden');
+            document.getElementById('ll-result-section').classList.add('hidden');
+            document.getElementById('ll-history-section').classList.add('hidden');
+            if (document.getElementById('llAppNoInput')) document.getElementById('llAppNoInput').value = "";
+            if (document.getElementById('llAadharInput')) document.getElementById('llAadharInput').value = "";
+            if (document.getElementById('llDobInput')) document.getElementById('llDobInput').value = "";
+            if (document.getElementById('llPassInput')) document.getElementById('llPassInput').value = "";
+            
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput) searchInput.value = "";
+            const cards = document.querySelectorAll('.card');
+            cards.forEach(card => card.style.display = 'block');
+        }
+
+        // === NAVIGATION UPDATE ===
+        function updateNavigation() {
+            const navLinks = document.getElementById('navLinks');
+            const sessionToken = localStorage.getItem('sessionToken');
+            const user = JSON.parse(localStorage.getItem('user') || 'null');
+            
+            while (navLinks.children.length > 3) {
+                navLinks.removeChild(navLinks.lastChild);
             }
             
-            const data = await response.json();
-            console.log('History data received:', data);
-            
-            if (data.success && data.history && data.history.length > 0) {
-                tbody.innerHTML = '';
-                noHistoryMsg.classList.add('hidden');
+            if (sessionToken && user) {
+                const dashboardLi = document.createElement('li');
+                dashboardLi.innerHTML = `<a href="#" onclick="showUserDashboard()">Dashboard</a>`;
+                navLinks.appendChild(dashboardLi);
                 
-                data.history.forEach(item => {
-                    const row = document.createElement('tr');
-                    
-                    let statusClass = 'badge-pending';
-                    let statusText = item.status || 'pending';
-                    
-                    if (item.status === 'completed' || item.status === 'active') {
-                        statusClass = 'badge-active';
-                        statusText = item.status === 'active' ? 'Active' : 'Completed';
-                    }
-                    
-                    let panDisplay = 'Not Available';
-                    if (item.isPanVisible && item.panNumber) {
-                        panDisplay = item.panNumber;
-                    } else if (item.panNumber) {
-                        panDisplay = '••••••••• (Pending)';
-                    } else {
-                        panDisplay = 'Not Available';
-                    }
-                    
-                    const aadharDisplay = item.aadhar ? item.aadhar.replace(/(\d{4})/g, '$1 ').trim() : '-';
-                    
-                    row.innerHTML = `
-                        <td>${aadharDisplay}</td>
-                        <td style="font-family: monospace; font-weight: ${item.isPanVisible ? 'bold' : 'normal'}; color: ${item.isPanVisible ? '#059669' : '#999'};">
-                            ${panDisplay}
-                            ${item.isPanVisible ? '<span style="color: green; margin-left: 5px;">✓</span>' : ''}
-                        </td>
-                        <td>${item.serviceName || 'PAN Application'}</td>
-                        <td>${item.date || new Date().toLocaleDateString()}</td>
-                        <td><span class="badge ${statusClass}">${statusText}</span></td>
-                    `;
-                    
-                    tbody.appendChild(row);
+                const profileLi = document.createElement('li');
+                profileLi.innerHTML = `<a href="#" onclick="showProfile()">${user.full_name || user.username}</a>`;
+                navLinks.appendChild(profileLi);
+                
+                const logoutLi = document.createElement('li');
+                logoutLi.innerHTML = `<a href="#" onclick="logout()" style="color: #ef4444;">Logout</a>`;
+                navLinks.appendChild(logoutLi);
+                
+                document.querySelectorAll('.auth-required').forEach(el => {
+                    el.style.display = 'block';
                 });
             } else {
-                tbody.innerHTML = '';
-                noHistoryMsg.classList.remove('hidden');
-                const emptyRow = document.createElement('tr');
-                emptyRow.innerHTML = '<td colspan="5" style="text-align: center; padding: 20px; color: #666;">No history found. Submit a PAN application first.</td>';
-                tbody.appendChild(emptyRow);
+                const loginLi = document.createElement('li');
+                loginLi.innerHTML = `<a href="login.html" style="color: #4F46E5;">Login</a>`;
+                navLinks.appendChild(loginLi);
+                
+                const registerLi = document.createElement('li');
+                registerLi.innerHTML = `<a href="login.html?tab=register" style="color: #10B981;">Register</a>`;
+                navLinks.appendChild(registerLi);
+                
+                document.querySelectorAll('.auth-required').forEach(el => {
+                    el.style.display = 'none';
+                });
             }
-        } catch (error) {
-            console.error('Error loading history:', error);
-            tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 20px; color: red;">
-                Error loading history: ${error.message}<br>
-                <button onclick="loadPanHistory()" style="margin-top: 10px; padding: 5px 10px; background: #667eea; color: white; border: none; border-radius: 4px; cursor: pointer;">Retry</button>
-            </td></tr>`;
         }
-    }
 
-    // Submit PAN Application
-    async function submitPanForm() {
-        const aadharInput = document.getElementById('aadharInput');
-        const messageDiv = document.getElementById('message');
-        const aadhar = aadharInput.value.trim();
-        
-        if (!aadhar || aadhar.length !== 12 || !/^\d+$/.test(aadhar)) {
-            messageDiv.innerHTML = '<p style="color: red;">Please enter a valid 12-digit Aadhar number</p>';
-            return;
-        }
-        
-        try {
-            messageDiv.innerHTML = '<p style="color: blue;">Submitting...</p>';
+        // === LOGIN PROMPT ===
+        function showLoginPrompt() {
+            const shouldShow = sessionStorage.getItem('showLoginPrompt');
+            if (!shouldShow) return;
             
-            const response = await fetch(`${API_BASE_URL}/apply`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ aadhar: aadhar })
+            const overlay = document.createElement('div');
+            overlay.id = 'loginPromptOverlay';
+            overlay.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.7);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 9999;
+                backdrop-filter: blur(5px);
+            `;
+            
+            const promptBox = document.createElement('div');
+            promptBox.style.cssText = `
+                background: white;
+                padding: 40px;
+                border-radius: 20px;
+                text-align: center;
+                max-width: 400px;
+                box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+                animation: slideUp 0.5s ease;
+            `;
+            
+            promptBox.innerHTML = `
+                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#4F46E5" stroke-width="2">
+                    <circle cx="12" cy="8" r="4"/>
+                    <path d="M5 20v-2a7 7 0 0 1 14 0v2"/>
+                </svg>
+                <h2 style="margin: 20px 0 10px; color: #333;">Welcome to Print Portal</h2>
+                <p style="color: #666; margin-bottom: 25px;">Please login or register to access all features</p>
+                <div style="display: flex; gap: 15px; justify-content: center;">
+                    <button onclick="redirectToLogin()" class="btn btn-primary" style="padding: 12px 30px;">Login</button>
+                    <button onclick="redirectToRegister()" class="btn btn-outline" style="padding: 12px 30px;">Register</button>
+                </div>
+                <button onclick="closeLoginPrompt()" style="margin-top: 20px; background: none; border: none; color: #999; cursor: pointer;">Continue as Guest</button>
+            `;
+            
+            overlay.appendChild(promptBox);
+            document.body.appendChild(overlay);
+            
+            sessionStorage.removeItem('showLoginPrompt');
+        }
+
+        function redirectToLogin() {
+            window.location.href = 'login.html';
+        }
+
+        function redirectToRegister() {
+            window.location.href = 'login.html?tab=register';
+        }
+
+        function closeLoginPrompt() {
+            const overlay = document.getElementById('loginPromptOverlay');
+            if (overlay) overlay.remove();
+        }
+
+        // === DASHBOARD FUNCTIONS ===
+        function showUserDashboard() {
+            const sessionToken = localStorage.getItem('sessionToken');
+            const user = JSON.parse(localStorage.getItem('user') || 'null');
+            
+            if (!sessionToken || !user) {
+                showToast('Please login to view dashboard', 'info');
+                showLoginPrompt();
+                return;
+            }
+            
+            hideAllPages();
+            userDashboardPage.classList.remove('hidden');
+            loadUserDashboard();
+        }
+
+        async function loadUserDashboard() {
+            try {
+                showToast('Loading your dashboard...', 'info');
+                
+                const sessionToken = localStorage.getItem('sessionToken');
+                const user = JSON.parse(localStorage.getItem('user') || 'null');
+                
+                if (!user || !user.id) {
+                    showToast('User data not found', 'error');
+                    return;
+                }
+
+                const response = await fetch(`${API_BASE_URL}/applications`);
+                
+                if (!response.ok) throw new Error('Failed to fetch applications');
+                
+                const data = await response.json();
+                
+                const userAadhar = user.aadhar_number;
+                const userMobile = user.phone;
+                
+                userApplications = data.filter(app => 
+                    (userAadhar && app.aadhar === userAadhar) || 
+                    (userMobile && app.mobile === userMobile)
+                );
+                
+                await loadUserLLTests();
+                updateDashboardStats();
+                renderDashboardTable();
+                
+                const walletDisplay = document.getElementById('dashboard-wallet-balance');
+                if (walletDisplay) {
+                    walletDisplay.textContent = `₹${user.wallet_balance || 0}`;
+                }
+                
+            } catch (error) {
+                console.error('Error loading dashboard:', error);
+                showToast('Failed to load dashboard data', 'error');
+            }
+        }
+
+        async function loadUserLLTests() {
+            try {
+                const sessionToken = localStorage.getItem('sessionToken');
+                const user = JSON.parse(localStorage.getItem('user') || 'null');
+                
+                if (!user) return;
+                
+                const response = await fetch(`${API_BASE_URL}/ll-applications`);
+                
+                if (!response.ok) throw new Error('Failed to fetch LL applications');
+                
+                const llApps = await response.json();
+                
+                const userAadhar = user.aadhar_number;
+                const userMobile = user.phone;
+                
+                userLLTests = llApps.filter(app => 
+                    (userAadhar && app.aadhar === userAadhar) || 
+                    (userMobile && app.mobile === userMobile)
+                );
+                
+                renderLLHistory();
+                
+            } catch (error) {
+                console.error('Error loading LL tests:', error);
+            }
+        }
+
+        function updateDashboardStats() {
+            const total = userApplications.length;
+            const pending = userApplications.filter(app => app.status === 'pending').length;
+            const completed = userApplications.filter(app => app.status === 'completed' || app.status === 'active').length;
+            
+            document.getElementById('dashboard-total-apps').textContent = total;
+            document.getElementById('dashboard-pending-apps').textContent = pending;
+            document.getElementById('dashboard-completed-apps').textContent = completed;
+        }
+
+        function switchDashboardTab(tab) {
+            currentDashboardTab = tab;
+            
+            document.querySelectorAll('.dashboard-tab-btn').forEach(btn => {
+                btn.classList.remove('active');
             });
+            event.target.classList.add('active');
+            
+            const titles = {
+                'all': 'All Applications',
+                'pan': 'PAN Applications',
+                'll': 'LL Test Applications'
+            };
+            document.getElementById('dashboard-table-title').textContent = titles[tab];
+            
+            renderDashboardTable();
+        }
 
-            if (!response.ok) {
-                const errorText = await response.text();
-                console.error('Server response:', errorText);
-                throw new Error(`HTTP error! status: ${response.status}`);
+        function renderDashboardTable() {
+            const tbody = document.getElementById('dashboard-table-body');
+            const searchTerm = document.getElementById('dashboard-search').value.toLowerCase();
+            
+            let filteredApps = [...userApplications];
+            
+            if (currentDashboardTab !== 'all') {
+                filteredApps = filteredApps.filter(app => app.type === currentDashboardTab);
             }
             
-            const data = await response.json();
+            if (searchTerm) {
+                filteredApps = filteredApps.filter(app => 
+                    (app.id && app.id.toLowerCase().includes(searchTerm)) ||
+                    (app.appNo && app.appNo.toLowerCase().includes(searchTerm)) ||
+                    (app.name && app.name.toLowerCase().includes(searchTerm))
+                );
+            }
             
-            if (data.success) {
-                const historyResponse = await fetch(`${API_BASE_URL}/history/store`, {
+            if (filteredApps.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; padding: 30px;">No applications found</td></tr>`;
+                return;
+            }
+            
+            tbody.innerHTML = '';
+            
+            filteredApps.forEach(app => {
+                const row = document.createElement('tr');
+                
+                const appDate = app.date ? new Date(app.date).toLocaleDateString('en-IN') : '-';
+                
+                let testScore = '-';
+                let testScoreClass = '';
+                
+                if (app.type === 'll') {
+                    const score = app.testScore || 0;
+                    testScore = `${score}/100`;
+                    if (score >= 70) testScoreClass = 'score-high';
+                    else if (score >= 40) testScoreClass = 'score-medium';
+                    else testScoreClass = 'score-low';
+                }
+                
+                const statusClass = app.status === 'completed' || app.status === 'active' ? 'badge-active' : 'badge-pending';
+                const statusText = app.status === 'active' ? 'Active' : app.status;
+                
+                let details = '';
+                if (app.type === 'pan') {
+                    details = `PAN: ${app.panNumber || 'Pending'}`;
+                } else if (app.type === 'll') {
+                    details = `App No: ${app.appNo || '-'}`;
+                } else {
+                    details = app.appNo || '-';
+                }
+                
+                row.innerHTML = `
+                    <td>#${app.id}</td>
+                    <td><span class="badge-type ${app.type === 'll' ? 'badge-ll' : 'badge-pan'}">${app.type.toUpperCase()}</span></td>
+                    <td>${appDate}</td>
+                    <td>${details}</td>
+                    <td><span class="badge ${statusClass}">${statusText}</span></td>
+                    <td>${app.type === 'll' ? `<span class="test-score ${testScoreClass}">${testScore}</span>` : '-'}</td>
+                    <td>
+                        <button class="btn btn-sm btn-outline" onclick="viewApplicationDetails('${app.id}')">View Details</button>
+                    </td>
+                `;
+                
+                tbody.appendChild(row);
+            });
+        }
+
+        function renderLLHistory() {
+            const tbody = document.getElementById('ll-history-body');
+            
+            if (userLLTests.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align: center;">No LL test history found</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = '';
+            
+            userLLTests.forEach(test => {
+                const row = document.createElement('tr');
+                
+                const testDate = test.test_date ? new Date(test.test_date).toLocaleDateString('en-IN') : '-';
+                const score = test.testScore || 0;
+                const scoreClass = score >= 70 ? 'score-high' : (score >= 40 ? 'score-medium' : 'score-low');
+                
+                let statusBadge = '';
+                if (test.testStatus === 'passed') {
+                    statusBadge = '<span class="badge" style="background: #10b981; color: white;">✅ Passed</span>';
+                } else if (test.testStatus === 'failed') {
+                    statusBadge = '<span class="badge" style="background: #ef4444; color: white;">❌ Failed</span>';
+                } else {
+                    statusBadge = '<span class="badge" style="background: #f59e0b; color: white;">⏳ Pending</span>';
+                }
+                
+                row.innerHTML = `
+                    <td>${test.appNo || '-'}</td>
+                    <td>${testDate}</td>
+                    <td><span class="test-score ${scoreClass}">${score}/100</span></td>
+                    <td>${statusBadge}</td>
+                    <td>${test.examinerRemarks || '-'}</td>
+                `;
+                
+                tbody.appendChild(row);
+            });
+        }
+
+        function filterDashboardApplications() {
+            renderDashboardTable();
+        }
+
+        function viewApplicationDetails(appId) {
+            const app = userApplications.find(a => a.id === appId);
+            if (!app) return;
+            
+            const details = `
+                Application ID: ${app.id}
+                Type: ${app.type}
+                Status: ${app.status}
+                Date: ${new Date(app.date).toLocaleDateString()}
+                ${app.type === 'pan' ? `PAN Number: ${app.panNumber || 'Pending'}` : ''}
+                ${app.type === 'll' ? `Test Score: ${app.testScore || 'Not taken'}` : ''}
+                ${app.type === 'll' ? `Test Status: ${app.testStatus || 'Pending'}` : ''}
+            `;
+            
+            alert(details);
+        }
+
+        // === PAN FUNCTIONS ===
+        function showPanMenu() {
+            if (!requireAuth()) return;
+            hideAllPages();
+            panMenuPage.classList.remove('hidden');
+        }
+
+        function showPanForm() {
+            if (!requireAuth()) return;
+            hideAllPages();
+            panPage.classList.remove('hidden');
+            document.getElementById('pan-input-section').classList.remove('hidden');
+            document.getElementById('pan-result-section').classList.add('hidden');
+            document.getElementById('message').innerHTML = '';
+        }
+
+        async function showPanHistory() {
+            if (!requireAuth()) return;
+            hideAllPages();
+            panHistoryPage.classList.remove('hidden');
+            await loadPanHistory();
+        }
+
+        function requireAuth() {
+            const sessionToken = localStorage.getItem('sessionToken');
+            if (!sessionToken) {
+                showToast('Please login to access this feature', 'info');
+                showLoginPrompt();
+                return false;
+            }
+            return true;
+        }
+
+        async function loadPanHistory() {
+            const tbody = document.querySelector('#historyTable tbody');
+            const noHistoryMsg = document.getElementById('noHistoryMsg');
+            
+            try {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 20px;">Loading history...</td></tr>';
+                
+                const response = await fetch(`${API_BASE_URL}/history/get`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ 
-                        aadhar: aadhar,
-                        userId: userSessionId 
-                    })
+                    body: JSON.stringify({ userId: userSessionId })
                 });
+
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                 
-                if (!historyResponse.ok) {
-                    console.warn('History store failed but application succeeded');
-                }
+                const data = await response.json();
                 
-                messageDiv.innerHTML = '<p style="color: green;">Application submitted successfully! You can check history after 15 days.</p>';
-                aadharInput.value = '';
-                
-                document.getElementById('pan-input-section').classList.add('hidden');
-                document.getElementById('pan-result-section').classList.remove('hidden');
-                
-                const resultHtml = `
-                    <tr>
-                        <td>${aadhar.replace(/(\d{4})/g, '$1 ').trim()}</td>
-                        <td>****** (Pending)</td>
-                        <td>PAN Application</td>
-                        <td>${new Date().toLocaleDateString()}</td>
-                        <td><span class="badge badge-pending">Pending</span></td>
-                    </tr>
-                `;
-                document.querySelector('#panTable tbody').innerHTML = resultHtml;
-                
-                setTimeout(() => {
-                    messageDiv.innerHTML = '';
-                }, 3000);
-            } else {
-                messageDiv.innerHTML = `<p style="color: red;">Error: ${data.error || 'Something went wrong'}</p>`;
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            messageDiv.innerHTML = '<p style="color: red;">Network error. Please try again.</p>';
-        }
-    }
-
-    // Simulate admin update
-    async function simulateAdminUpdate() {
-        try {
-            const response = await fetch(`${API_BASE_URL}/admin/reveal-pan`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            
-            const data = await response.json();
-            
-            if (data.success) {
-                await loadPanHistory();
-                alert(`✅ Admin update simulated! ${data.count} PAN numbers revealed.`);
-            } else {
-                alert('❌ Failed to update: ' + (data.error || 'Unknown error'));
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            alert('Network error. Please try again.');
-        }
-    }
-
-    // === LL FUNCTIONS ===
-    function showLLForm() {
-        hideAllPages();
-        llPage.classList.remove('hidden');
-        document.getElementById('ll-input-section').classList.remove('hidden');
-        document.getElementById('ll-result-section').classList.add('hidden');
-        document.getElementById('ll-history-section').classList.add('hidden');
-    }
-
-    function saveLLRecord(appNo, aadhar, dob, pass, service, status) {
-    const history = JSON.parse(localStorage.getItem('llSearchHistory')) || [];
-    const newRecord = {
-        appNo: appNo,
-        aadhar: aadhar,
-        dob: dob,
-        pass: pass,
-        service: service,
-        status: status,
-        timestamp: new Date().toISOString(),
-        displayDate: new Date().toLocaleDateString()
-    };
-    history.push(newRecord);
-    localStorage.setItem('llSearchHistory', JSON.stringify(history));
-}
-
-   // === LL FUNCTIONS ===
-function showLLForm() {
-    hideAllPages();
-    llPage.classList.remove('hidden');
-    document.getElementById('ll-input-section').classList.remove('hidden');
-    document.getElementById('ll-result-section').classList.add('hidden');
-    document.getElementById('ll-history-section').classList.add('hidden');
-}
-
-function saveLLRecord(appNo, dob, pass, service, status) {
-    const history = JSON.parse(localStorage.getItem('llSearchHistory')) || [];
-    const newRecord = {
-        appNo: appNo,
-        dob: dob,
-        pass: pass,
-        service: service,
-        status: status,
-        timestamp: new Date().toISOString(),
-        displayDate: new Date().toLocaleDateString()
-    };
-    history.push(newRecord);
-    localStorage.setItem('llSearchHistory', JSON.stringify(history));
-}
-
-// FIXED: Submit LL Application to correct LL endpoint
-async function submitLLForm() {
-    const appNo = document.getElementById('llAppNoInput').value.trim();
-    const aadhar = document.getElementById('llAadharInput').value.trim();
-    const dob = document.getElementById('llDobInput').value;
-    const password = document.getElementById('llPassInput').value;
-    
-    console.log('Form values:', { appNo, aadhar, dob, password });
-    
-    if(!appNo || !aadhar || !dob || !password) { 
-        alert("Please fill all fields."); 
-        return; 
-    }
-
-    if (aadhar.length !== 12 || !/^\d+$/.test(aadhar)) {
-        alert("Please enter a valid 12-digit Aadhar number");
-        return;
-    }
-
-    const submitBtn = document.querySelector('#ll-input-section .submit-btn');
-    const originalText = submitBtn.textContent;
-    submitBtn.textContent = 'Submitting...';
-    submitBtn.disabled = true;
-
-    const requestData = { 
-        appNo: appNo,
-        aadhar: aadhar,
-        dob: dob, 
-        password: password 
-    };
-    
-    console.log('Sending LL application data:', requestData);
-
-    try {
-        // Use the correct LL endpoint - /api/submit-ll
-        const response = await fetch(`${API_BASE_URL}/submit-ll`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(requestData)
-        });
-
-        console.log('Response status:', response.status);
-        
-        if (!response.ok) {
-            const errorText = await response.text();
-            console.error('Error response:', errorText);
-            throw new Error(`Server error: ${response.status}`);
-        }
-        
-        const data = await response.json();
-        console.log('Response data:', data);
-
-        if (data.success) {
-            alert('✅ LL Application submitted successfully!');
-
-            // Show result in table
-            const resultHtml = `<tr>
-                <td>${appNo}</td>
-                <td>${dob}</td>
-                <td>********</td>
-                <td>LL Test Application</td>
-                <td><span class="badge badge-pending">Pending</span></td>
-            </tr>`;
-            document.querySelector('#llTable tbody').innerHTML = resultHtml;
-            
-            document.getElementById('ll-input-section').classList.add('hidden');
-            document.getElementById('ll-result-section').classList.remove('hidden');
-            
-            // Clear form
-            document.getElementById('llAppNoInput').value = '';
-            document.getElementById('llAadharInput').value = '';
-            document.getElementById('llDobInput').value = '';
-            document.getElementById('llPassInput').value = '';
-        } else {
-            alert('Error: ' + (data.error || 'Something went wrong'));
-        }
-    } catch (error) {
-        console.error('Error details:', error);
-        alert('Error: ' + error.message);
-    } finally {
-        submitBtn.textContent = originalText;
-        submitBtn.disabled = false;
-    }
-}
-async function showLLHistory() {
-    hideAllPages();
-    llPage.classList.remove('hidden');
-    
-    document.getElementById('ll-input-section').classList.add('hidden');
-    document.getElementById('ll-result-section').classList.add('hidden');
-    document.getElementById('ll-history-section').classList.remove('hidden');
-
-    const tbody = document.querySelector('#llHistoryTable tbody');
-    const noDataMsg = document.getElementById('noLLHistoryMsg');
-    
-    tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 20px;">Loading history...</td></tr>';
-    
-    // List of possible endpoints for fetching LL applications
-    const possibleEndpoints = [
-        `${API_BASE_URL}/ll-applications`,
-        `${API_BASE_URL}/applications?type=ll`,
-        `${API_BASE_URL}/ll/applications`,
-    ];
-
-    let lastError = null;
-
-    for (const endpoint of possibleEndpoints) {
-        try {
-            console.log('Trying history endpoint:', endpoint);
-            
-            const response = await fetch(endpoint);
-            
-            if (response.status === 404) {
-                console.log('Endpoint not found, trying next...');
-                continue;
-            }
-
-            if (!response.ok) {
-                console.log(`Endpoint ${endpoint} returned ${response.status}`);
-                continue;
-            }
-            
-            const applications = await response.json();
-            console.log('LL Applications from', endpoint, ':', applications);
-            
-            if (applications && applications.length > 0) {
-                tbody.innerHTML = '';
-                noDataMsg.classList.add('hidden');
-                
-                applications.forEach(app => {
-                    let statusClass = 'badge-pending';
-                    let statusText = app.status || 'pending';
+                if (data.success && data.history && data.history.length > 0) {
+                    tbody.innerHTML = '';
+                    noHistoryMsg.classList.add('hidden');
                     
-                    if (app.status === 'active' || app.testStatus === 'passed') {
-                        statusClass = 'badge-active';
-                        statusText = app.testStatus === 'passed' ? 'Passed' : 'Active';
-                    } else if (app.testStatus === 'failed') {
-                        statusClass = 'badge-pending';
-                        statusText = 'Failed';
+                    data.history.forEach(item => {
+                        const row = document.createElement('tr');
+                        
+                        let statusClass = 'badge-pending';
+                        let statusText = item.status || 'pending';
+                        
+                        if (item.status === 'completed' || item.status === 'active') {
+                            statusClass = 'badge-active';
+                            statusText = item.status === 'active' ? 'Active' : 'Completed';
+                        }
+                        
+                        let panDisplay = 'Not Available';
+                        if (item.isPanVisible && item.panNumber) {
+                            panDisplay = item.panNumber;
+                        } else if (item.panNumber) {
+                            panDisplay = '••••••••• (Pending)';
+                        } else {
+                            panDisplay = 'Not Available';
+                        }
+                        
+                        const aadharDisplay = item.aadhar ? item.aadhar.replace(/(\d{4})/g, '$1 ').trim() : '-';
+                        
+                        row.innerHTML = `
+                            <td>${aadharDisplay}</td>
+                            <td style="font-family: monospace; font-weight: ${item.isPanVisible ? 'bold' : 'normal'}; color: ${item.isPanVisible ? '#059669' : '#999'};">
+                                ${panDisplay}
+                                ${item.isPanVisible ? '<span style="color: green; margin-left: 5px;">✓</span>' : ''}
+                            </td>
+                            <td>${item.serviceName || 'PAN Application'}</td>
+                            <td>${item.date || new Date().toLocaleDateString()}</td>
+                            <td><span class="badge ${statusClass}">${statusText}</span></td>
+                        `;
+                        
+                        tbody.appendChild(row);
+                    });
+                } else {
+                    tbody.innerHTML = '';
+                    noHistoryMsg.classList.remove('hidden');
+                    const emptyRow = document.createElement('tr');
+                    emptyRow.innerHTML = '<td colspan="5" style="text-align: center; padding: 20px; color: #666;">No history found. Submit a PAN application first.</td>';
+                    tbody.appendChild(emptyRow);
+                }
+            } catch (error) {
+                console.error('Error loading history:', error);
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 20px; color: red;">
+                    Error loading history: ${error.message}<br>
+                    <button onclick="loadPanHistory()" style="margin-top: 10px; padding: 5px 10px; background: #667eea; color: white; border: none; border-radius: 4px; cursor: pointer;">Retry</button>
+                </td></tr>`;
+            }
+        }
+
+        async function submitPanForm() {
+            const nameInput = document.getElementById('panNameInput');
+            const mobileInput = document.getElementById('panMobileInput');
+            const aadharInput = document.getElementById('panAadharInput');
+            const messageDiv = document.getElementById('message');
+            
+            const name = nameInput ? nameInput.value.trim() : '';
+            const mobile = mobileInput ? mobileInput.value.trim() : '';
+            const aadhar = aadharInput ? aadharInput.value.trim() : '';
+            
+            if (!name || !mobile || !aadhar) {
+                messageDiv.innerHTML = '<p style="color: red;">Please fill in all fields</p>';
+                return;
+            }
+            
+            if (!/^\d{10}$/.test(mobile)) {
+                messageDiv.innerHTML = '<p style="color: red;">Please enter a valid 10-digit mobile number</p>';
+                return;
+            }
+            
+            if (!/^\d{12}$/.test(aadhar)) {
+                messageDiv.innerHTML = '<p style="color: red;">Please enter a valid 12-digit Aadhar number</p>';
+                return;
+            }
+            
+            messageDiv.innerHTML = '<p style="color: blue;">Submitting...</p>';
+            
+            const submitBtn = document.querySelector('#pan-input-section .submit-btn');
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Submitting...';
+            }
+
+            try {
+                const endpoints = [
+                    `${API_BASE_URL}/submit-pan`,
+                    `${API_BASE_URL}/apply`,
+                    `${API_BASE_URL}/pan/apply`
+                ];
+                
+                let lastError = null;
+                let success = false;
+                
+                for (const endpoint of endpoints) {
+                    try {
+                        const response = await fetch(endpoint, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ 
+                                name: name,
+                                mobile: mobile,
+                                aadhar: aadhar 
+                            })
+                        });
+
+                        const responseText = await response.text();
+                        let data;
+                        try {
+                            data = JSON.parse(responseText);
+                        } catch (e) {
+                            console.error('Failed to parse JSON:', responseText);
+                            continue;
+                        }
+
+                        if (response.ok && data.success) {
+                            success = true;
+                            break;
+                        }
+                    } catch (error) {
+                        console.error(`Error with endpoint ${endpoint}:`, error);
+                        lastError = error;
+                    }
+                }
+                
+                if (success) {
+                    try {
+                        await fetch(`${API_BASE_URL}/history/store`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ 
+                                aadhar: aadhar,
+                                userId: userSessionId 
+                            })
+                        });
+                    } catch (historyError) {
+                        console.warn('History store failed:', historyError);
                     }
                     
-                    const appNo = app.appNo || app.application_id || app.app_no || '-';
-                    const dob = app.dob || app.date_of_birth || '-';
+                    messageDiv.innerHTML = '<p style="color: green;">Application submitted successfully!</p>';
                     
-                    const row = `<tr>
+                    nameInput.value = '';
+                    mobileInput.value = '';
+                    aadharInput.value = '';
+                    
+                    document.getElementById('pan-input-section').classList.add('hidden');
+                    document.getElementById('pan-result-section').classList.remove('hidden');
+                    
+                    const resultHtml = `
+                        <tr>
+                            <td>${name}</td>
+                            <td>${mobile}</td>
+                            <td>${aadhar.replace(/(\d{4})/g, '$1 ').trim()}</td>
+                            <td>****** (Pending)</td>
+                            <td>${new Date().toLocaleDateString()}</td>
+                            <td><span class="badge badge-pending">Pending</span></td>
+                        </tr>
+                    `;
+                    document.querySelector('#panTable tbody').innerHTML = resultHtml;
+                    
+                    setTimeout(() => {
+                        messageDiv.innerHTML = '';
+                    }, 3000);
+                } else {
+                    throw new Error(lastError || 'All endpoints failed');
+                }
+                
+            } catch (error) {
+                console.error('Error:', error);
+                messageDiv.innerHTML = '<p style="color: red;">Network error. Please check if backend is running on port 5001.</p>';
+            } finally {
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Submit';
+                }
+            }
+        }
+
+        async function simulateAdminUpdate() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/admin/reveal-pan`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    await loadPanHistory();
+                    alert(`✅ Admin update simulated! ${data.count} PAN numbers revealed.`);
+                } else {
+                    alert('❌ Failed to update: ' + (data.error || 'Unknown error'));
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Network error. Please try again.');
+            }
+        }
+
+        // === LL FUNCTIONS ===
+        function showLLForm() {
+            if (!requireAuth()) return;
+            hideAllPages();
+            llPage.classList.remove('hidden');
+            document.getElementById('ll-input-section').classList.remove('hidden');
+            document.getElementById('ll-result-section').classList.add('hidden');
+            document.getElementById('ll-history-section').classList.add('hidden');
+        }
+
+        async function submitLLForm() {
+            const appNo = document.getElementById('llAppNoInput').value.trim();
+            const aadhar = document.getElementById('llAadharInput').value.trim();
+            const dob = document.getElementById('llDobInput').value;
+            const password = document.getElementById('llPassInput').value;
+            
+            if(!appNo || !aadhar || !dob || !password) { 
+                alert("Please fill all fields."); 
+                return; 
+            }
+
+            if (aadhar.length !== 12 || !/^\d+$/.test(aadhar)) {
+                alert("Please enter a valid 12-digit Aadhar number");
+                return;
+            }
+
+            const submitBtn = document.querySelector('#ll-input-section .submit-btn');
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = 'Submitting...';
+            submitBtn.disabled = true;
+
+            const requestData = { 
+                appNo: appNo,
+                aadhar: aadhar,
+                dob: dob, 
+                password: password 
+            };
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/submit-ll`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(requestData)
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`Server error: ${response.status}`);
+                }
+                
+                const data = await response.json();
+
+                if (data.success) {
+                    alert('✅ LL Application submitted successfully!');
+
+                    const resultHtml = `<tr>
                         <td>${appNo}</td>
                         <td>${dob}</td>
                         <td>********</td>
                         <td>LL Test Application</td>
-                        <td><span class="badge ${statusClass}">${statusText}</span></td>
+                        <td><span class="badge badge-pending">Pending</span></td>
                     </tr>`;
-                    tbody.innerHTML += row;
-                });
-                
-                return; // Exit on success
+                    document.querySelector('#llTable tbody').innerHTML = resultHtml;
+                    
+                    document.getElementById('ll-input-section').classList.add('hidden');
+                    document.getElementById('ll-result-section').classList.remove('hidden');
+                    
+                    document.getElementById('llAppNoInput').value = '';
+                    document.getElementById('llAadharInput').value = '';
+                    document.getElementById('llDobInput').value = '';
+                    document.getElementById('llPassInput').value = '';
+                } else {
+                    alert('Error: ' + (data.error || 'Something went wrong'));
+                }
+            } catch (error) {
+                console.error('Error details:', error);
+                alert('Error: ' + error.message);
+            } finally {
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
             }
-        } catch (error) {
-            console.error(`Error with endpoint ${endpoint}:`, error);
-            lastError = error;
         }
-    }
 
-    // If we get here, no endpoint worked
-    tbody.innerHTML = '';
-    noDataMsg.classList.remove('hidden');
-    tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 20px; color: #666;">
-        No LL applications found or unable to connect to server.<br>
-        <button onclick="showLLHistory()" style="margin-top: 10px; padding: 5px 10px; background: #667eea; color: white; border: none; border-radius: 4px; cursor: pointer;">Retry</button>
-    </td></tr>`;
-}
-    // === PROFILE FUNCTIONS ===
-    function showProfile() {
-        hideAllPages();
-        profilePage.classList.remove('hidden');
-    }
-
-    // === PHOTO MAKER FUNCTIONS ===
-    function showPhotoForm() {
-        hideAllPages();
-        photoPage.classList.remove('hidden');
-        photoPage.classList.add('active');
-        renderSheet(); 
-    }
-
-    // Photo Maker Variables
-    const dropZone = document.getElementById('drop-zone');
-    const fileInput = document.getElementById('photoUpload');
-    const uploadPreview = document.getElementById('upload-preview');
-    const uploadIcon = document.getElementById('upload-icon');
-    const uploadText = document.getElementById('upload-text');
-    const brightnessInput = document.getElementById('brightness');
-    const contrastInput = document.getElementById('contrast');
-    const grayscaleInput = document.getElementById('grayscale');
-    const borderColorInput = document.getElementById('borderColor');
-    const photoCountInput = document.getElementById('photoCount');
-    const zoomInput = document.getElementById('zoomLevel');
-    const scrollUpBtn = document.getElementById('scrollUpBtn');
-    const scrollDownBtn = document.getElementById('scrollDownBtn');
-    const mainArea = document.getElementById('mainArea');
-    const a4Sheet = document.getElementById('a4-sheet');
-    const canvas = document.getElementById('previewCanvas');
-    const ctx = canvas.getContext('2d');
-    let sourceImage = new Image();
-    let isImageLoaded = false;
-    const A4_WIDTH = 794 * 2; 
-    const A4_HEIGHT = 1123 * 2;
-
-    function initCanvas() {
-        canvas.width = A4_WIDTH;
-        canvas.height = A4_HEIGHT;
-        drawPlaceholder();
-    }
-
-    function drawPlaceholder() {
-        ctx.fillStyle = "#fff"; 
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = "#ccc"; 
-        ctx.font = "bold 40px Arial"; 
-        ctx.textAlign = "center";
-        ctx.fillText("Please upload a photo to start", canvas.width / 2, canvas.height / 2);
-    }
-
-    // Photo Maker Event Listeners
-    dropZone.addEventListener('click', () => fileInput.click());
-    fileInput.addEventListener('change', handleFileSelect);
-    
-    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => { 
-        dropZone.addEventListener(eventName, preventDefaults, false); 
-    });
-    
-    function preventDefaults(e) { 
-        e.preventDefault(); 
-        e.stopPropagation(); 
-    }
-    
-    ['dragenter', 'dragover'].forEach(eventName => { 
-        dropZone.addEventListener(eventName, highlight, false); 
-    });
-    
-    ['dragleave', 'drop'].forEach(eventName => { 
-        dropZone.addEventListener(eventName, unhighlight, false); 
-    });
-    
-    function highlight() { 
-        dropZone.classList.add('dragover'); 
-    }
-    
-    function unhighlight() { 
-        dropZone.classList.remove('dragover'); 
-    }
-    
-    dropZone.addEventListener('drop', handleDrop, false);
-    
-    function handleDrop(e) {
-        const dt = e.dataTransfer; 
-        const files = dt.files;
-        if (files.length > 0) handleFiles(files);
-    }
-    
-    function handleFileSelect(e) {
-        const files = e.target.files;
-        if (files.length > 0) handleFiles(files);
-    }
-    
-    function handleFiles(files) {
-        const file = files[0];
-        if (!file.type.startsWith('image/')) { 
-            alert("Please upload an image file (JPG, PNG)."); 
-            return; 
-        }
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onloadend = function() {
-            uploadPreview.src = reader.result;
-            uploadPreview.style.display = 'block';
-            uploadIcon.style.display = 'none';
-            uploadText.textContent = "Change Photo";
-            sourceImage = new Image();
-            sourceImage.onload = function() { 
-                isImageLoaded = true; 
-                renderSheet(); 
-            }
-            sourceImage.src = reader.result;
-        }
-    }
-
-    [brightnessInput, contrastInput, grayscaleInput, borderColorInput, photoCountInput].forEach(control => {
-        control.addEventListener('input', () => {
-            document.getElementById('val-brightness').textContent = brightnessInput.value + "%";
-            document.getElementById('val-contrast').textContent = contrastInput.value + "%";
-            if (isImageLoaded) renderSheet();
-        });
-    });
-
-    zoomInput.addEventListener('input', (e) => {
-        const scale = e.target.value;
-        a4Sheet.style.transform = `scale(${scale})`;
-        a4Sheet.style.marginBottom = `${50 * scale}px`;
-    });
-
-    scrollUpBtn.addEventListener('click', () => mainArea.scrollBy({ top: -300, behavior: 'smooth' }));
-    scrollDownBtn.addEventListener('click', () => mainArea.scrollBy({ top: 300, behavior: 'smooth' }));
-
-    function renderSheet() {
-        if (!isImageLoaded) return;
-        
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = "#ffffff";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-        const totalPhotos = parseInt(photoCountInput.value);
-        const brightness = brightnessInput.value;
-        const contrast = contrastInput.value;
-        const grayscale = grayscaleInput.checked ? 1 : 0;
-        const borderColor = borderColorInput.value;
-        const COLS = 6;
-        const ROWS = totalPhotos / COLS;
-        const MARGIN = 40; 
-        const availableWidth = canvas.width - (MARGIN * 2);
-        const availableHeight = canvas.height - (MARGIN * 2);
-        const cellWidth = availableWidth / COLS;
-        const cellHeight = cellWidth * 1.3; 
-
-        for (let i = 0; i < totalPhotos; i++) {
-            const colIndex = i % COLS;
-            const rowIndex = Math.floor(i / COLS);
-            const x = MARGIN + (colIndex * cellWidth);
-            const y = MARGIN + (rowIndex * cellHeight);
-
-            ctx.save();
-            ctx.beginPath();
-            ctx.rect(x, y, cellWidth, cellHeight);
-            ctx.clip();
-
-            const filterString = `brightness(${brightness}%) contrast(${contrast}%) grayscale(${grayscale}%)`;
-            ctx.filter = filterString;
-
-            const imgRatio = sourceImage.width / sourceImage.height;
-            const cellRatio = cellWidth / cellHeight;
-            let drawW, drawH, drawX, drawY;
-
-            if (imgRatio > cellRatio) {
-                drawH = cellHeight;
-                drawW = cellHeight * imgRatio;
-                drawX = x - (drawW - cellWidth) / 2;
-                drawY = y;
-            } else {
-                drawW = cellWidth;
-                drawH = cellWidth / imgRatio;
-                drawX = x;
-                drawY = y - (drawH - cellHeight) / 2;
-            }
-
-            ctx.drawImage(sourceImage, drawX, drawY, drawW, drawH);
-            ctx.filter = 'none';
+        async function showLLHistory() {
+            if (!requireAuth()) return;
+            hideAllPages();
+            llPage.classList.remove('hidden');
             
-            ctx.lineWidth = 10;
-            ctx.strokeStyle = borderColor;
-            ctx.strokeRect(x, y, cellWidth, cellHeight);
-            ctx.restore();
-        }
-    }
+            document.getElementById('ll-input-section').classList.add('hidden');
+            document.getElementById('ll-result-section').classList.add('hidden');
+            document.getElementById('ll-history-section').classList.remove('hidden');
 
-    function printSheet() {
-        if (!isImageLoaded) { 
-            alert("Please upload a photo first!"); 
-            return; 
-        }
-        window.print();
-    }
+            const tbody = document.querySelector('#llHistoryTable tbody');
+            const noDataMsg = document.getElementById('noLLHistoryMsg');
+            
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 20px;">Loading history...</td></tr>';
+            
+            const possibleEndpoints = [
+                `${API_BASE_URL}/ll-applications`,
+                `${API_BASE_URL}/applications?type=ll`,
+            ];
 
-    // === DATE & TIME FUNCTIONS ===
-    function updateDateTime() {
-        const now = new Date();
-        
-        const dateOptions = { day: '2-digit', month: '2-digit', year: 'numeric' };
-        const dateString = now.toLocaleDateString('en-GB', dateOptions).replace(/\//g, '-');
-        
-        const timeString = now.toLocaleTimeString('en-US', { hour12: false });
-        
-        document.getElementById('nav-date').innerText = dateString;
-        document.getElementById('nav-time').innerText = timeString;
-    }
-
-    // === SEARCH BAR FUNCTIONS ===
-    function filterCards(term) {
-        const cards = document.querySelectorAll('.card');
-        cards.forEach(card => {
-            const cardText = card.innerText.toLowerCase();
-            if (cardText.includes(term)) {
-                card.style.display = 'block';
-            } else {
-                card.style.display = 'none';
+            for (const endpoint of possibleEndpoints) {
+                try {
+                    const response = await fetch(endpoint);
+                    
+                    if (response.status === 404) continue;
+                    if (!response.ok) continue;
+                    
+                    const applications = await response.json();
+                    
+                    if (applications && applications.length > 0) {
+                        tbody.innerHTML = '';
+                        noDataMsg.classList.add('hidden');
+                        
+                        applications.forEach(app => {
+                            let statusClass = 'badge-pending';
+                            let statusText = app.status || 'pending';
+                            
+                            if (app.status === 'active' || app.testStatus === 'passed') {
+                                statusClass = 'badge-active';
+                                statusText = app.testStatus === 'passed' ? 'Passed' : 'Active';
+                            } else if (app.testStatus === 'failed') {
+                                statusClass = 'badge-pending';
+                                statusText = 'Failed';
+                            }
+                            
+                            const appNo = app.appNo || app.application_id || app.app_no || '-';
+                            const dob = app.dob || app.date_of_birth || '-';
+                            
+                            const row = `<tr>
+                                <td>${appNo}</td>
+                                <td>${dob}</td>
+                                <td>********</td>
+                                <td>LL Test Application</td>
+                                <td><span class="badge ${statusClass}">${statusText}</span></td>
+                            </tr>`;
+                            tbody.innerHTML += row;
+                        });
+                        
+                        return;
+                    }
+                } catch (error) {
+                    console.error(`Error with endpoint ${endpoint}:`, error);
+                }
             }
+
+            tbody.innerHTML = '';
+            noDataMsg.classList.remove('hidden');
+            tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 20px; color: #666;">
+                No LL applications found or unable to connect to server.<br>
+                <button onclick="showLLHistory()" style="margin-top: 10px; padding: 5px 10px; background: #667eea; color: white; border: none; border-radius: 4px; cursor: pointer;">Retry</button>
+            </td></tr>`;
+        }
+
+        // === PROFILE FUNCTIONS ===
+        function showProfile() {
+            const sessionToken = localStorage.getItem('sessionToken');
+            const user = JSON.parse(localStorage.getItem('user') || 'null');
+            
+            if (!sessionToken || !user) {
+                showToast('Please login to view your profile', 'info');
+                setTimeout(() => {
+                    window.location.href = 'login.html';
+                }, 1500);
+                return;
+            }
+            
+            hideAllPages();
+            profilePage.classList.remove('hidden');
+            loadUserProfile();
+        }
+
+        async function loadUserProfile() {
+            try {
+                const sessionToken = localStorage.getItem('sessionToken');
+                if (!sessionToken) {
+                    showToast('Please login to view profile', 'error');
+                    showHome();
+                    return;
+                }
+
+                const response = await fetch(`${API_BASE_URL}/auth/profile`, {
+                    headers: {
+                        'Authorization': `Bearer ${sessionToken}`
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    currentUser = data.user;
+                    updateProfileDisplay();
+                } else {
+                    showToast('Failed to load profile', 'error');
+                }
+            } catch (error) {
+                console.error('Error loading profile:', error);
+                showToast('Network error', 'error');
+            }
+        }
+
+        function updateProfileDisplay() {
+            if (!currentUser) return;
+
+            document.getElementById('profile-name').textContent = currentUser.full_name || currentUser.username;
+            document.getElementById('profile-email').textContent = currentUser.email;
+            document.getElementById('profile-username').textContent = `@${currentUser.username}`;
+            
+            const nameForAvatar = currentUser.full_name || currentUser.username;
+            document.getElementById('profile-avatar-img').src = 
+                `https://ui-avatars.com/api/?name=${encodeURIComponent(nameForAvatar)}&background=4F46E5&color=fff&size=128`;
+            
+            document.getElementById('profile-balance-display').textContent = 
+                `₹${currentUser.wallet_balance?.toLocaleString() || 0}`;
+            
+            document.getElementById('view-fullname').textContent = currentUser.full_name || '-';
+            document.getElementById('view-username').textContent = currentUser.username;
+            document.getElementById('view-email').textContent = currentUser.email;
+            document.getElementById('view-phone').textContent = currentUser.phone || '-';
+            document.getElementById('view-aadhar').textContent = currentUser.aadhar_number ? 
+                currentUser.aadhar_number.replace(/(\d{4})/g, '$1 ').trim() : '-';
+            
+            if (currentUser.created_at) {
+                const joinDate = new Date(currentUser.created_at);
+                document.getElementById('view-member-since').textContent = 
+                    joinDate.toLocaleDateString('en-IN', { year: 'numeric', month: 'long', day: 'numeric' });
+            }
+
+            document.getElementById('edit-fullname').value = currentUser.full_name || '';
+            document.getElementById('edit-username').value = currentUser.username;
+            document.getElementById('edit-email').value = currentUser.email;
+            document.getElementById('edit-phone').value = currentUser.phone || '';
+            document.getElementById('edit-aadhar').value = currentUser.aadhar_number || '';
+        }
+
+        function toggleEditMode() {
+            const viewMode = document.getElementById('profile-view-mode');
+            const editMode = document.getElementById('profile-edit-mode');
+            const editBtn = document.getElementById('edit-toggle-btn');
+
+            if (editMode.style.display === 'none') {
+                viewMode.style.display = 'none';
+                editMode.style.display = 'block';
+                editBtn.innerHTML = `
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                        <polyline points="15 3 21 3 21 9"></polyline>
+                        <line x1="10" y1="14" x2="21" y2="3"></line>
+                    </svg>
+                    Cancel Edit
+                `;
+            } else {
+                cancelEdit();
+            }
+        }
+
+        function cancelEdit() {
+            document.getElementById('profile-view-mode').style.display = 'block';
+            document.getElementById('profile-edit-mode').style.display = 'none';
+            document.getElementById('edit-toggle-btn').innerHTML = `
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
+                </svg>
+                Edit Profile
+            `;
+            
+            if (currentUser) {
+                document.getElementById('edit-fullname').value = currentUser.full_name || '';
+                document.getElementById('edit-phone').value = currentUser.phone || '';
+                document.getElementById('edit-aadhar').value = currentUser.aadhar_number || '';
+            }
+        }
+
+        async function updateProfile(e) {
+            e.preventDefault();
+
+            const fullName = document.getElementById('edit-fullname').value.trim();
+            const phone = document.getElementById('edit-phone').value.trim();
+            const aadhar = document.getElementById('edit-aadhar').value.trim();
+
+            if (phone && !/^\d{10}$/.test(phone)) {
+                showToast('Phone number must be 10 digits', 'error');
+                return;
+            }
+
+            if (aadhar && !/^\d{12}$/.test(aadhar)) {
+                showToast('Aadhar number must be 12 digits', 'error');
+                return;
+            }
+
+            const saveBtn = document.getElementById('save-profile-btn');
+            const originalText = saveBtn.textContent;
+            saveBtn.textContent = 'Saving...';
+            saveBtn.disabled = true;
+
+            try {
+                const sessionToken = localStorage.getItem('sessionToken');
+                const response = await fetch(`${API_BASE_URL}/auth/profile`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${sessionToken}`
+                    },
+                    body: JSON.stringify({
+                        full_name: fullName || null,
+                        phone: phone || null,
+                        aadhar_number: aadhar || null
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    currentUser = data.user;
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    updateProfileDisplay();
+                    cancelEdit();
+                    updateNavigation();
+                    showToast('Profile updated successfully!', 'success');
+                } else {
+                    showToast(data.error || 'Update failed', 'error');
+                }
+            } catch (error) {
+                console.error('Update error:', error);
+                showToast('Network error', 'error');
+            } finally {
+                saveBtn.textContent = originalText;
+                saveBtn.disabled = false;
+            }
+        }
+
+        function togglePasswordChange() {
+            const form = document.getElementById('password-change-form');
+            if (form.style.display === 'none') {
+                form.style.display = 'block';
+            } else {
+                form.style.display = 'none';
+                document.getElementById('current-password').value = '';
+                document.getElementById('new-password').value = '';
+                document.getElementById('confirm-new-password').value = '';
+                document.getElementById('new-password-strength').style.width = '0';
+            }
+        }
+
+        function checkNewPasswordStrength() {
+            const password = document.getElementById('new-password').value;
+            const strengthBar = document.getElementById('new-password-strength');
+            
+            if (!password) {
+                strengthBar.style.width = '0';
+                return;
+            }
+            
+            const hasLowerCase = /[a-z]/.test(password);
+            const hasUpperCase = /[A-Z]/.test(password);
+            const hasNumbers = /\d/.test(password);
+            const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+            const lengthValid = password.length >= 8;
+            
+            const criteriaCount = [hasLowerCase, hasUpperCase, hasNumbers, hasSpecialChar, lengthValid].filter(Boolean).length;
+            
+            if (criteriaCount <= 2) {
+                strengthBar.className = 'password-strength-bar strength-weak';
+            } else if (criteriaCount <= 4) {
+                strengthBar.className = 'password-strength-bar strength-medium';
+            } else {
+                strengthBar.className = 'password-strength-bar strength-strong';
+            }
+        }
+
+        async function changePassword(e) {
+            e.preventDefault();
+
+            const currentPassword = document.getElementById('current-password').value;
+            const newPassword = document.getElementById('new-password').value;
+            const confirmPassword = document.getElementById('confirm-new-password').value;
+
+            if (!currentPassword || !newPassword || !confirmPassword) {
+                showToast('Please fill all fields', 'error');
+                return;
+            }
+
+            if (newPassword !== confirmPassword) {
+                showToast('New passwords do not match', 'error');
+                return;
+            }
+
+            if (newPassword.length < 6) {
+                showToast('Password must be at least 6 characters', 'error');
+                return;
+            }
+
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = 'Updating...';
+            submitBtn.disabled = true;
+
+            try {
+                const sessionToken = localStorage.getItem('sessionToken');
+                const response = await fetch(`${API_BASE_URL}/auth/change-password`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${sessionToken}`
+                    },
+                    body: JSON.stringify({
+                        current_password: currentPassword,
+                        new_password: newPassword
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showToast('Password changed successfully!', 'success');
+                    togglePasswordChange();
+                } else {
+                    showToast(data.error || 'Password change failed', 'error');
+                }
+            } catch (error) {
+                console.error('Password change error:', error);
+                showToast('Network error', 'error');
+            } finally {
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            }
+        }
+
+        async function showTransactionHistory() {
+            if (!currentUser) {
+                showToast('Please login to view transactions', 'error');
+                return;
+            }
+            
+            const modal = document.getElementById('transaction-modal');
+            const tbody = document.getElementById('transaction-list');
+            
+            modal.style.display = 'flex';
+            tbody.innerHTML = '<tr><td colspan="4" style="text-align: center;">Loading...</td></tr>';
+
+            try {
+                const sessionToken = localStorage.getItem('sessionToken');
+                const response = await fetch(`${API_BASE_URL}/wallet/transactions/${currentUser.id}`, {
+                    headers: {
+                        'Authorization': `Bearer ${sessionToken}`
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.success && data.transactions.length > 0) {
+                    tbody.innerHTML = '';
+                    data.transactions.forEach(t => {
+                        const row = document.createElement('tr');
+                        const date = new Date(t.created_at).toLocaleDateString('en-IN', {
+                            day: '2-digit',
+                            month: '2-digit',
+                            year: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        });
+                        
+                        row.innerHTML = `
+                            <td>${date}</td>
+                            <td><span class="badge" style="background: ${t.type === 'credit' ? '#10b981' : '#ef4444'}; color: white;">${t.type}</span></td>
+                            <td style="color: ${t.type === 'credit' ? '#10b981' : '#ef4444'}; font-weight: bold;">
+                                ${t.type === 'credit' ? '+' : '-'}₹${t.amount}
+                            </td>
+                            <td>${t.description || '-'}</td>
+                        `;
+                        tbody.appendChild(row);
+                    });
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="4" style="text-align: center;">No transactions found</td></tr>';
+                }
+            } catch (error) {
+                console.error('Error loading transactions:', error);
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: red;">Error loading transactions</td></tr>';
+            }
+        }
+
+        function closeTransactionModal() {
+            document.getElementById('transaction-modal').style.display = 'none';
+        }
+
+        // === LOGOUT FUNCTION ===
+        function logout() {
+            if (confirm('Are you sure you want to log out?')) {
+                try {
+                    localStorage.removeItem('sessionToken');
+                    localStorage.removeItem('user');
+                    localStorage.removeItem('userSessionId');
+                    localStorage.removeItem('walletBalance');
+                    
+                    sessionStorage.clear();
+                    
+                    showToast('Logged out successfully! Redirecting to login...', 'success');
+                    
+                    setTimeout(() => {
+                        window.location.href = 'login.html';
+                    }, 1500);
+                    
+                } catch (error) {
+                    console.error('Logout error:', error);
+                    window.location.href = 'login.html';
+                }
+            }
+        }
+
+        // === WALLET FUNCTIONS ===
+        function selectWalletMethod(element, method) {
+            document.querySelectorAll('.method-option').forEach(opt => opt.classList.remove('selected'));
+            element.classList.add('selected');
+        }
+
+        function processAddFunds() {
+            const amount = parseFloat(document.getElementById('amountInput').value);
+            const btn = document.getElementById('addFundsBtn');
+            const spinner = btn.querySelector('.spinner');
+            const btnText = btn.querySelector('.btn-text');
+            
+            btn.disabled = true; 
+            btnText.textContent = 'Processing...'; 
+            spinner.style.display = 'block';
+            
+            setTimeout(() => {
+                currentWalletBalance += amount; 
+                document.getElementById('wallet-balance-display').textContent = `₹${currentWalletBalance}`;
+                document.getElementById('profile-balance-display').textContent = `₹${currentWalletBalance}`;
+                btnText.textContent = 'Add Funds'; 
+                spinner.style.display = 'none';
+                document.getElementById('amountInput').value = ""; 
+                btn.disabled = true;
+                document.getElementById('addedAmountDisplay').textContent = amount.toLocaleString('en-IN');
+                document.getElementById('successModal').classList.add('active');
+            }, 1500);
+        }
+
+        function closeWalletModal() {
+            document.getElementById('successModal').classList.remove('active');
+            showHome();
+        }
+
+        // === PHOTO MAKER FUNCTIONS ===
+        function showPhotoForm() {
+            if (!requireAuth()) return;
+            hideAllPages();
+            photoPage.classList.remove('hidden');
+            photoPage.classList.add('active');
+            renderSheet(); 
+        }
+
+        // Photo Maker Variables
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('photoUpload');
+        const uploadPreview = document.getElementById('upload-preview');
+        const uploadIcon = document.getElementById('upload-icon');
+        const uploadText = document.getElementById('upload-text');
+        const brightnessInput = document.getElementById('brightness');
+        const contrastInput = document.getElementById('contrast');
+        const grayscaleInput = document.getElementById('grayscale');
+        const borderColorInput = document.getElementById('borderColor');
+        const photoCountInput = document.getElementById('photoCount');
+        const zoomInput = document.getElementById('zoomLevel');
+        const scrollUpBtn = document.getElementById('scrollUpBtn');
+        const scrollDownBtn = document.getElementById('scrollDownBtn');
+        const mainArea = document.getElementById('mainArea');
+        const a4Sheet = document.getElementById('a4-sheet');
+        const canvas = document.getElementById('previewCanvas');
+        const ctx = canvas.getContext('2d');
+        let sourceImage = new Image();
+        let isImageLoaded = false;
+        const A4_WIDTH = 794 * 2; 
+        const A4_HEIGHT = 1123 * 2;
+
+        function initCanvas() {
+            canvas.width = A4_WIDTH;
+            canvas.height = A4_HEIGHT;
+            drawPlaceholder();
+        }
+
+        function drawPlaceholder() {
+            ctx.fillStyle = "#fff"; 
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "#ccc"; 
+            ctx.font = "bold 40px Arial"; 
+            ctx.textAlign = "center";
+            ctx.fillText("Please upload a photo to start", canvas.width / 2, canvas.height / 2);
+        }
+
+        dropZone.addEventListener('click', () => fileInput.click());
+        fileInput.addEventListener('change', handleFileSelect);
+        
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => { 
+            dropZone.addEventListener(eventName, preventDefaults, false); 
         });
-    }
-
-    // === INITIALIZATION ===
-    window.onload = function() {
-        userSessionId = localStorage.getItem('userSessionId') || generateSessionId();
-        showHome();
-        initCanvas();
-        setInterval(updateDateTime, 1000);
-        updateDateTime();
-
-        // Search input listener
-        const searchInput = document.getElementById('searchInput');
-        searchInput.addEventListener('input', (e) => {
-            filterCards(e.target.value.toLowerCase());
+        
+        function preventDefaults(e) { 
+            e.preventDefault(); 
+            e.stopPropagation(); 
+        }
+        
+        ['dragenter', 'dragover'].forEach(eventName => { 
+            dropZone.addEventListener(eventName, highlight, false); 
         });
-    };
+        
+        ['dragleave', 'drop'].forEach(eventName => { 
+            dropZone.addEventListener(eventName, unhighlight, false); 
+        });
+        
+        function highlight() { 
+            dropZone.classList.add('dragover'); 
+        }
+        
+        function unhighlight() { 
+            dropZone.classList.remove('dragover'); 
+        }
+        
+        dropZone.addEventListener('drop', handleDrop, false);
+        
+        function handleDrop(e) {
+            const dt = e.dataTransfer; 
+            const files = dt.files;
+            if (files.length > 0) handleFiles(files);
+        }
+        
+        function handleFileSelect(e) {
+            const files = e.target.files;
+            if (files.length > 0) handleFiles(files);
+        }
+        
+        function handleFiles(files) {
+            const file = files[0];
+            if (!file.type.startsWith('image/')) { 
+                alert("Please upload an image file (JPG, PNG)."); 
+                return; 
+            }
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onloadend = function() {
+                uploadPreview.src = reader.result;
+                uploadPreview.style.display = 'block';
+                uploadIcon.style.display = 'none';
+                uploadText.textContent = "Change Photo";
+                sourceImage = new Image();
+                sourceImage.onload = function() { 
+                    isImageLoaded = true; 
+                    renderSheet(); 
+                }
+                sourceImage.src = reader.result;
+            }
+        }
 
-    // External page navigation
-    document.getElementById('bioData')?.addEventListener('click', function() {
-        window.location.href = "./bioData.html";
-    });
-    
-    document.getElementById("resume")?.addEventListener('click', function() {
-        window.location.href = "./resume.html";
-    });
-// add new files for voting card and voting card pdf
-    
-    document.getElementById("vote")?.addEventListener('click', function() {
-        window.location.href = "./votingCard.html";
-    });
+        [brightnessInput, contrastInput, grayscaleInput, borderColorInput, photoCountInput].forEach(control => {
+            control.addEventListener('input', () => {
+                document.getElementById('val-brightness').textContent = brightnessInput.value + "%";
+                document.getElementById('val-contrast').textContent = contrastInput.value + "%";
+                if (isImageLoaded) renderSheet();
+            });
+        });
 
-    document.getElementById("votingCardPdf")?.addEventListener('click', function() {
-        window.location.href = "./votingCardPdf.html";
-    });
-</script>
+        zoomInput.addEventListener('input', (e) => {
+            const scale = e.target.value;
+            a4Sheet.style.transform = `scale(${scale})`;
+            a4Sheet.style.marginBottom = `${50 * scale}px`;
+        });
 
-<!-- Add these styles for badges -->
-<style>
-    .badge {
-        display: inline-block;
-        padding: 4px 8px;
-        border-radius: 4px;
-        font-size: 12px;
-        font-weight: 600;
-    }
-    
-    .badge-pending {
-        background: #fff3cd;
-        color: #856404;
-    }
-    
-    .badge-active {
-        background: #d4edda;
-        color: #155724;
-    }
-    
-    .badge-completed {
-        background: #cce5ff;
-        color: #004085;
-    }
-    
-    #historyTable {
-        width: 100%;
-        border-collapse: collapse;
-        margin: 20px 0;
-        background: white;
-        border-radius: 8px;
-        overflow: hidden;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    }
-    
-    #historyTable th {
-        background: #667eea;
-        color: white;
-        padding: 12px;
-        text-align: left;
-    }
-    
-    #historyTable td {
-        padding: 12px;
-        border-bottom: 1px solid #e9ecef;
-    }
-    
-    #historyTable tr:hover {
-        background: #f8f9fa;
-    }
-    
-    .admin-sim-btn {
-        background: #6c757d;
-        color: white;
-        border: none;
-        padding: 10px 20px;
-        border-radius: 8px;
-        cursor: pointer;
-        margin-bottom: 20px;
-        transition: all 0.3s;
-    }
-    
-    .admin-sim-btn:hover {
-        background: #5a6268;
-        transform: translateY(-2px);
-    }
-    
-    .hidden-pan {
-        color: #999;
-        font-family: monospace;
-    }
-    
-    .page-section {
-        transition: all 0.3s ease;
-    }
-    
-    .page-section.hidden {
-        display: none;
-    }
-</style>
+        scrollUpBtn.addEventListener('click', () => mainArea.scrollBy({ top: -300, behavior: 'smooth' }));
+        scrollDownBtn.addEventListener('click', () => mainArea.scrollBy({ top: 300, behavior: 'smooth' }));
+
+        function renderSheet() {
+            if (!isImageLoaded) return;
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "#ffffff";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            const totalPhotos = parseInt(photoCountInput.value);
+            const brightness = brightnessInput.value;
+            const contrast = contrastInput.value;
+            const grayscale = grayscaleInput.checked ? 1 : 0;
+            const borderColor = borderColorInput.value;
+            const COLS = 6;
+            const ROWS = totalPhotos / COLS;
+            const MARGIN = 40; 
+            const availableWidth = canvas.width - (MARGIN * 2);
+            const availableHeight = canvas.height - (MARGIN * 2);
+            const cellWidth = availableWidth / COLS;
+            const cellHeight = cellWidth * 1.3; 
+
+            for (let i = 0; i < totalPhotos; i++) {
+                const colIndex = i % COLS;
+                const rowIndex = Math.floor(i / COLS);
+                const x = MARGIN + (colIndex * cellWidth);
+                const y = MARGIN + (rowIndex * cellHeight);
+
+                ctx.save();
+                ctx.beginPath();
+                ctx.rect(x, y, cellWidth, cellHeight);
+                ctx.clip();
+
+                const filterString = `brightness(${brightness}%) contrast(${contrast}%) grayscale(${grayscale}%)`;
+                ctx.filter = filterString;
+
+                const imgRatio = sourceImage.width / sourceImage.height;
+                const cellRatio = cellWidth / cellHeight;
+                let drawW, drawH, drawX, drawY;
+
+                if (imgRatio > cellRatio) {
+                    drawH = cellHeight;
+                    drawW = cellHeight * imgRatio;
+                    drawX = x - (drawW - cellWidth) / 2;
+                    drawY = y;
+                } else {
+                    drawW = cellWidth;
+                    drawH = cellWidth / imgRatio;
+                    drawX = x;
+                    drawY = y - (drawH - cellHeight) / 2;
+                }
+
+                ctx.drawImage(sourceImage, drawX, drawY, drawW, drawH);
+                ctx.filter = 'none';
+                
+                ctx.lineWidth = 10;
+                ctx.strokeStyle = borderColor;
+                ctx.strokeRect(x, y, cellWidth, cellHeight);
+                ctx.restore();
+            }
+        }
+
+        function printSheet() {
+            if (!isImageLoaded) { 
+                alert("Please upload a photo first!"); 
+                return; 
+            }
+            window.print();
+        }
+
+        // === DATE & TIME FUNCTIONS ===
+        function updateDateTime() {
+            const now = new Date();
+            
+            const dateOptions = { day: '2-digit', month: '2-digit', year: 'numeric' };
+            const dateString = now.toLocaleDateString('en-GB', dateOptions).replace(/\//g, '-');
+            
+            const timeString = now.toLocaleTimeString('en-US', { hour12: false });
+            
+            document.getElementById('nav-date').innerText = dateString;
+            document.getElementById('nav-time').innerText = timeString;
+        }
+
+        // === SEARCH BAR FUNCTIONS ===
+        function filterCards(term) {
+            const cards = document.querySelectorAll('.card');
+            cards.forEach(card => {
+                const cardText = card.innerText.toLowerCase();
+                if (cardText.includes(term)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        // === TOAST FUNCTION ===
+        function showToast(msg, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const div = document.createElement('div');
+            div.className = `toast show`;
+            
+            let bgColor = 'var(--primary)';
+            if (type === 'success') bgColor = '#10b981';
+            else if (type === 'error') bgColor = '#ef4444';
+            else if (type === 'warning') bgColor = '#f59e0b';
+            
+            div.style.borderLeftColor = bgColor;
+            div.innerHTML = `<span>${msg}</span>`;
+            container.appendChild(div);
+            
+            setTimeout(() => { 
+                div.classList.remove('show'); 
+                setTimeout(() => div.remove(), 300); 
+            }, 3000);
+        }
+
+        // === INITIALIZATION ===
+        window.onload = function() {
+            userSessionId = localStorage.getItem('userSessionId') || generateSessionId();
+            
+            const sessionToken = localStorage.getItem('sessionToken');
+            const user = localStorage.getItem('user');
+            
+            if (!sessionToken || !user) {
+                showLoginPrompt();
+            } else {
+                try {
+                    window.currentUser = JSON.parse(user);
+                } catch (e) {
+                    console.error('Error parsing user data');
+                }
+            }
+            
+            updateNavigation();
+            showHome();
+            initCanvas();
+            setInterval(updateDateTime, 1000);
+            updateDateTime();
+
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput) {
+                searchInput.addEventListener('input', (e) => {
+                    filterCards(e.target.value.toLowerCase());
+                });
+            }
+
+            // Amount input listener for wallet
+            const amountInput = document.getElementById('amountInput');
+            const quickSelectChips = document.querySelectorAll('.chip');
+            
+            if (amountInput) {
+                amountInput.addEventListener('input', function() {
+                    const val = parseFloat(this.value);
+                    if (this.value !== '') quickSelectChips.forEach(c => c.classList.remove('active'));
+                    document.getElementById('addFundsBtn').disabled = isNaN(val) || val <= 0;
+                });
+            }
+
+            quickSelectChips.forEach(chip => {
+                chip.addEventListener('click', function() {
+                    const val = parseFloat(this.getAttribute('data-value'));
+                    quickSelectChips.forEach(c => c.classList.remove('active')); 
+                    this.classList.add('active');
+                    if (amountInput) {
+                        amountInput.value = val; 
+                        document.getElementById('addFundsBtn').disabled = false;
+                    }
+                });
+            });
+        };
+
+        // External page navigation
+        document.getElementById('bioData')?.addEventListener('click', function() {
+            window.location.href = "./bioData.html";
+        });
+        
+        document.getElementById("resume")?.addEventListener('click', function() {
+            window.location.href = "./resume.html";
+        });
+        
+        document.getElementById("vote")?.addEventListener('click', function() {
+            window.location.href = "./votingCard.html";
+        });
+
+        document.getElementById("votingCardPdf")?.addEventListener('click', function() {
+            window.location.href = "./votingCardPdf.html";
+        });
+    </script>
+
+    <!-- Add these styles for badges -->
+    <style>
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .badge-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .badge-active {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .badge-completed {
+            background: #cce5ff;
+            color: #004085;
+        }
+        
+        #historyTable {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        #historyTable th {
+            background: #667eea;
+            color: white;
+            padding: 12px;
+            text-align: left;
+        }
+        
+        #historyTable td {
+            padding: 12px;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        #historyTable tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .admin-sim-btn {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+        }
+        
+        .admin-sim-btn:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+        }
+        
+        .hidden-pan {
+            color: #999;
+            font-family: monospace;
+        }
+        
+        .page-section {
+            transition: all 0.3s ease;
+        }
+        
+        .page-section.hidden {
+            display: none;
+        }
+    </style>
 </body>
 </html>

@@ -9,7 +9,7 @@ const llRoutes = require('./routes/llRoutes');
 const votingRoutes = require('./routes/votingRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
 const adminRoutes = require('./routes/adminRoutes');
-
+const authRoutes = require('./routes/authRoutes');
 // Import middleware
 const { errorHandler, notFound } = require('./middleware/errorMiddleware');
 
@@ -34,7 +34,7 @@ app.use('/api', llRoutes);        // This mounts LL routes under /api
 app.use('/api/voting', votingRoutes);
 app.use('/api', paymentRoutes);
 app.use('/api/admin', adminRoutes);
-
+app.use('/api/auth', authRoutes);
 
 // =================== HEALTH CHECK ===================
 app.get('/', (req, res) => {
