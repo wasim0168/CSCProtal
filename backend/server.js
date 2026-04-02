@@ -17,11 +17,21 @@ const app = express();
 const PORT = process.env.PORT || 5001;
 
 // =================== MIDDLEWARE ===================
+const allowedOrigins = [
+  "https://csc-protal.vercel.app",
+  "http://localhost:3000",
+  "http://127.0.0.1:5500"
+];
 // add this on brosff
 app.use(cors({
-    origin: ["https://csc-protal.vercel.app"],
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    credentials: true
+  origin: function(origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
