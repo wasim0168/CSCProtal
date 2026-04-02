@@ -19,17 +19,13 @@ const PORT = process.env.PORT || 5001;
 // =================== MIDDLEWARE ===================
 // add this on brosff
 app.use(cors({
-    origin: "https://csc-protal.vercel.app/" , " * "
+    origin: ["https://csc-protal.vercel.app"],
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
-
-app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-    next();
-});
 
 // =================== ROUTES ===================
 app.use('/api', panRoutes);
