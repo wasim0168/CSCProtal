@@ -19,7 +19,7 @@ const PORT = process.env.PORT || 5001;
 // =================== MIDDLEWARE ===================
 // add this on brosff
 app.use(cors({
-    origin: "https://csc-protal.vercel.app/"
+    origin: "https://csc-protal.vercel.app/" , " * "
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
